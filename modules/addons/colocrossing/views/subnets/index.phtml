@@ -1,0 +1,160 @@
+<?php
+	$num_records = $this->subnets->getTotalRecordCount();
+	$num_pages = $this->subnets->size();
+
+	$columns = array(
+		'ip_address' => 'IP Address',
+		'device' => 'Device',
+		'subzone' => 'Zone',
+		'swip' => 'SWIP'
+	);
+	$sortable_columns = array('ip_address');
+?>
+
+<form id="subnets-table-form" method="get">
+	<table width="100%" border="0" cellpadding="3" cellspacing="0">
+		<tr>
+			<td width="50%" align="left"><?php echo $num_records . ' Records Found, Page ' . $this->page . ' of ' . $num_pages ?></td>
+			<td width="50%" align="right">
+				<label>Jump to Page:</label>
+				<select id='page-select'>
+				<?php
+					for ($page = 1; $page <= $num_pages; $page++) {
+						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
+					}
+				?>
+				</select>
+				<input type="submit" value="Go" class="btn-small">
+			</td>
+		</tr>
+	</table>
+
+	<div class="tablebg">
+		<table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3" style="text-align: center;">
+			<tr>
+			<?php
+				foreach ($columns as $id => $name) {
+					if(in_array($id, $sortable_columns)) {
+						$image = $this->sort == $id ? '<img src="images/' . $this->order . '.gif" class="absmiddle">' : '';
+						echo '<th><a class="sort-column-button" href="#sort" data-sort="' . $id . '">' . $name . '</a> ' . $image . '</th>';
+					} else {
+						echo '<th>' . $name . '</th>';
+					}
+				}
+			?>
+			</tr>
+		<?php
+			if(count($this->subnets->current()) == 0):
+		?>
+			<tr>
+				<td colspan="4">No subnets found.</td>
+			</tr>
+		<?php
+			endif;
+
+			foreach ($this->subnets->current() as $index => $subnet):
+				$url = $modulelink . '&controller=subnets&action=view&id=' . $subnet->getId();
+
+				$device_display = 'Unassigned';
+				if($subnet->isAssigned()) {
+					$device_url = $modulelink . '&controller=devices&action=view&id=' . $subnet->getDeviceId();
+					$device_display = '<a href="' . $device_url . '">' . $subnet->getDeviceName() . '</a>';
+				}
+		?>
+			<tr>
+				<td><a href="<?php echo $url; ?>"><?php echo $subnet->getCIDRIpAddress(); ?></a></td>
+				<td><?php echo $device_display; ?></td>
+				<td><?php echo $subnet->getSubzone(); ?></td>
+				<td><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?></td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+		</table>
+	</div>
+
+	<p align="center">
+	<?php
+		if($this->page > 1) {
+			echo '<a id="previous-page-button" href="#previous-page">&laquo; Previous Page</a>';
+		} else {
+			echo '<span id="previous-page-button">&laquo; Previous Page</span>';
+		}
+
+		echo '&nbsp;';
+
+		if($this->page < $num_pages) {
+			echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
+		} else {
+			echo '<span id="next-page-button">Next Page &raquo;</span>';
+		}
+	?>
+	</p>
+
+	<input type="hidden" name="module" value="colocrossing" />
+	<input type="hidden" name="controller" value="subnets" />
+	<input type="hidden" name="action" value="index" />
+	<input type="hidden" name="sort" value="<?php echo $this->sort; ?>" />
+	<input type="hidden" name="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="page" value="<?php echo $this->page; ?>" />
+</form>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('#contentarea, #content').find('h1').html('ColoCrossing Subnets');
+
+		var currentPage = parseInt('<?php echo $this->page; ?>'),
+		form = $('#subnets-table-form'),
+		sortInput = form.find('input[name="sort"]'),
+		orderInput = form.find('input[name="order"]'),
+		pageInput = form.find('input[name="page"]');
+
+		form.find('a.sort-column-button').on('click', function(e) {
+			var button = $(this);
+
+			if(button.data('sort') == sortInput.val()) {
+				orderInput.val(orderInput.val() == 'asc' ? 'desc' : 'asc');
+			} else {
+				sortInput.val(button.data('sort'));
+				orderInput.val('asc');
+			}
+
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('a#previous-page-button').on('click', function(e) {
+			pageInput.val(currentPage - 1);
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('a#next-page-button').on('click', function(e) {
+			pageInput.val(currentPage + 1);
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('select#page-select').on('change', function() {
+			pageInput.val($(this).val());
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+	});
+
+</script>
+
+<style type="text/css">
+	div#contentarea h1 { margin-bottom: 10px; }
+</style>

@@ -1,0 +1,66 @@
+<div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
+	<div class="heading">
+		<h2>Power Ports</h2>
+		<div class="actions">
+			<input type="button" class="control-power-ports-button button" data-status="on" value="Turn On" disabled />
+			<input type="button" class="control-power-ports-button button" data-status="off" value="Turn Off" disabled />
+			<input type="button" class="control-power-ports-button button" data-status="restart" value="Restart" disabled />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<table class="datatable">
+		<tr>
+			<th style="width: 60px;">Control</th>
+			<th>Port</th>
+			<th>Status</th>
+			<th>Comment</th>
+			<th>Device</th>
+		</tr>
+	<?php
+		$pdu_id = $pdu->getId();
+		$pdu_ports = $pdu->getPorts();
+
+		if(count($pdu_ports) == 0):
+	?>
+		<tr>
+			<td colspan="5">No power ports configured.</td>
+		</tr>
+	<?php
+		endif;
+
+		foreach ($pdu_ports as $i => $port):
+			$port_id = $port->getId();
+			$port_device = $port->getDevice();
+			$port_comment = $port->getComment();
+
+			$control_status = $port->isControllable() ? '' : 'disabled';
+			$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
+
+			$device_display = 'Unassigned';
+			if(isset($port_device)) {
+				$device_owner = $port_device->getOwner();
+				$device_url = $module_link . '&controller=devices&action=view&id=' . $port_device->getId();
+				$device_display = $port_device->getName();
+
+				if (isset($device_owner)) {
+					$device_display = '<a href="' . $device_url . '">' . $device_display . '</a>';
+				}
+			}
+	?>
+		<tr>
+			<td>
+				<label style="display: block;">
+					<input type="checkbox" name="<?php echo $control_name; ?>" value="<?php echo $port_id; ?>" <?php echo $control_status; ?>/>
+				</label>
+			</td>
+			<td><?php echo $port->getDescription(); ?></td>
+			<td><?php echo $port->getStatus(); ?></td>
+			<td><?php echo isset($port_comment) ? $port_comment : ''; ?></td>
+			<td><?php echo $device_display; ?></td>
+		</tr>
+	<?php
+		endforeach;
+	?>
+	</table>
+</div>

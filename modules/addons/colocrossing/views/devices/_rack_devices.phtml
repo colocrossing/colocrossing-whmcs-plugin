@@ -1,0 +1,34 @@
+<div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
+	<h2>Rack Devices</h2>
+
+	<table class="datatable">
+		<tr>
+			<th>Name</th>
+			<th>Nickname</th>
+			<th>Type</th>
+			<th>Hostname</th>
+		</tr>
+	<?php
+		if(count($devices) == 0):
+	?>
+		<tr>
+			<td colspan="5">No devices configured.</td>
+		</tr>
+	<?php
+		endif;
+
+		foreach ($devices as $i => $device):
+			$type = $device->getType();
+			$url = $module_link . '&controller=devices&action=view&id=' . $device->getId();
+	?>
+		<tr>
+			<td><a href="<?php echo $url; ?>"><?php echo $device->getName(); ?></a></td>
+			<td><?php echo $device->getNickname(); ?></td>
+			<td><?php echo $type->getName(); ?></td>
+			<td><?php echo $device->getHostname(); ?></td>
+		</tr>
+	<?php
+		endforeach;
+	?>
+	</table>
+</div>

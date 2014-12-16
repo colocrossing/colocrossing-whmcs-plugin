@@ -1,0 +1,104 @@
+<?php
+	$start = strtotime('-1 month');
+	$end = time();
+?>
+
+<div id="bandwidth-graphs-heading">
+	<h2 style="margin: 0px; display: inline-block;">Bandwidth Usage Graphs</h2>
+	<div id="bandwidth-graphs-dates">
+		<label>From</label>
+		<input type="text" id="start-bandwidth-date" value="<?php echo date('m/d/Y', $start); ?>" />
+		<label>To</label>
+		<input type="text" id="end-bandwidth-date" value="<?php echo date('m/d/Y', $end); ?>" />
+		<input type="submit" id="set-bandwidth-dates-button" class="button" value="View" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div id="bandwidth-graphs"></div>
+
+<script type="text/javascript">
+
+	function loadImages(images, callback) {
+	    var length = images.length,
+	    count = length,
+	    check = function () {
+	        if (--count === 0) {
+	            callback(images);
+	        }
+	    };
+
+	    for (var i = 0; i < length; i++) {
+	        var image = new Image();
+
+	        image.onload = check;
+	        image.onerror = check;
+
+	        image.src = images[i];
+
+	        images[i] = image;
+	    }
+	}
+
+	$(document).ready(function() {
+		var link = '<?php echo $module_link; ?>',
+		graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>'),
+		container = $('#bandwidth-graphs'),
+		startInput = $('#start-bandwidth-date'),
+		endInput = $('#end-bandwidth-date'),
+		submitButton = $('#set-bandwidth-dates-button'),
+		loading = false,
+		loadGraphs = function() {
+			var images = [];
+
+			if(loading) {
+				return false;
+			}
+
+			loading = true;
+			submitButton.prop('disabled', true);
+
+			container.html('<img src="/images/loading.gif"/>');
+
+			for (var i = 0, length = graphs.length; i < length; i++) {
+				images.push(link + '&' + $.param({
+					controller: 'devices',
+					action: 'bandwidthGraph',
+					id: graphs[i].device_id,
+					switch_id: graphs[i].switch_id,
+					port_id: graphs[i].port_id,
+					start: startInput.val(),
+					end: endInput.val()
+				}));
+			}
+
+			loadImages(images, function(images) {
+				container.html('');
+
+				for (var i = 0, length = images.length; i < length; i++) {
+					container.append(images[i]);
+				}
+
+				loading = false;
+				submitButton.prop('disabled', false);
+			});
+		};
+
+		loadGraphs();
+
+		startInput.datepicker();
+		endInput.datepicker();
+
+		submitButton.on('click', loadGraphs);
+	});
+</script>
+
+<style type="text/css">
+	div#bandwidth-graphs-heading { margin-top: 5px; padding: 5px 0px; border-bottom: 3px solid #1A4D80 }
+
+	div#bandwidth-graphs-dates { float: right; }
+	div#bandwidth-graphs-dates input[type="text"] { width: 75px; text-align: center; }
+
+	div#bandwidth-graphs { text-align: center; }
+	div#bandwidth-graphs img { margin: 10px 30px; }
+</style>

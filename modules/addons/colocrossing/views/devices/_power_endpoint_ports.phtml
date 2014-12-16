@@ -1,0 +1,60 @@
+<div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : ''; ?>>
+	<div class="heading">
+		<h2>Power Ports</h2>
+		<div class="actions">
+			<input type="button" class="control-power-ports-button button" data-status="on" value="Turn On" disabled />
+			<input type="button" class="control-power-ports-button button" data-status="off" value="Turn Off" disabled />
+			<input type="button" class="control-power-ports-button button" data-status="restart" value="Restart" disabled />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<table class="datatable">
+		<tr>
+			<th style="width: 60px;">Control</th>
+			<th>Device</th>
+			<th>Port</th>
+			<th>Status</th>
+		</tr>
+	<?php
+		if(count($power_distribution_units) == 0):
+	?>
+		<tr>
+			<td colspan="4">No power ports configured.</td>
+		</tr>
+	<?php
+		endif;
+
+		foreach ($power_distribution_units as $i => $pdu):
+			$pdu_id = $pdu->getId();
+			$pdu_owner = $pdu->getOwner();
+			$pdu_url = $module_link . '&controller=devices&action=view&id=' . $pdu_id;
+			$pdu_display = $pdu->getName();
+
+			if (isset($pdu_owner)) {
+				$pdu_display = '<a href="' . $pdu_url . '">' . $pdu_display . '</a>';
+			}
+
+			$pdu_ports = $pdu->getPorts();
+
+			foreach ($pdu_ports as $j => $port):
+				$port_id = $port->getId();
+				$control_status = $port->isControllable() ? '' : 'disabled';
+				$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
+	?>
+			<tr>
+				<td>
+					<label style="display: block;">
+						<input type="checkbox" name="<?php echo $control_name; ?>" value="<?php echo $port_id; ?>" <?php echo $control_status; ?>/>
+					</label>
+				</td>
+				<td><?php echo $pdu_display; ?></td>
+				<td><?php echo $port_id; ?></td>
+				<td><?php echo $port->getStatus(); ?></td>
+			</tr>
+	<?php
+			endforeach;
+		endforeach;
+	?>
+	</table>
+</div>

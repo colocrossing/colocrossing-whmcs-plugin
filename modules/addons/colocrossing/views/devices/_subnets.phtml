@@ -1,0 +1,30 @@
+<div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : ''; ?>>
+	<h2>Subnets</h2>
+
+	<table class="datatable">
+		<tr>
+			<th>IP Address</th>
+			<th>SWIP</th>
+		</tr>
+	<?php
+		if(count($subnets) == 0):
+	?>
+		<tr>
+			<td colspan="2">No subnets found.</td>
+		</tr>
+	<?php
+		endif;
+
+		foreach ($subnets as $index => $subnet):
+			$url = $module_link . '&controller=subnets&action=view&id=' . $subnet->getId();
+			$ip_address = $subnet->getIpAddress() . '/' . $subnet->getCidr();
+	?>
+		<tr>
+			<td><a href="<?php echo $url; ?>"><?php echo $ip_address; ?></a></td>
+			<td><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?></td>
+		</tr>
+	<?php
+		endforeach;
+	?>
+	</table>
+</div>
