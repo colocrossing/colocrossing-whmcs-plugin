@@ -156,7 +156,7 @@ class ColoCrossing_Module {
 			require_once 'Router.php';
 
 			$routes = array(
-				'devices' => array('index', 'view', 'bandwidth-graph'),
+				'devices' => array('index', 'view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
 				'subnets' => array('index', 'view', 'update'),
 				'null-routes' => array('index', 'create', 'destroy'),
 				'events' => array('index')

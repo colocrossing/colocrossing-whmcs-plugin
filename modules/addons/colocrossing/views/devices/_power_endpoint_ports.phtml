@@ -2,59 +2,129 @@
 	<div class="heading">
 		<h2>Power Ports</h2>
 		<div class="actions">
-			<input type="button" class="control-power-ports-button button" data-status="on" value="Turn On" disabled />
-			<input type="button" class="control-power-ports-button button" data-status="off" value="Turn Off" disabled />
-			<input type="button" class="control-power-ports-button button" data-status="restart" value="Restart" disabled />
+			<input type="button" class="control-power-ports-button button" data-status="on" value="Turn On" />
+			<input type="button" class="control-power-ports-button button" data-status="off" value="Turn Off" />
+			<input type="button" class="control-power-ports-button button" data-status="restart" value="Restart" />
 		</div>
 		<div class="clear"></div>
 	</div>
+	<form id="control-power-ports-form" action="<? echo $module_link . '&controller=devices&action=update-power-ports'; ?>" method="POST">
+		<table class="datatable">
+			<tr>
+				<th style="width: 60px;">Control</th>
+				<th>Device</th>
+				<th>Port</th>
+				<th>Status</th>
+				<th>Comment</th>
+			</tr>
+		<?php
+			if(count($power_distribution_units) == 0):
+		?>
+			<tr>
+				<td colspan="4">No power ports configured.</td>
+			</tr>
+		<?php
+			endif;
 
-	<table class="datatable">
-		<tr>
-			<th style="width: 60px;">Control</th>
-			<th>Device</th>
-			<th>Port</th>
-			<th>Status</th>
-		</tr>
-	<?php
-		if(count($power_distribution_units) == 0):
-	?>
-		<tr>
-			<td colspan="4">No power ports configured.</td>
-		</tr>
-	<?php
-		endif;
+			$device_id = $device->getId();
 
-		foreach ($power_distribution_units as $i => $pdu):
-			$pdu_id = $pdu->getId();
-			$pdu_owner = $pdu->getOwner();
-			$pdu_url = $module_link . '&controller=devices&action=view&id=' . $pdu_id;
-			$pdu_display = $pdu->getName();
+			foreach ($power_distribution_units as $i => $pdu):
+				$pdu_id = $pdu->getId();
+				$pdu_owner = $pdu->getOwner();
+				$pdu_url = $module_link . '&controller=devices&action=view&id=' . $pdu_id;
+				$pdu_display = $pdu->getName();
 
-			if (isset($pdu_owner)) {
-				$pdu_display = '<a href="' . $pdu_url . '">' . $pdu_display . '</a>';
+				if (isset($pdu_owner)) {
+					$pdu_display = '<a href="' . $pdu_url . '">' . $pdu_display . '</a>';
+				}
+
+				$pdu_ports = $pdu->getPorts();
+
+				foreach ($pdu_ports as $j => $port):
+					$port_id = $port->getId();
+					$port_status = $port->getStatus();
+					$port_comment = $port->getComment();
+
+					$control_status = $port->isControllable() ? '' : 'disabled';
+					$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
+		?>
+				<tr>
+					<td>
+						<label style="display: block;">
+							<input type="checkbox" class="select-port-toggle" name="<?php echo $control_name; ?>"
+								   value="<?php echo $device_id; ?>" <?php echo $control_status; ?>/>
+						</label>
+					</td>
+					<td><?php echo $pdu_display; ?></td>
+					<td><?php echo $port_id; ?></td>
+					<td><?php echo isset($port_status) ? $port_status : 'Unknown'; ?></td>
+					<td><?php echo isset($port_comment) ? $port_comment : ''; ?></td>
+				</tr>
+		<?php
+				endforeach;
+			endforeach;
+		?>
+		</table>
+
+		<input type="hidden" name="status" />
+		<input type="hidden" name="comment" />
+		<input type="hidden" name="origin_device_id" value="<?php echo $device_id; ?>" />
+	</form>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var form = $('#control-power-ports-form'),
+		table = form.find('table'),
+		button = $('.control-power-ports-button'),
+		dialog = $('#control-power-ports-dialog');
+
+		dialog.dialog({
+			autoOpen: false,
+			width: 310,
+			modal: true,
+			resizable: false,
+			buttons: {
+				Confirm: function() {
+					var comment = dialog.find('input[name="comment"]').val();
+
+					form.find('input[name="comment"]').val(comment);
+					form.submit();
+				},
+				Cancel: function() {
+					dialog.dialog('close');
+				}
+			}
+		});
+
+		button.on('click',function(e) {
+			var button = $(this),
+			numSelected = table.find('.select-port-toggle:checked').length;
+
+			if(numSelected > 0) {
+				form.find('input[name="status"]').val(button.data('status'));
+				dialog.find('.status-description').html(button.val().toLowerCase());
+				dialog.dialog('open');
+			} else {
+				alert('Please select one or more power ports to ' + button.val().toLowerCase() + '.');
 			}
 
-			$pdu_ports = $pdu->getPorts();
+			e.preventDefault();
+			return false;
+		});
+	});
+</script>
 
-			foreach ($pdu_ports as $j => $port):
-				$port_id = $port->getId();
-				$control_status = $port->isControllable() ? '' : 'disabled';
-				$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
-	?>
-			<tr>
-				<td>
-					<label style="display: block;">
-						<input type="checkbox" name="<?php echo $control_name; ?>" value="<?php echo $port_id; ?>" <?php echo $control_status; ?>/>
-					</label>
-				</td>
-				<td><?php echo $pdu_display; ?></td>
-				<td><?php echo $port_id; ?></td>
-				<td><?php echo $port->getStatus(); ?></td>
-			</tr>
-	<?php
-			endforeach;
-		endforeach;
-	?>
-	</table>
+<style type="text/css">
+	div.field-group { float: left; margin: 5px 0px; }
+	div.field-group label { float: left; width: 120px; }
+	div.field-group input { float: left; width: 150px; }
+</style>
+
+<div id="control-power-ports-dialog" title="Control Power Ports">
+	<p>Are you sure you want to <span class="status-description"></span> these power ports?</p>
+	<div class="field-group">
+		<label>Comment:</label>
+		<input type="text" name="comment" maxlength="20"/>
+	</div>
 </div>

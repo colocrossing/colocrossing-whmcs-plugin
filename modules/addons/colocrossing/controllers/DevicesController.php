@@ -85,12 +85,90 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 		ob_clean();
     	ob_start();
 
-    	header("Content-Type: image/png");
+    	header('Content-Type: image/png');
     	http_response_code(imagepng($graph) ? 200 : 500);
     	imagedestroy($graph);
 
     	ob_end_flush();
     	exit;
+	}
+
+
+	public function updatePowerPorts(array $params) {
+		$status = $params['status'];
+		$comment = empty($params['comment']) ? null : $params['comment'];
+
+		$success = true;
+
+		foreach ($params['power_distribution_units'] as $pdu_id => $ports) {
+			foreach ($ports as $port_id => $device_id) {
+				$success &= $this->api->devices->pdus->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+			}
+		}
+
+		if($success) {
+			switch ($status) {
+				case 'on':
+					$status_description = 'turned on';
+					break;
+				case 'off':
+					$status_description = 'turned off';
+					break;
+				case 'restart':
+					$status_description = 'restarted';
+					break;
+				default:
+					$status_description = 'controlled';
+					break;
+			}
+
+			$this->setFlashMessage('The power ports have successfully been ' . $status_description . '.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while controlling the power ports.', 'error');
+		}
+
+		$this->redirectToModule($params['modulelink'], array(
+			'controller' => 'devices',
+			'action' => 'view',
+			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
+		));
+	}
+
+	public function updateNetworkPorts(array $params) {
+		$status = $params['status'];
+		$comment = empty($params['comment']) ? null : $params['comment'];
+
+		$success = true;
+
+		foreach ($params['switches'] as $pdu_id => $ports) {
+			foreach ($ports as $port_id => $device_id) {
+				$success &= $this->api->devices->switches->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+			}
+		}
+
+		if($success) {
+			switch ($status) {
+				case 'on':
+					$status_description = 'turned on';
+					break;
+				case 'off':
+					$status_description = 'turned off';
+					break;
+				default:
+					$status_description = 'controlled';
+					break;
+			}
+
+			$this->setFlashMessage('The network ports have successfully been ' . $status_description . '.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while controlling the network ports.', 'error');
+		}
+
+		$this->redirectToModule($params['modulelink'], array(
+			'controller' => 'devices',
+			'action' => 'view',
+			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
+		));
 	}
 
 }

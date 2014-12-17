@@ -49,17 +49,20 @@
 			$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
 				'module_link' => $modulelink,
 				'container_class' => 'half-section',
+				'device' => $this->device,
 				'power_distribution_units' => $this->power_distribution_units
 			));
 			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
 				'module_link' => $modulelink,
 				'container_class' => 'half-section',
+				'device' => $this->device,
 				'switches' => $this->switches
 			));
 		}else if($this->type->isNetworkEndpoint() && !$this->type->isPowered()) { 	// Cross Connect
 			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
 				'module_link' => $modulelink,
 				'container_class' => 'half-section',
+				'device' => $this->device,
 				'switches' => $this->switches
 			));
 		}
@@ -87,6 +90,7 @@
 			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
 				'module_link' => $modulelink,
 				'container_class' => 'full-section',
+				'device' => $this->device,
 				'switches' => $this->switches
 			));
 		}else if($this->type->isPowerEndpoint() && $this->type->isNetworkDistribution()) { 		// Switch or Firewall
@@ -97,6 +101,7 @@
 			$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
 				'module_link' => $modulelink,
 				'container_class' => 'full-section',
+				'device' => $this->device,
 				'power_distribution_units' => $this->power_distribution_units
 			));
 		}
