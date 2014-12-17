@@ -12,10 +12,10 @@
 	<table class="datatable">
 		<tr>
 			<th style="width: 60px;">Control</th>
+			<th>Device</th>
 			<th>Port</th>
 			<th>Status</th>
 			<th>Comment</th>
-			<th>Device</th>
 		</tr>
 	<?php
 		$pdu_id = $pdu->getId();
@@ -31,21 +31,24 @@
 
 		foreach ($pdu_ports as $i => $port):
 			$port_id = $port->getId();
-			$port_device = $port->getDevice();
+			$port_status = $port->getStatus();
 			$port_comment = $port->getComment();
 
 			$control_status = $port->isControllable() ? '' : 'disabled';
 			$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
 
-			$device_display = 'Unassigned';
-			if(isset($port_device)) {
-				$device_owner = $port_device->getOwner();
-				$device_url = $module_link . '&controller=devices&action=view&id=' . $port_device->getId();
-				$device_display = $port_device->getName();
+			try {
+				$port_device = $port->getDevice();
 
-				if (isset($device_owner)) {
-					$device_display = '<a href="' . $device_url . '">' . $device_display . '</a>';
+				if(isset($port_device)) {
+					$device_url = $module_link . '&controller=devices&action=view&id=' . $port_device->getId();
+					$device_display = '<a href="' . $device_url . '">' . $port_device->getName() . '</a>';
+				} else {
+					$device_display = 'Unassigned';
 				}
+			} catch (ColoCrossing_Error_Authorization $e) {
+				$control_status = 'disabled';
+				$device_display = 'Unkown';
 			}
 	?>
 		<tr>
@@ -54,10 +57,10 @@
 					<input type="checkbox" name="<?php echo $control_name; ?>" value="<?php echo $port_id; ?>" <?php echo $control_status; ?>/>
 				</label>
 			</td>
-			<td><?php echo $port->getDescription(); ?></td>
-			<td><?php echo $port->getStatus(); ?></td>
-			<td><?php echo isset($port_comment) ? $port_comment : ''; ?></td>
 			<td><?php echo $device_display; ?></td>
+			<td><?php echo $port_id; ?></td>
+			<td><?php echo isset($port_status) ? $port_status : 'Unknown'; ?></td>
+			<td><?php echo isset($port_comment) ? $port_comment : ''; ?></td>
 		</tr>
 	<?php
 		endforeach;

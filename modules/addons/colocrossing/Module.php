@@ -192,7 +192,9 @@ class ColoCrossing_Module {
 		if(empty($this->api_client)) {
 			$api_key = $this->getAPIKey();
 			$options = array(
-				'application_name' => 'ColoCrossing WHMCS Module'
+				'application_name' => 'ColoCrossing WHMCS Module',
+				'api_url' => 'http://portal.matt/api/',
+				'ssl_verify' => false,
 			);
 
 			$this->api_client = new ColoCrossing_Client($api_key, $options);

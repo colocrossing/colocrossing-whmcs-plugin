@@ -29,11 +29,11 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 		$this->device = $this->api->devices->find($params['id']);
 		$this->assets = $this->device->getAssets();
 		$this->type = $this->device->getType();
-		$this->subnets = $this->type->isNetworkEndpoint() ? $this->device->getSubnets() : array();
+		$this->subnets = $this->type->isNetworkEndpoint() || $this->type->isVirtual() ? $this->device->getSubnets() : array();
 
 		if($this->type->isRacked()) {
 			$this->rack = $this->device->getRack();
-			$this->rack_name = isset($this->rack) ? $this->rack->getName() : 'Unassigned';
+			$this->rack_name = isset($this->rack) ? $this->rack->getName() . ' (U Slot: ' . $this->device->getUSpace() . ')' : 'Unassigned';
 		} else {
 			$this->rack_name = 'Self';
 		}

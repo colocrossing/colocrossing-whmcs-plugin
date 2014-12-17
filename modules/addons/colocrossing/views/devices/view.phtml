@@ -32,15 +32,18 @@
 
 	<div id="half-sections">
 	<?php
-		$this->renderTemplate('/devices/_subnets.phtml', array(
-			'module_link' => $modulelink,
-			'container_class' => 'half-section',
-			'subnets' => $this->subnets
-		));
-		$this->renderTemplate('/devices/_assets.phtml', array(
-			'container_class' => 'half-section',
-			'assets' => $this->assets
-		));
+
+		if($this->type->isNetworked() || $this->type->isVirtual()) { //All except Rack, Panel
+			$this->renderTemplate('/devices/_subnets.phtml', array(
+				'module_link' => $modulelink,
+				'container_class' => 'half-section',
+				'subnets' => $this->subnets
+			));
+			$this->renderTemplate('/devices/_assets.phtml', array(
+				'container_class' => 'half-section',
+				'assets' => $this->assets
+			));
+		}
 
 		if($this->type->isPowerEndpoint() && $this->type->isNetworkEndpoint()) { 	// Server or KVM
 			$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
@@ -65,7 +68,13 @@
 	<div class="clear"></div>
 
 	<?php
-		if($this->type->isRack()) { 															// Rack
+		if(!$this->type->isNetworked() && !$this->type->isVirtual()) { //Rack, Panel
+			$this->renderTemplate('/devices/_assets.phtml', array(
+				'assets' => $this->assets
+			));
+		}
+
+		if($this->type->isRack()) {  //Rack
 			$this->renderTemplate('/devices/_rack_devices.phtml', array(
 				'module_link' => $modulelink,
 				'devices' => $this->device->getDevices()
