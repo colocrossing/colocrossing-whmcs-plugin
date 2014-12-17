@@ -79,7 +79,7 @@ abstract class ColoCrossing_Controller {
 
         //Convert to Dashed Name from Class Name
         $type = preg_replace('/Controller$/', '', preg_replace('/^ColoCrossing_/', '', $class));
-        $type = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $type));
+        $type = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $type));
 
         return implode(DIRECTORY_SEPARATOR, array('', $type, $action . '.phtml'));
     }
