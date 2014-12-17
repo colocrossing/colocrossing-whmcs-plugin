@@ -1,4 +1,4 @@
-<div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : 'full-section'; ?>>
+<div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
 	<div class="heading">
 		<h2>Network Ports</h2>
 		<div class="actions">
@@ -20,7 +20,7 @@
 			if(count($switches) == 0):
 		?>
 			<tr>
-				<td colspan="4">No network ports configured.</td>
+				<td colspan="5">No network ports configured.</td>
 			</tr>
 		<?php
 			endif;
