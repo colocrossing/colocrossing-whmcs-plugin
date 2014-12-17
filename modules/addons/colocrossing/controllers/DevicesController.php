@@ -71,26 +71,10 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 
 	public function bandwidthGraph(array $params) {
-		$this->device = $this->api->devices->find($params['id']);
-		$this->type = $this->device->getType();
-
-		if(!$this->type->isNetworkEndpoint()) {
-			http_response_code(404);
-			return false;
-		}
-
-		$this->switch = $this->device->getSwitch($params['switch_id']);
-		$this->port = $this->switch->getPort($params['port_id']);
-
-		if(!$this->port->isBandwidthGraphAvailable()) {
-			http_response_code(404);
-			return false;
-		}
-
 		$start = is_numeric($params['start']) ? intval($params['start']) : strtotime($params['start']);
 		$end = is_numeric($params['end']) ? intval($params['end']) : strtotime($params['end']);
 
-		$graph = $this->port->getBandwidthGraph($start, $end);
+		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $params['id'], $start, $end);
 
 		if (empty($graph))
 		{
@@ -102,7 +86,7 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
     	ob_start();
 
     	header("Content-Type: image/png");
-    	imagepng($graph);
+    	http_response_code(imagepng($graph) ? 200 : 500);
     	imagedestroy($graph);
 
     	ob_end_flush();
