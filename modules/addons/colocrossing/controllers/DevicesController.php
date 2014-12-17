@@ -27,6 +27,15 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 	public function view(array $params) {
 		$this->device = $this->api->devices->find($params['id']);
+
+		if(empty($this->device)) {
+			$this->setFlashMessage('The device was not found.', 'error');
+			$this->redirectToModule($params['modulelink'], array(
+				'controller' => 'devices',
+				'action' => 'index'
+			));
+		}
+
 		$this->assets = $this->device->getAssets();
 		$this->type = $this->device->getType();
 		$this->subnets = $this->type->isNetworkEndpoint() || $this->type->isVirtual() ? $this->device->getSubnets() : array();

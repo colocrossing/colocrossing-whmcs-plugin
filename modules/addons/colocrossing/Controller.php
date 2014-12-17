@@ -35,6 +35,10 @@ abstract class ColoCrossing_Controller {
      * @param  array  $params
      */
     public function dispatch($action, array $params) {
+        $action = lcfirst(implode('', array_map(function ($word) {
+            return ucfirst($word);
+        }, explode('-', $action))));
+
         if(!method_exists($this, $action)) {
             throw new Exception('Action not found.');
         }
@@ -75,8 +79,7 @@ abstract class ColoCrossing_Controller {
 
         //Convert to Dashed Name from Class Name
         $type = preg_replace('/Controller$/', '', preg_replace('/^ColoCrossing_/', '', $class));
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $type, $matches);
-        $type = strtolower(implode('-', $matches[0]));
+        $type = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $type));
 
         return implode(DIRECTORY_SEPARATOR, array('', $type, $action . '.phtml'));
     }
