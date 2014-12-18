@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Controller.php';
-
 /**
  * ColoCrossing Router for WHMCS Module.
  * Handles Dispatching Requests to Correct Controllers.

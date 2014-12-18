@@ -9,7 +9,15 @@ if (!defined('WHMCS')){
     die('This file cannot be accessed directly');
 }
 
-require_once(__DIR__ . '/Module.php');
+require 'Module.php';
+require 'Router.php';
+require 'Controller.php';
+require 'Model.php';
+require 'models/Event.php';
+require 'models/User.php';
+require 'models/Admin.php';
+require 'models/Client.php';
+require 'api/ColoCrossing.php';
 
 function colocrossing_config() {
     $module = ColoCrossing_Module::getInstance();

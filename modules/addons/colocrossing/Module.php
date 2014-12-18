@@ -1,8 +1,5 @@
 <?php
 
-require_once 'api/ColoCrossing.php';
-require_once 'models/Event.php';
-
 /**
  * ColoCrossing Module for WHMCS Module
  * Handles Module Configuration, Activation, and Deactivation
@@ -52,7 +49,6 @@ class ColoCrossing_Module {
 	                "`id` int(10) NOT NULL AUTO_INCREMENT," .
 	                "`user_type` tinyint(1) NOT NULL," .
 	                "`user_id` int(10) NOT NULL," .
-	                "`service_id` int(10) NOT NULL," .
 	                "`description` varchar(255) NOT NULL," .
 	                "`time` int(10) NOT NULL," .
 	                "PRIMARY KEY (`id`)" .
@@ -154,8 +150,6 @@ class ColoCrossing_Module {
 	 */
 	public function getRouter() {
 		if(empty($this->router)) {
-			require_once 'Router.php';
-
 			$routes = array(
 				'devices' => array('index', 'view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
 				'subnets' => array('index', 'view', 'update'),

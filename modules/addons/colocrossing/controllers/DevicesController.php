@@ -13,7 +13,6 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 		$this->sort = isset($params['sort']) ? $params['sort'] : 'name';
 		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
-
 		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
 
 		$this->devices = $this->api->devices->findAll(array(

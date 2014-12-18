@@ -207,6 +207,21 @@ abstract class ColoCrossing_Model {
 	}
 
 	/**
+	 * Retrieve the Total Number of Rows in the Table
+	 * @param  array|null $options Optional options to modify the results. I.e. filters
+	 * @return integer 		The total record count
+	 * @static
+	 */
+	public static function getTotalRecordCount(array $options = array()) {
+		$where = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : null;
+
+		$result = select_query(static::$TABLE, 'COUNT(*) as `total_count`', $where);
+		$data = mysql_fetch_array($result);
+
+		return isset($data) && isset($data['total_count']) ? intval($data['total_count']) : 0;
+	}
+
+	/**
 	 * Creates an Instance of the Model form a DB row
 	 * @param  array $values  The Values from the Row
 	 * @return ColoCrossing_Model The Model Instance
