@@ -21,7 +21,7 @@
 			<td width="35%" class="fieldarea">
 			<?php
 				if(isset($this->device)) {
-					$device_url = $modulelink . '&controller=devicesaction=view&id=' . $this->device->getId();
+					$device_url = $modulelink . '&controller=devices&action=view&id=' . $this->device->getId();
 					echo '<a href="' . $device_url . '">' . $this->device->getName() . '</a>';
 				} else {
 					echo 'Unassigned';

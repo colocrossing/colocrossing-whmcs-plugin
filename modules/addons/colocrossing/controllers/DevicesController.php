@@ -41,10 +41,10 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 		$this->subnets = $this->type->isNetworkEndpoint() || $this->type->isVirtual() ? $this->device->getSubnets() : array();
 
 		if($this->type->isRacked()) {
-			$this->rack = $this->device->getRack();
-			$this->rack_name = isset($this->rack) ? $this->rack->getName() . ' (U Slot: ' . $this->device->getUSpace() . ')' : 'Unassigned';
+			$rack_name = $this->device->getRackName();
+			$this->rack = isset($rack_namek) ? $rack_name . ' (U Slot: ' . $this->device->getUSpace() . ')' : 'Unassigned';
 		} else {
-			$this->rack_name = 'Self';
+			$this->rack = 'Self';
 		}
 
 		if($this->type->isNetworkEndpoint()) {

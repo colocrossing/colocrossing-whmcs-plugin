@@ -32,8 +32,8 @@ class ColoCrossing_SubnetsController extends ColoCrossing_Controller {
 		}
 
 		$this->device = $this->subnet->getDevice();
-		$this->rdns_records = $this->subnet->getReverseDNSRecords();
-		$this->null_routes = ColoCrossing_Utility::getMapCollection($this->subnet->getNullRoutes(), 'ip_address');
+		$this->rdns_records = $this->subnet->isReverseDnsEnabled() ? $this->subnet->getReverseDNSRecords() : null;
+		$this->null_routes = $this->subnet->isNullRoutesEnabled() ? ColoCrossing_Utility::getMapCollection($this->subnet->getNullRoutes(), 'ip_address') : null;
 	}
 
 	public function update(array $params) {
