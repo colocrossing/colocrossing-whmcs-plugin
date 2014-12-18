@@ -55,10 +55,12 @@ class ColoCrossing_SubnetsController extends ColoCrossing_Controller {
 			$request_result = $this->subnet->updateReverseDNSRecords($params['rdns_records']);
 
 			if($request_result === true) {
+				ColoCrossing_Model_Event::log('Reverse DNS records for ' . $this->subnet->getCIDRIpAddress() . ' were updated.');
 				$this->setFlashMessage('Reverse DNS records have successfully been edited.', 'success');
 			} else if($request_result === false) {
 				$this->setFlashMessage('An error occurred while saving reverse DNS records.', 'error');
 			} else {
+				ColoCrossing_Model_Event::log('Reverse DNS record service request for ' . $this->subnet->getCIDRIpAddress() . ' was submitted.');
 				$this->setFlashMessage('Reverse DNS record service request has successfully been submitted.', 'success');
 			}
 		}

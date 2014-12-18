@@ -95,32 +95,24 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 	public function updatePowerPorts(array $params) {
 		$status = $params['status'];
+		$status_description = $this->getPortStatusDescription($status);
 		$comment = empty($params['comment']) ? null : $params['comment'];
 
 		$success = true;
 
 		foreach ($params['power_distribution_units'] as $pdu_id => $ports) {
 			foreach ($ports as $port_id => $device_id) {
-				$success &= $this->api->devices->pdus->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+				$result = $this->api->devices->pdus->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+
+				if($result) {
+					ColoCrossing_Model_Event::log('Power port was ' . $status_description . '.');
+				} else {
+					$success = false;
+				}
 			}
 		}
 
 		if($success) {
-			switch ($status) {
-				case 'on':
-					$status_description = 'turned on';
-					break;
-				case 'off':
-					$status_description = 'turned off';
-					break;
-				case 'restart':
-					$status_description = 'restarted';
-					break;
-				default:
-					$status_description = 'controlled';
-					break;
-			}
-
 			$this->setFlashMessage('The power ports have successfully been ' . $status_description . '.', 'success');
 		} else {
 			$this->setFlashMessage('An error occurred while controlling the power ports.', 'error');
@@ -135,29 +127,24 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 	public function updateNetworkPorts(array $params) {
 		$status = $params['status'];
+		$status_description = $this->getPortStatusDescription($status);
 		$comment = empty($params['comment']) ? null : $params['comment'];
 
 		$success = true;
 
 		foreach ($params['switches'] as $pdu_id => $ports) {
 			foreach ($ports as $port_id => $device_id) {
-				$success &= $this->api->devices->switches->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+				$result = $this->api->devices->switches->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+
+				if($result) {
+					ColoCrossing_Model_Event::log('Network port was ' . $status_description . '.');
+				} else {
+					$success = false;
+				}
 			}
 		}
 
 		if($success) {
-			switch ($status) {
-				case 'on':
-					$status_description = 'turned on';
-					break;
-				case 'off':
-					$status_description = 'turned off';
-					break;
-				default:
-					$status_description = 'controlled';
-					break;
-			}
-
 			$this->setFlashMessage('The network ports have successfully been ' . $status_description . '.', 'success');
 		} else {
 			$this->setFlashMessage('An error occurred while controlling the network ports.', 'error');
@@ -168,6 +155,19 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 			'action' => 'view',
 			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
 		));
+	}
+
+	private function getPortStatusDescription($status) {
+		switch ($status) {
+			case 'on':
+				return 'turned on';
+			case 'off':
+				return 'turned off';
+			case 'restart':
+				return 'restarted';
+		}
+
+		return 'controlled';
 	}
 
 }
