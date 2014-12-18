@@ -71,8 +71,14 @@
 				$url = $modulelink . '&controller=devices&action=view&id=' . $device->getId();
 
 				if($type->isRacked()) {
-					$rack = $device->getRack();
-					$rack_name = isset($rack) ? $rack->getName() : 'Unassigned';
+					$rack_id = $device->getRackId();
+					$rack_name = $device->getRackName();
+					$rack_owner = $device->getRackOwner();
+
+					if(isset($rack_id) && isset($rack_name) && isset($rack_owner)) {
+						$rack_url = $modulelink . '&controller=devices&action=view&id=' . $rack_id;
+						$rack_name = '<a href="' . $rack_url . '">' . $rack_name . '</a>';
+					}
 				} else {
 					$rack_name = 'Self';
 				}
@@ -83,7 +89,7 @@
 				<td><?php echo $type->getName(); ?></td>
 				<td><?php echo $device->getHostname(); ?></td>
 				<td><?php echo $device->getSubzone(); ?></td>
-				<td><?php echo $rack_name; ?></td>
+				<td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
 			</tr>
 		<?php
 			endforeach;
