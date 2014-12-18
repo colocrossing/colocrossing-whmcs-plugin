@@ -15,6 +15,18 @@
 ?>
 
 <form id="null-routes-table-form" method="get">
+	<div>
+		<h1 style="display: inline-block;">ColoCrossing Null Routes</h1>
+		<div style="float: right;">
+			<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
+			<input type="submit" value="Search" class="btn-small" />
+		</div>
+	</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
 	<table width="100%" border="0" cellpadding="3" cellspacing="0">
 		<tr>
 			<td width="50%" align="left"><?php echo $num_records . ' Records Found, Page ' . $this->page . ' of ' . $num_pages ?></td>
@@ -104,7 +116,7 @@
 
 	$(document).ready(function() {
 
-		$('#contentarea, #content').find('h1').html('ColoCrossing Null Routes');
+		$('#contentarea, #content').find('h1').first().remove();
 
 		var currentPage = parseInt('<?php echo $this->page; ?>'),
 		form = $('#null-routes-table-form'),

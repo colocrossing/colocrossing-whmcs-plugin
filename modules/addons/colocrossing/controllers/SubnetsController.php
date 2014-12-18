@@ -7,12 +7,16 @@
 class ColoCrossing_SubnetsController extends ColoCrossing_Controller {
 
 	public function index(array $params) {
+		$this->filters = array(
+			'query' => isset($params['query']) ? $params['query'] : '',
+		);
+
 		$this->sort = isset($params['sort']) ? $params['sort'] : 'ip_address';
 		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
-
 		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
 
 		$this->subnets = $this->api->subnets->findAll(array(
+			'filters' => $this->filters,
 			'sort' => ($this->order == 'asc' ? '+' : '-') . $this->sort,
 			'page_number' => $this->page,
 			'page_size' => 30,
