@@ -7,7 +7,7 @@
 class ColoCrossing_EventsController extends ColoCrossing_Controller {
 
 	public function index(array $params) {
-		echo '<h2>Events</h2>';
+		$this->events = ColoCrossing_Event::findAll();
 	}
 
 }

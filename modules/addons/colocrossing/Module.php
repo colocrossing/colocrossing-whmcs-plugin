@@ -1,6 +1,7 @@
 <?php
 
 require_once 'api/ColoCrossing.php';
+require_once 'models/Event.php';
 
 /**
  * ColoCrossing Module for WHMCS Module
