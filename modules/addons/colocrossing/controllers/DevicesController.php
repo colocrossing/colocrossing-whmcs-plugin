@@ -102,10 +102,32 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 		foreach ($params['power_distribution_units'] as $pdu_id => $ports) {
 			foreach ($ports as $port_id => $device_id) {
-				$result = $this->api->devices->pdus->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+				$device = $this->api->devices->find($device_id);
+
+				if(empty($device) || !$device->getType()->isPowerEndpoint()) {
+					$success = false;
+					continue;
+				}
+
+				$pdu = $device->getPowerDistributionUnit($pdu_id);
+
+				if(empty($pdu)) {
+					$success = false;
+					continue;
+				}
+
+				$port = $pdu->getPort($port_id);
+
+				if(empty($port) || !$port->isControllable()) {
+					$success = false;
+					continue;
+				}
+
+				$result = $this->api->devices->pdus->setPortStatus($pdu, $port, $device, $status, $comment);
 
 				if($result) {
-					ColoCrossing_Model_Event::log('Power port was ' . $status_description . '.');
+					$description = 'Power port ' . $port_id . ' of ' . $pdu->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
+					ColoCrossing_Model_Event::log($description);
 				} else {
 					$success = false;
 				}
@@ -132,12 +154,34 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 		$success = true;
 
-		foreach ($params['switches'] as $pdu_id => $ports) {
+		foreach ($params['switches'] as $switch_id => $ports) {
 			foreach ($ports as $port_id => $device_id) {
-				$result = $this->api->devices->switches->setPortStatus($pdu_id, $port_id, $device_id, $status, $comment);
+				$device = $this->api->devices->find($device_id);
+
+				if(empty($device) || !$device->getType()->isNetworkEndpoint()) {
+					$success = false;
+					continue;
+				}
+
+				$switch = $device->getSwitch($switch_id);
+
+				if(empty($switch)) {
+					$success = false;
+					continue;
+				}
+
+				$port = $switch->getPort($port_id);
+
+				if(empty($port) || !$port->isControllable()) {
+					$success = false;
+					continue;
+				}
+
+				$result = $this->api->devices->switches->setPortStatus($switch, $port, $device, $status, $comment);
 
 				if($result) {
-					ColoCrossing_Model_Event::log('Network port was ' . $status_description . '.');
+					$description = 'Network port ' . $port_id . ' of ' . $switch->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
+					ColoCrossing_Model_Event::log($description);
 				} else {
 					$success = false;
 				}
