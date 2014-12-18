@@ -20,6 +20,7 @@
 		<?php
 			$pdu_id = $pdu->getId();
 			$pdu_ports = $pdu->getPorts();
+			$pdu_devices = $pdu->getDevices(array('format' => 'map'));
 
 			if(count($pdu_ports) == 0):
 		?>
@@ -37,11 +38,11 @@
 				$control_status = $port->isControllable() ? '' : 'disabled';
 				$control_name = 'power_distribution_units[' . $pdu_id . '][' . $port_id . ']';
 
-				try {
-					$device = $port->getDevice();
+				if($port->isAssignedToDevice()) {
+					$device_id = $port->getDeviceId();
+					$device = $pdu_devices[$device_id];
 
 					if(isset($device)) {
-						$device_id = $device->getId();
 						$device_url = $module_link . '&controller=devices&action=view&id=' . $device_id;
 						$device_display = '<a href="' . $device_url . '">' . $device->getName() . '</a>';
 					} else {
@@ -49,10 +50,10 @@
 						$device_id = 0;
 						$device_display = 'Unassigned';
 					}
-				} catch (ColoCrossing_Error_Authorization $e) {
+				} else {
 					$control_status = 'disabled';
 					$device_id = 0;
-					$device_display = 'Unkown';
+					$device_display = 'Unassigned';
 				}
 		?>
 			<tr>

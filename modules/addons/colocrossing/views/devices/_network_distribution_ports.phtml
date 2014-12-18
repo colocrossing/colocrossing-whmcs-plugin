@@ -19,6 +19,7 @@
 		<?php
 			$switch_id = $switch->getId();
 			$switch_ports = $switch->getPorts();
+			$switch_devices = $switch->getDevices(array('format' => 'map'));
 
 			if(count($switch_ports) == 0):
 		?>
@@ -36,11 +37,11 @@
 				$control_status = $port->isControllable() ? '' : 'disabled';
 				$control_name = 'switches[' . $switch_id . '][' . $port_id . ']';
 
-				try {
-					$device = $port->getDevice();
+				if($port->isAssignedToDevice()) {
+					$device_id = $port->getDeviceId();
+					$device = $switch_devices[$device_id];
 
 					if(isset($device)) {
-						$device_id = $device->getId();
 						$device_url = $module_link . '&controller=devices&action=view&id=' . $device_id;
 						$device_display = '<a href="' . $device_url . '">' . $device->getName() . '</a>';
 					} else {
@@ -48,10 +49,11 @@
 						$device_id = 0;
 						$device_display = 'Unassigned';
 					}
-				} catch (ColoCrossing_Error_Authorization $e) {
+
+				} else {
 					$control_status = 'disabled';
 					$device_id = 0;
-					$device_display = 'Unkown';
+					$device_display = 'Unassigned';
 				}
 		?>
 			<tr>

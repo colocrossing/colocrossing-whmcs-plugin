@@ -42,7 +42,7 @@ class ColoCrossing_DevicesController extends ColoCrossing_Controller {
 
 		if($this->type->isRacked()) {
 			$rack_name = $this->device->getRackName();
-			$this->rack = isset($rack_namek) ? $rack_name . ' (U Slot: ' . $this->device->getUSpace() . ')' : 'Unassigned';
+			$this->rack = isset($rack_name) ? $rack_name . ' (U Slot: ' . $this->device->getUSpace() . ')' : 'Unassigned';
 		} else {
 			$this->rack = 'Self';
 		}
