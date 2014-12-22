@@ -1,0 +1,96 @@
+<div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
+	<div class="heading">
+		<h2>Reverse DNS Records</h2>
+	<?php
+		if(!$subnet->isPendingServiceRequest()):
+	?>
+		<div class="actions">
+			<input id="reset-rdns-records-button" type="button" class="button" value="Reset" />
+			<input id="edit-rdns-records-button" type="button" class="button" value="Save Records" />
+		</div>
+		<div class="clear"></div>
+	<?php
+		endif;
+	?>
+	</div>
+
+	<form id="edit-rdns-records-form" action="<?php echo $base_url . '&controller=subnets&action=update&id=' . $subnet->getId(); ?>" method="POST">
+		<table class="datatable">
+			<tr>
+				<th>IP Address</th>
+				<th>Record</th>
+			</tr>
+		<?php
+			if(count($rdns_records) == 0):
+		?>
+			<tr>
+				<td colspan="3">No reverse DNS records found.</td>
+			</tr>
+		<?php
+			endif;
+
+			foreach ($rdns_records as $index => $rdns_record):
+				$ip_address = $rdns_record->getIpAddress();
+				$record = htmlspecialchars($rdns_record->getRecord());
+
+				$read_only = $subnet->isPendingServiceRequest() ? 'readonly' : '';
+		?>
+			<tr class="rdns-record-row" data-ip-address="<?php echo $ip_address; ?>">
+				<td><?php echo $ip_address; ?></td>
+				<td>
+					<input type="hidden" name="rdns_records[<?php echo $index; ?>][id]" value="<?php echo $rdns_record->getId(); ?>" />
+					<input type="text" name="rdns_records[<?php echo $index; ?>][value]" value="<?php echo $record; ?>"
+						   style="width: 225px;" <?php echo $read_only; ?> />
+				</td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+		</table>
+	</form>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var editForm = $('#edit-rdns-records-form'),
+		editConfirmDialog = $('#rdns-confirm-edit-dialog').dialog({
+			autoOpen: false,
+			modal: true,
+			resizable: false,
+			buttons: {
+				Confim: function() {
+					editForm.submit();
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+
+		$('input#edit-rdns-records-button').on('click', function(e) {
+			editConfirmDialog.dialog('open');
+
+			e.preventDefault();
+			return false;
+		});
+
+		$('input#reset-rdns-records-button').on('click', function(e) {
+			$('tr.rdns-record-row').each(function() {
+				var row = $(this),
+				ipAddress = row.data('ip-address'),
+				recordInput = row.find('input[type="text"]');
+
+				recordInput.val(ipAddress.split('.').join('-') + '-host.colocrossing.com');
+			});
+
+			e.preventDefault();
+			return false;
+		});
+	});
+</script>
+
+
+<div id="rdns-confirm-edit-dialog" title="Edit Reverse DNS Records">
+	<p>Are you sure you want to edit the reverse DNS records for this subnet?</p>
+</div>
+

@@ -1,5 +1,9 @@
 <?php
 
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
 /**
  * Parent Class for a WHMCS User. Can be either a Admin or Client.
  */

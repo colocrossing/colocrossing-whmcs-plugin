@@ -1,5 +1,9 @@
 <?php
 
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
 /**
  * A WHMCS Admin User
  */

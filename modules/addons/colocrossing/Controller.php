@@ -1,6 +1,11 @@
 <?php
 
-require_once 'Module.php';
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
+require 'admins/Controller.php';
+require 'clients/Controller.php';
 
 /**
  * ColoCrossing Controller for WHMCS Module.
@@ -15,17 +20,29 @@ abstract class ColoCrossing_Controller {
 
     /**
      * The API Client
-     * @var ColoCrossing_Client
+     * @var ColoCrossing_API
      */
     protected $api;
+
+    /**
+     * The Base Url
+     * @var string
+     */
+    protected $base_url;
 
     /**
      * Initialize References to Module and API Client
      */
     public function __construct() {
         $this->module = ColoCrossing_Module::getInstance();
-        $this->api = $this->module->getAPIClient();
+        $this->api = ColoCrossing_API::getInstance();
+        $this->base_url = $this->getBaseUrl();
     }
+
+    /**
+     * @return string The Base Url
+     */
+    protected abstract function getBaseUrl();
 
     /**
      * Dispatches Request to Action and Renders The Actions View
@@ -64,9 +81,41 @@ abstract class ColoCrossing_Controller {
             }
         }
 
-        $path = $this->getViewDirectory() . $path;
+        $path = $this->getViewDirectoryPath() . $path;
 
         require $path;
+    }
+
+    /**
+     * Renders JSON
+     *
+     * @param  array    $data   The data to render in JSON
+     */
+    protected function renderJSON(array $data = null) {
+        ob_clean();
+        ob_start();
+
+        echo json_encode($data);
+
+        ob_end_flush();
+        exit;
+    }
+
+    /**
+     * Renders a PNG Image
+     *
+     * @param  image    $image   The image
+     */
+    protected function renderImage($image) {
+        ob_clean();
+        ob_start();
+
+        header('Content-Type: image/png');
+        http_response_code(imagepng($image) ? 200 : 500);
+        imagedestroy($image);
+
+        ob_end_flush();
+        exit;
     }
 
     /**
@@ -78,7 +127,7 @@ abstract class ColoCrossing_Controller {
         $class = get_class($this);
 
         //Convert to Dashed Name from Class Name
-        $type = preg_replace('/Controller$/', '', preg_replace('/^ColoCrossing_/', '', $class));
+        $type = preg_replace('/Controller$/', '', preg_replace('/^ColoCrossing_(Admins|Clients)_/', '', $class));
         $type = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $type));
 
         return implode(DIRECTORY_SEPARATOR, array('', $type, $action . '.phtml'));
@@ -89,26 +138,29 @@ abstract class ColoCrossing_Controller {
      *
      * @return string The Path
      */
-    protected function getViewDirectory() {
-        return implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'views'));
-    }
+    protected abstract function getViewDirectoryPath();
 
     /**
      * Redirect to the Specified URL
      * @param  string $url The Destination URL
      */
-    protected function redirectTo($url) {
+    protected function redirectToUrl($url) {
         header('Location: ' . $url);
         exit;
     }
 
     /**
-     * Redirect to the Specified Module URL
-     * @param  string $module_url   The Module URL
+     * Redirect to the Specified Controller and Action
+     *
+     * @param  string $controller   The Controller
+     * @param  string $action       The Action
      * @param  array  $params       The Query String Params
      */
-    protected function redirectToModule($module_url, array $params = array()) {
-        $this->redirectTo($module_url . '&' . http_build_query($params));
+    protected function redirectTo($controller, $action, array $params = array()) {
+        $params['controller'] = $controller;
+        $params['action'] = $action;
+
+        $this->redirectToUrl($this->base_url . '&' . http_build_query($params));
     }
 
     /**

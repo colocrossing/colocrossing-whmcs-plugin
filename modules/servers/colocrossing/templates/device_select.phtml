@@ -1,0 +1,40 @@
+<link type="text/css" href="/modules/addons/colocrossing/assets/selectize.css" rel="stylesheet" />
+<script type="text/javascript" src="/modules/addons/colocrossing/assets/selectize.js"></script>
+
+<select id="colocrossing-device-select" name="colocrossing_device_id" style="width: 260px;" placeholder="Select a device...">
+    <option></option>
+</select>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("select#colocrossing-device-select").selectize({
+        	valueField: 'id',
+        	labelField: 'name',
+        	searchField: ['name', 'hostname'],
+        	create: false,
+        	preload: true,
+        	render:{
+        		option: function(device, escape) {
+        			return  '<div>' +
+		                        '<span style="display: block; font-weight: bold;">' + escape(device.name) + '</span>' +
+		                        (device.hostname ? '<span>' +  escape(device.hostname) + '</span>' : '') +
+		                    '</div>';
+        		}
+        	},
+        	load: function(query, callback) {
+        		$.ajax({
+	                url: '<?php echo $admin_module_url; ?>',
+	                type: 'GET',
+	                dataType: 'json',
+	                data: {
+	                	controller: 'devices',
+	                	action: 'unassigned-devices-index',
+	                	query: query
+	                },
+	                error: callback,
+	                success: callback
+	            });
+        	}
+        });
+    });
+</script>

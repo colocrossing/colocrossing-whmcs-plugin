@@ -1,0 +1,154 @@
+<div style="margin: 0 10px;">
+	<?php
+		$this->renderFlashMessage();
+	?>
+
+	<table class="form" width="100%" border="0" cellspacing="2" cellpadding="3">
+		<tr>
+			<td width="15%" class="fieldlabel">Name</td>
+			<td width="35%" class="fieldarea"><?php echo $this->device->getName(); ?></td>
+			<td width="15%" class="fieldlabel">Service</td>
+			<td width="35%" class="fieldarea"><?php echo 'Unassigned' ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Nickname</td>
+			<td width="35%" class="fieldarea"><?php echo $this->device->getNickname(); ?></td>
+			<td width="15%" class="fieldlabel">Client</td>
+			<td width="35%" class="fieldarea"><?php echo 'Unassigned' ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Type</td>
+			<td width="35%" class="fieldarea"><?php echo $this->type->getName(); ?></td>
+			<td width="15%" class="fieldlabel">Zone</td>
+			<td width="35%" class="fieldarea"><?php echo $this->device->getSubzone(); ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Hostname</td>
+			<td width="35%" class="fieldarea"><?php echo $this->device->getHostname(); ?></td>
+			<td width="15%" class="fieldlabel">Rack</td>
+			<td width="35%" class="fieldarea"><?php echo $this->rack; ?></td>
+		</tr>
+	</table>
+
+	<div id="half-sections">
+	<?php
+
+		if($this->type->isNetworked() || $this->type->isVirtual()) { //All except Rack, Panel
+			$this->renderTemplate('/devices/_subnets.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'half-section',
+				'subnets' => $this->subnets
+			));
+			$this->renderTemplate('/devices/_assets.phtml', array(
+				'container_class' => 'half-section',
+				'assets' => $this->assets
+			));
+		}
+
+		if($this->type->isPowerEndpoint() && $this->type->isNetworkEndpoint()) { 	// Server or KVM
+			$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'half-section',
+				'device' => $this->device,
+				'power_distribution_units' => $this->power_distribution_units
+			));
+			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'half-section',
+				'device' => $this->device,
+				'switches' => $this->switches
+			));
+		}else if($this->type->isNetworkEndpoint() && !$this->type->isPowered()) { 	// Cross Connect
+			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'half-section',
+				'device' => $this->device,
+				'switches' => $this->switches
+			));
+		}
+	?>
+	</div>
+	<div class="clear"></div>
+
+	<?php
+		if(!$this->type->isNetworked() && !$this->type->isVirtual()) { //Rack, Panel
+			$this->renderTemplate('/devices/_assets.phtml', array(
+				'assets' => $this->assets
+			));
+		}
+
+		if($this->type->isRack()) {  //Rack
+			$this->renderTemplate('/devices/_rack_devices.phtml', array(
+				'base_url' => $this->base_url,
+				'devices' => $this->device->getDevices()
+			));
+		} else  if($this->type->isPowerDistribution() && $this->type->isNetworkEndpoint()) { 	// PDU
+			$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'pdu' => $this->device
+			));
+			$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'full-section',
+				'device' => $this->device,
+				'switches' => $this->switches
+			));
+		}else if($this->type->isPowerEndpoint() && $this->type->isNetworkDistribution()) { 		// Switch or Firewall
+			$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'switch' => $this->device
+			));
+			$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
+				'base_url' => $this->base_url,
+				'container_class' => 'full-section',
+				'device' => $this->device,
+				'power_distribution_units' => $this->power_distribution_units
+			));
+		}
+
+
+		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) { 	// Server, KVM, PDU, or Cross Connect
+			$this->renderTemplate('/devices/_bandwidth_graphs.phtml', array(
+				'base_url' => $this->base_url,
+				'bandwidth_graphs' => $this->bandwidth_graphs
+			));
+		}
+	?>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#contentarea, #content').find('h1').html('ColoCrossing Device - <?php echo $this->device->getName(); ?>');
+
+		var leftHeight = 0, rightHeight = 0;
+		$('#half-sections').find('.half-section').each(function(){
+			var section = $(this);
+
+			if(leftHeight <= rightHeight) {
+				section.addClass('half-section-left');
+				leftHeight += section.outerHeight();
+			} else {
+				section.addClass('half-section-right');
+				rightHeight += section.outerHeight();
+			}
+		});
+	});
+</script>
+
+<style type="text/css">
+	div#contentarea h2 { margin-bottom: 10px; }
+
+	div.heading { margin-bottom: 0px; margin-top: 5px; padding: 5px 0px; }
+	div.heading h2 { display: inline-block; margin-top: 5px; margin-bottom: 5px !important; }
+	div.heading div.actions { float: right; }
+
+	table.datatable { width: 100%; text-align: center; }
+
+	div.full-section { width: 100%; }
+	div.half-section { width: 50%; }
+
+	div.half-section-left { float: left; width: 49%; padding-right: 1%; }
+	div.half-section-right { float: right; width: 49%; padding-left: 1%; }
+
+	div.half-section table.datatable td, div.half-section table.datatable th{ padding: 3px; }
+</style>

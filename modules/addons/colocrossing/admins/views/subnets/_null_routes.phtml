@@ -1,0 +1,151 @@
+<div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
+	<div class="heading">
+		<h2>Null Routes</h2>
+	</div>
+
+	<table class="datatable">
+		<tr>
+			<th>IP Address</th>
+			<th>Comment</th>
+			<th>Expiration</th>
+			<th style="width: 125px;">Action</th>
+		</tr>
+	<?php
+		if(count($ip_addresses) == 0):
+	?>
+		<tr>
+			<td colspan="3">No IP addresses found.</td>
+		</tr>
+	<?php
+		endif;
+
+		$add_null_route_button = '<input type="submit" value="Add Null Route" class="add-null-route-button btn-small" />';
+		$remove_null_route_button = '<input type="submit" value="Remove Null Route" class="remove-null-route-button btn-small btn-danger" />';
+
+		foreach ($ip_addresses as $index => $ip_address):
+			if(isset($null_routes[$ip_address])) {
+				$null_route = $null_routes[$ip_address];
+				$date = $null_route->getDateExpire();
+
+				$comment = $null_route->getComment();
+				$expiration = isset($date) ? date('m/d/Y h:i a', $date) : 'Never';
+				$action = $null_route->isRemovable() ? $remove_null_route_button : '';
+			} else {
+				$comment = 'N/A';
+				$expiration = 'N/A';
+				$action = $add_null_route_button;
+			}
+	?>
+		<tr data-ip-address="<?php echo $ip_address; ?>" data-null-route-id="<?php echo isset($null_route) ? $null_route->getId() : 0; ?>">
+			<td><?php echo $ip_address; ?></td>
+			<td><?php echo $comment; ?></td>
+			<td><?php echo $expiration; ?></td>
+			<td style="height: 21px;"><?php echo $action; ?></td>
+		</tr>
+	<?php
+		endforeach;
+	?>
+	</table>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var addDialog = $('#add-null-route-dialog').dialog({
+			autoOpen: false,
+			width: 310,
+			modal: true,
+			resizable: false,
+			buttons: {
+				Add: function() {
+					$(this).find('form').submit();
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+
+		$('input.add-null-route-button').on('click', function(e) {
+			var row = $(this).closest('tr');
+
+			addDialog.find('.ip-address').html(row.data('ip-address'));
+			addDialog.find('input[name="ip_address"]').val(row.data('ip-address'));
+			addDialog.dialog('open');
+
+			e.preventDefault();
+			return false;
+		});
+
+		var removeDialog = $('#remove-null-route-dialog').dialog({
+			autoOpen: false,
+			width: 310,
+			modal: true,
+			resizable: false,
+			buttons: {
+				Remove: function() {
+					$(this).find('form').submit();
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+
+		$('input.remove-null-route-button').on('click', function(e) {
+			var row = $(this).closest('tr');
+
+			removeDialog.find('.ip-address').html(row.data('ip-address'));
+			removeDialog.find('input[name="id"]').val(row.data('null-route-id'));
+			removeDialog.dialog('open');
+
+			e.preventDefault();
+			return false;
+		});
+	});
+</script>
+
+<style type="text/css">
+	div.field-group { float: left; margin: 5px 0px; }
+	div.field-group label { float: left; width: 120px; }
+</style>
+
+<div id="add-null-route-dialog" title="Add Null Route">
+	<p>Are you sure you want to null route <span class="ip-address"></span>?</p>
+	<form action="<? echo $base_url . '&controller=null-routes&action=create'; ?>" method="POST">
+		<div class="field-group">
+			<label>Comment</label>
+			<input type="text" name="comment" />
+		</div>
+
+		<div class="field-group">
+			<label>Duration</label>
+			<select name="duration">
+				<option value="30 minutes">30 Minutes</option>
+				<option value="1 hour">1 Hour</option>
+				<option value="2 hours">2 Hours</option>
+				<option value="4 hours" selected>4 Hours</option>
+	            <option value="6 hours">6 Hours</option>
+	            <option value="12 hours">12 Hours</option>
+	            <option value="1 day">1 Day</option>
+	            <option value="2 days">2 Days</option>
+	           	<option value="3 days">3 Days</option>
+	            <option value="5 days">5 Days</option>
+	           	<option value="1 week">1 Week</option>
+	            <option value="2 weeks">2 Weeks</option>
+	            <option value="3 weeks">3 Weeks</option>
+	            <option value="4 weeks">4 Weeks</option>
+	        </select>
+	    </div>
+
+		<input type="hidden" name="subnet_id" value="<?php echo $subnet->getId(); ?>" />
+		<input type="hidden" name="ip_address" />
+	</form>
+</div>
+
+<div id="remove-null-route-dialog" title="Remove Null Route">
+	<p>Are you sure you want to remove the null route on <span class="ip-address"></span>?</p>
+	<form action="<? echo $base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
+		<input type="hidden" name="id"/>
+		<input type="hidden" name="origin" value="subnets#view"/>
+	</form>
+</div>

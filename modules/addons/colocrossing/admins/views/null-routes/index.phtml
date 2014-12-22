@@ -1,0 +1,207 @@
+<?php
+	$num_records = $this->null_routes->getTotalRecordCount();
+	$num_pages = $this->null_routes->size();
+
+	$columns = array(
+		'ip_address' => 'IP Address',
+		'comment' => 'Comment',
+		'date_added' => 'Created On',
+		'date_expire' => 'Expires On',
+		'action' => 'Actions'
+	);
+	$sortable_columns = array('ip_address', 'comment', 'date_added', 'date_expire');
+
+	$this->renderFlashMessage();
+?>
+
+<form id="null-routes-table-form" method="get">
+	<div>
+		<h1 style="display: inline-block;">ColoCrossing Null Routes</h1>
+		<div style="float: right;">
+			<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
+			<input type="submit" value="Search" class="btn-small" />
+		</div>
+	</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+	<table width="100%" border="0" cellpadding="3" cellspacing="0">
+		<tr>
+			<td width="50%" align="left"><?php echo $num_records . ' Records Found, Page ' . $this->page . ' of ' . $num_pages ?></td>
+			<td width="50%" align="right">
+				<label>Jump to Page:</label>
+				<select id='page-select'>
+				<?php
+					for ($page = 1; $page <= $num_pages; $page++) {
+						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
+					}
+				?>
+				</select>
+				<input type="submit" value="Go" class="btn-small">
+			</td>
+		</tr>
+	</table>
+
+	<div class="tablebg">
+		<table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3" style="text-align: center;">
+			<tr>
+			<?php
+				foreach ($columns as $id => $name) {
+					if(in_array($id, $sortable_columns)) {
+						$image = $this->sort == $id ? '<img src="images/' . $this->order . '.gif" class="absmiddle">' : '';
+						echo '<th><a class="sort-column-button" href="#sort" data-sort="' . $id . '">' . $name . '</a> ' . $image . '</th>';
+					} else {
+						echo '<th>' . $name . '</th>';
+					}
+				}
+			?>
+			</tr>
+		<?php
+			if(count($this->null_routes->current()) == 0):
+		?>
+			<tr>
+				<td colspan="5">No null routes found.</td>
+			</tr>
+		<?php
+			endif;
+
+			$remove_null_route_button = '<input type="submit" value="Remove" class="remove-null-route-button btn-small" />';
+
+			foreach ($this->null_routes->current() as $index => $null_route):
+				$url = $this->base_url . '&controller=subnets&action=view&id=' . $null_route->getSubnetId();
+				$expiration_date = $null_route->getDateExpire();
+		?>
+			<tr data-id="<?php echo $null_route->getId(); ?>" data-ip-address="<?php echo $null_route->getIpAddress(); ?>">
+				<td><a href="<?php echo $url; ?>"><?php echo $null_route->getIpAddress(); ?></a></td>
+				<td><?php echo $null_route->getComment(); ?></td>
+				<td><?php echo date('m/d/Y h:i a', $null_route->getDateAdded()); ?></td>
+				<td><?php echo isset($expiration_date) ? date('m/d/Y h:i a', $expiration_date) : 'Never'; ?></td>
+				<td style="width: 125px;"><?php echo $null_route->isRemovable() ? $remove_null_route_button : ''; ?></td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+		</table>
+	</div>
+
+	<p align="center">
+	<?php
+		if($this->page > 1) {
+			echo '<a id="previous-page-button" href="#previous-page">&laquo; Previous Page</a>';
+		} else {
+			echo '<span id="previous-page-button">&laquo; Previous Page</span>';
+		}
+
+		echo '&nbsp;';
+
+		if($this->page < $num_pages) {
+			echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
+		} else {
+			echo '<span id="next-page-button">Next Page &raquo;</span>';
+		}
+	?>
+	</p>
+
+	<input type="hidden" name="module" value="colocrossing" />
+	<input type="hidden" name="controller" value="null-routes" />
+	<input type="hidden" name="action" value="index" />
+	<input type="hidden" name="sort" value="<?php echo $this->sort; ?>" />
+	<input type="hidden" name="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="page" value="<?php echo $this->page; ?>" />
+</form>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('#contentarea, #content').find('h1').first().remove();
+
+		var currentPage = parseInt('<?php echo $this->page; ?>'),
+		form = $('#null-routes-table-form'),
+		sortInput = form.find('input[name="sort"]'),
+		orderInput = form.find('input[name="order"]'),
+		pageInput = form.find('input[name="page"]');
+
+		form.find('a.sort-column-button').on('click', function(e) {
+			var button = $(this);
+
+			if(button.data('sort') == sortInput.val()) {
+				orderInput.val(orderInput.val() == 'asc' ? 'desc' : 'asc');
+			} else {
+				sortInput.val(button.data('sort'));
+				orderInput.val('asc');
+			}
+
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('a#previous-page-button').on('click', function(e) {
+			pageInput.val(currentPage - 1);
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('a#next-page-button').on('click', function(e) {
+			pageInput.val(currentPage + 1);
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		form.find('select#page-select').on('change', function() {
+			pageInput.val($(this).val());
+			form.submit();
+
+			e.preventDefault();
+			return false;
+		});
+
+		var removeDialog = $('#remove-null-route-dialog').dialog({
+			autoOpen: false,
+			width: 310,
+			modal: true,
+			resizable: false,
+			buttons: {
+				Remove: function() {
+					$(this).find('form').submit();
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+
+		$('input.remove-null-route-button').on('click', function(e) {
+			var row = $(this).closest('tr');
+
+			removeDialog.find('.ip-address').html(row.data('ip-address'));
+			removeDialog.find('input[name="id"]').val(row.data('id'));
+			removeDialog.dialog('open');
+
+			e.preventDefault();
+			return false;
+		});
+
+	});
+
+</script>
+
+<style type="text/css">
+	div#contentarea h1 { margin-bottom: 10px; }
+	div.ui-dialog a.ui-dialog-titlebar-close { display: none; }
+</style>
+
+<div id="remove-null-route-dialog" title="Remove Null Route">
+	<p>Are you sure you want to remove the null route on <span class="ip-address"></span>?</p>
+	<form action="<? echo $this->base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
+		<input type="hidden" name="id"/>
+	</form>
+</div>

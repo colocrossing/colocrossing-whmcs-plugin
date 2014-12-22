@@ -1,5 +1,9 @@
 <?php
 
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
 /**
  * Represents a Table which holds event that occurred within the ColoCrossing Module
  */

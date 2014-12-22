@@ -10,14 +10,6 @@ if (!defined('WHMCS')){
 }
 
 require 'Module.php';
-require 'Router.php';
-require 'Controller.php';
-require 'Model.php';
-require 'models/Event.php';
-require 'models/User.php';
-require 'models/Admin.php';
-require 'models/Client.php';
-require 'api/ColoCrossing.php';
 
 function colocrossing_config() {
     $module = ColoCrossing_Module::getInstance();
@@ -40,18 +32,19 @@ function colocrossing_deactivate() {
 function colocrossing_output($params) {
     $module = ColoCrossing_Module::getInstance();
 
-    $module->dispatchRequest($params);
+    $module->dispatchAdminRequest();
 }
 
 function colocrossing_sidebar($params) {
-    $module_link = $params['modulelink'];
+    $module = ColoCrossing_Module::getInstance();
+    $module_url = $module->getBaseAdminUrl();
 
     $sidebar  = '<span class="header">ColoCrossing Portal</span>';
     $sidebar .= '<ul class="menu">';
-    $sidebar .=     '<li><a href="' . $module_link . '&controller=devices&action=index">Devices</a></li>';
-    $sidebar .=     '<li><a href="' . $module_link . '&controller=subnets&action=index">Subnets</a></li>';
-    $sidebar .=     '<li><a href="' . $module_link . '&controller=null-routes&action=index">Null Routes</a></li>';
-    $sidebar .=     '<li><a href="' . $module_link . '&controller=events&action=index">Events</a></li>';
+    $sidebar .=     '<li><a href="' . $module_url . '&controller=devices&action=index">Devices</a></li>';
+    $sidebar .=     '<li><a href="' . $module_url . '&controller=subnets&action=index">Subnets</a></li>';
+    $sidebar .=     '<li><a href="' . $module_url . '&controller=null-routes&action=index">Null Routes</a></li>';
+    $sidebar .=     '<li><a href="' . $module_url . '&controller=events&action=index">Events</a></li>';
     $sidebar .= '</ul>';
 
     return $sidebar;

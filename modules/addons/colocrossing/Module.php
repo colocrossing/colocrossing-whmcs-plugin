@@ -1,10 +1,23 @@
 <?php
 
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
+require 'Router.php';
+require 'Controller.php';
+require 'Utilities.php';
+require 'Model.php';
+require 'API.php';
+
 /**
  * ColoCrossing Module for WHMCS Module
  * Handles Module Configuration, Activation, and Deactivation
  */
 class ColoCrossing_Module {
+
+	const BASE_ADMIN_URL = '/admin/addonmodules.php?module=colocrossing';
+	const BASE_CLIENT_URL = '/index.php?m=colocrossing';
 
 	/**
 	 * The Singleton Module Instance
@@ -13,16 +26,16 @@ class ColoCrossing_Module {
 	private static $instance;
 
 	/**
-	 * The Router
-	 * @var ColoCrossing_Router
+	 * The Admin Router
+	 * @var ColoCrossing_Admins_Router
 	 */
-	private $router;
+	private $admin_router;
 
 	/**
-	 * The API Client
-	 * @var ColoCrossing_Client
+	 * The Client Router
+	 * @var ColoCrossing_Clients_Router
 	 */
-	private $api_client;
+	private $client_router;
 
 	/**
 	 * Private Constructor to Prevent Instantiation Outside of this Class
@@ -37,7 +50,7 @@ class ColoCrossing_Module {
 	 */
 	public function activate() {
 		// Create Devices Table
-	    $query = "CREATE TABLE `mod_colocrossing_devices` (" .
+	    $query = "CREATE TABLE `mod_colocrossing_devices_services` (" .
 	                "`service_id` int(10) NOT NULL," .
 	                "`device_id` int(10) NOT NULL," .
 	                "PRIMARY KEY (`service_id`, `device_id`)" .
@@ -70,7 +83,7 @@ class ColoCrossing_Module {
 	 */
 	public function deactivate() {
 	    // Remove Devices Table
-	    $query = "DROP TABLE `mod_colocrossing_devices`";
+	    $query = "DROP TABLE `mod_colocrossing_devices_services`";
 	    $result = full_query($query);
 
 	    // Remove Events Table
@@ -132,39 +145,68 @@ class ColoCrossing_Module {
 	}
 
 	/**
-	 * Dispatch a Request to the Controller
+	 * @return string The Base Admin URL
+	 */
+	public function getBaseAdminUrl() {
+		return self::BASE_ADMIN_URL;
+	}
+
+	/**
+	 * @return string The Base Client URL
+	 */
+	public function getBaseClientUrl() {
+		return self::BASE_CLIENT_URL;
+	}
+
+	/**
+	 * Dispatch a Admin Request to the Controller
 	 *
 	 * @param  array  $params
 	 */
-	public function dispatchRequest(array $params = array()) {
-		$router = $this->getRouter();
+	public function dispatchAdminRequest(array $params = array()) {
+		$router = $this->getAdminRouter();
 		$params = array_merge($params, $_POST, $_GET);
 
 		$router->dispatch($params);
 	}
 
 	/**
-	 * Get the router for this module
+	 * Get the router for the admin module
 	 *
-	 * @return ColoCrossing_Router
+	 * @return ColoCrossing_Admins_Router
 	 */
-	public function getRouter() {
-		if(empty($this->router)) {
-			$routes = array(
-				'devices' => array('index', 'view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
-				'subnets' => array('index', 'view', 'update'),
-				'null-routes' => array('index', 'create', 'destroy'),
-				'events' => array('index')
-			);
-			$default_route = array(
-				'controller' => 'devices',
-				'action' => 'index'
-			);
-
-			$this->router = new ColoCrossing_Router($routes, $default_route);
+	public function getAdminRouter() {
+		if(empty($this->admin_router)) {
+			$this->admin_router = new ColoCrossing_Admins_Router();
 		}
 
-		return $this->router;
+		return $this->admin_router;
+	}
+
+	/**
+	 * Dispatch a Client Request to the Controller
+	 *
+	 * @param  array  $params
+	 */
+	public function dispatchClientRequest(array $params = array()) {
+		$router = $this->getClientRouter();
+		$params = array_merge($params, $_POST, $_GET);
+
+		$router->dispatch($params);
+	}
+
+
+	/**
+	 * Get the router for the client module
+	 *
+	 * @return ColoCrossing_Clients_Router
+	 */
+	public function getClientRouter() {
+		if(empty($this->client_router)) {
+			$this->client_router = new ColoCrossing_Clients_Router();
+		}
+
+		return $this->client_router;
 	}
 
 	/**
@@ -176,26 +218,6 @@ class ColoCrossing_Module {
 		$configuration = $this->getConfiguration();
 
 	    return isset($configuration['api_key']) ? $configuration['api_key'] : null;
-	}
-
-	/**
-	 * Get the API Client for this module
-	 *
-	 * @return ColoCrossing_Client
-	 */
-	public function getAPIClient() {
-		if(empty($this->api_client)) {
-			$api_key = $this->getAPIKey();
-			$options = array(
-				'application_name' => 'ColoCrossing WHMCS Module',
-				'api_url' => 'http://portal.matt/api/',
-				'ssl_verify' => false,
-			);
-
-			$this->api_client = new ColoCrossing_Client($api_key, $options);
-		}
-
-		return $this->api_client;
 	}
 
 	/**

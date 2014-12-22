@@ -1,0 +1,19 @@
+<?php
+	$this->renderFlashMessage();
+?>
+
+<p>A error occurred while trying to authenticate with the ColoCrossing API. Contact an administrator to correct the module's configuration.</p>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('#contentarea, #content').find('h1').html('ColoCrossing - Authentication Error!');
+
+	});
+
+</script>
+
+<style type="text/css">
+	div#contentarea h1 { margin-bottom: 10px; }
+</style>

@@ -1,5 +1,16 @@
 <?php
 
+if(!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
+}
+
+require 'models/Event.php';
+require 'models/User.php';
+require 'models/Admin.php';
+require 'models/Client.php';
+require 'models/Service.php';
+require 'models/Product.php';
+
 /**
  * A Simple Model Implementation to interact with rows of a DB table
  */
@@ -32,11 +43,26 @@ abstract class ColoCrossing_Model {
 	protected $values;
 
 	/**
+     * The Module
+     * @var ColoCrossing_Module
+     */
+    protected $module;
+
+    /**
+     * The API Client
+     * @var ColoCrossing_API
+     */
+    protected $api;
+
+	/**
 	 * Constructs a model with the provided Values and Id
 	 * @param integer  	$id        The Id, Can be null if this model is not persisted
 	 * @param array   	$values    The Values
 	 */
 	protected function __construct($id = null, array $values) {
+        $this->module = ColoCrossing_Module::getInstance();
+        $this->api = ColoCrossing_API::getInstance();
+
 		$this->id = isset($id) ? intval($id) : null;
 		$this->values = $values;
 	}
@@ -189,6 +215,7 @@ abstract class ColoCrossing_Model {
 		$where = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : null;
 		$sort = isset($options['sort']) && in_array($options['sort'], static::$COLUMNS) ? $options['sort'] : 'id';
 		$order = isset($options['order']) && strtolower($options['order']) == 'desc' ? 'DESC' : 'ASC';
+		$join = isset($options['join']) ? $options['join'] : null;
 
 		if(isset($options['pagination']) && is_array($options['pagination'])) {
 			$pagination = array_merge(array('number' => 1, 'size' => 30), $options['pagination']);
@@ -197,7 +224,7 @@ abstract class ColoCrossing_Model {
 			$limit = $offset . ',' . $size;
 		}
 
-		$rows = select_query(static::$TABLE, implode(',', static::$COLUMNS), $where, $sort, $order, $limit);
+		$rows = select_query(static::$TABLE, implode(',', static::$COLUMNS), $where, $sort, $order, $limit, $join);
 
 		$instances = array();
 		while ($values = mysql_fetch_array($rows)) {
