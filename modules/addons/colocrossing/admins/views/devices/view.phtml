@@ -8,13 +8,36 @@
 			<td width="15%" class="fieldlabel">Name</td>
 			<td width="35%" class="fieldarea"><?php echo $this->device->getName(); ?></td>
 			<td width="15%" class="fieldlabel">Service</td>
-			<td width="35%" class="fieldarea"><?php echo 'Unassigned' ?></td>
+			<td width="35%" class="fieldarea">
+			<?php
+				if(isset($this->service) && isset($this->product) && isset($this->client)) {
+					$service_url = '/admin/clientsservices.php?' . http_build_query(array(
+						'id' => $this->service->getId(),
+						'userid' => $this->client->getId()
+					));
+					echo '<a href="' . $service_url . '">' . $this->product->getName() . '</a>';
+				} else {
+					echo 'Unassigned';
+				}
+			?>
+			</td>
 		</tr>
 		<tr>
 			<td width="15%" class="fieldlabel">Nickname</td>
 			<td width="35%" class="fieldarea"><?php echo $this->device->getNickname(); ?></td>
 			<td width="15%" class="fieldlabel">Client</td>
-			<td width="35%" class="fieldarea"><?php echo 'Unassigned' ?></td>
+			<td width="35%" class="fieldarea">
+			<?php
+				if(isset($this->client)) {
+					$client_url = '/admin/clientssummary.php?' . http_build_query(array(
+						'userid' => $this->client->getId()
+					));
+					echo '<a href="' . $client_url . '">' . $this->client->getFullName() . '</a>';
+				} else {
+					echo 'Unassigned';
+				}
+			?>
+			</td>
 		</tr>
 		<tr>
 			<td width="15%" class="fieldlabel">Type</td>

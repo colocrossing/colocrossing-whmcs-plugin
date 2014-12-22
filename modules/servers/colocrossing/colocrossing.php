@@ -26,16 +26,28 @@ function colocrossing_AdminServicesTabFields($params) {
 
 	//Device Not Found for Service, Render Device Select
 	if(empty($device)) {
-		$template = ColoCrossing_Utilities::parseTemplate(dirname(__FILE__) . '/templates/device_select.phtml', array(
+		$template = ColoCrossing_Utilities::parseTemplate(dirname(__FILE__) . '/templates/services/device_select.phtml', array(
     		'admin_module_url' => $admin_module_url
 		));
+
 	    return array(
 	    	'ColoCrossing Device' => $template
 	    );
 	}
 
+	$device_url = ColoCrossing_Utilities::buildUrl($admin_module_url, array(
+		'controller' => 'devices',
+		'action' => 'view',
+		'id' => $device->getId()
+	));
+
+	$template = ColoCrossing_Utilities::parseTemplate(dirname(__FILE__) . '/templates/services/device_display.phtml', array(
+		'device' => $device,
+		'device_url' => $device_url
+	));
+
 	return array(
-        'ColoCrossing Device' => $device->getName()
+        'ColoCrossing Device' => $template
     );
 }
 

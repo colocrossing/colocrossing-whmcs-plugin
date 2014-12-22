@@ -36,6 +36,13 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 			$this->redirectTo('devices', 'index');
 		}
 
+		$this->service = ColoCrossing_Model_Service::findByDevice($this->device->getId());
+
+		if(isset($this->service)) {
+			$this->client = $this->service->getClient();
+			$this->product = $this->service->getProduct();
+		}
+
 		$this->assets = $this->device->getAssets();
 		$this->type = $this->device->getType();
 		$this->subnets = $this->type->isNetworkEndpoint() || $this->type->isVirtual() ? $this->device->getSubnets() : array();
