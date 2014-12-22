@@ -129,8 +129,9 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 
 		if (empty($graph))
 		{
-			http_response_code(404);
-			return false;
+			$this->setResponseCode(404);
+			$this->disableRendering();
+			return null;
 		}
 
 		$this->renderImage($graph);

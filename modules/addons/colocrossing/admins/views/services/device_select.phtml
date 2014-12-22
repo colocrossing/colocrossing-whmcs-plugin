@@ -7,6 +7,9 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        //Remove the Module Command Buttons Until a Device is Assigned
+        $('div#modcmdbtns').closest('tr').remove();
+
         $("select#colocrossing-device-select").selectize({
         	valueField: 'id',
         	labelField: 'name',
@@ -23,7 +26,7 @@
         	},
         	load: function(query, callback) {
         		$.ajax({
-	                url: '<?php echo $admin_module_url; ?>',
+	                url: '<?php echo $base_url; ?>',
 	                type: 'GET',
 	                dataType: 'json',
 	                data: {

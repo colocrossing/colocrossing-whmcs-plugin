@@ -18,24 +18,25 @@ abstract class ColoCrossing_Router {
 	 *
 	 * @param  string $controller
 	 * @param  string $action
+	 * @return mixed The Result of the Action
 	 */
 	public function dispatch(array $params) {
 		$route = $this->getRouteFromParams($params);
 
 		try {
-			$this->dispatchRoute($route, $params);
+			return $this->dispatchRoute($route, $params);
 		} catch (ColoCrossing_Error_Authorization $e) {
-			$this->dispatchRoute(array(
+			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'authentication'
 			), $params);
 		} catch (ColoCrossing_Error_NotFound $e) {
-			$this->dispatchRoute(array(
+			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'missing'
 			), $params);
 		} catch (Exception $e) {
-			$this->dispatchRoute(array(
+			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'generic'
 			), $params);
@@ -46,10 +47,11 @@ abstract class ColoCrossing_Router {
      * Dispatch The Route to the Controller
      *
      * @param  array  $route
+     * @return mixed The Result of the Action
      */
 	public function dispatchRoute(array $route, array $params = array()) {
 		$controller = $this->create($route['controller']);
-		$controller->dispatch($route['action'], $params);
+		return $controller->dispatch($route['action'], $params);
 	}
 
 	/**

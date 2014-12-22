@@ -13,7 +13,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * The Service Columns
 	 * @var array<string>
 	 */
-	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain');
+	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus');
 
 	/**
 	 * The Table Name
@@ -34,6 +34,17 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$domain = $this->getValue('domain');
 
 		return empty($domain) ? '' : $domain;
+	}
+
+	/**
+	 * Returns the status of this service. Possible values include Pending, Active,
+	 * Suspended, Terminated, Cancelled, or Fraud
+	 * @return string The Status
+	 */
+	public function getStatus() {
+		$status = $this->getValue('domainstatus');
+
+		return empty($status) ? 'Pending' : $status;
 	}
 
 	/**

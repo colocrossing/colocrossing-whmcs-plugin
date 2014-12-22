@@ -32,7 +32,7 @@ function colocrossing_deactivate() {
 function colocrossing_output($params) {
     $module = ColoCrossing_Module::getInstance();
 
-    $module->dispatchAdminRequest();
+    $module->dispatchRequest('admin');
 }
 
 function colocrossing_sidebar($params) {

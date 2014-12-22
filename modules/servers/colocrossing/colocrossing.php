@@ -2,7 +2,7 @@
 /**
  * ColoCrossing Portal
  *
- * This is an addon module that can be used to interact with the ColoCrossing Portal.
+ * This is a provisioning module that delegates actions to the ColoCrossing WHMCS Addon
  */
 
 if (!defined('WHMCS')){
@@ -12,54 +12,56 @@ if (!defined('WHMCS')){
 require implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', '..', 'addons', 'colocrossing', 'Module.php'));
 
 function colocrossing_AdminServicesTabFields($params) {
-	$service_id = intval($params['serviceid']);
-	$service = ColoCrossing_Model_Service::find($service_id);
-
-	try {
-		$device = empty($service) ? null : $service->getDevice();
-	} catch (ColoCrossing_Error $e) {
-		$device = null;
-	}
-
 	$module = ColoCrossing_Module::getInstance();
-	$admin_module_url = $module->getBaseAdminUrl();
 
-	//Device Not Found for Service, Render Device Select
-	if(empty($device)) {
-		$template = ColoCrossing_Utilities::parseTemplate(dirname(__FILE__) . '/templates/services/device_select.phtml', array(
-    		'admin_module_url' => $admin_module_url
-		));
-
-	    return array(
-	    	'ColoCrossing Device' => $template
-	    );
-	}
-
-	$device_url = ColoCrossing_Utilities::buildUrl($admin_module_url, array(
-		'controller' => 'devices',
-		'action' => 'view',
-		'id' => $device->getId()
-	));
-
-	$template = ColoCrossing_Utilities::parseTemplate(dirname(__FILE__) . '/templates/services/device_display.phtml', array(
-		'device' => $device,
-		'device_url' => $device_url
-	));
-
-	return array(
-        'ColoCrossing Device' => $template
-    );
+    return $module->dispatchRequestTo('admin', 'services', 'edit', array(
+    	'id' => $params['serviceid']
+    ));
 }
 
 function colocrossing_AdminServicesTabFieldsSave($params) {
-	$service_id = intval($params['serviceid']);
-	$service = ColoCrossing_Model_Service::find($service_id);
+	$module = ColoCrossing_Module::getInstance();
 
-	$device_id = intval($_POST['colocrossing_device_id']);
+    return $module->dispatchRequestTo('admin', 'services', 'assign-device', array(
+    	'id' => $params['serviceid'],
+    	'device_id' => $_POST['colocrossing_device_id']
+    ));
+}
 
-	if($device_id > 0) {
-		$service->assignToDevice($device_id);
-	} else {
-		$service->unassignFromDevice();
-	}
+function colocrossing_SuspendAccount($params) {
+	$module = ColoCrossing_Module::getInstance();
+
+    return $module->dispatchRequestTo('admin', 'services', 'suspend', array(
+        'id' => $params['serviceid']
+    ));
+}
+
+function colocrossing_UnsuspendAccount($params) {
+	$module = ColoCrossing_Module::getInstance();
+
+    return $module->dispatchRequestTo('admin', 'services', 'unsuspend', array(
+        'id' => $params['serviceid']
+    ));
+}
+
+function colocrossing_TerminateAccount($params) {
+	$module = ColoCrossing_Module::getInstance();
+
+    return $module->dispatchRequestTo('admin', 'services', 'terminate', array(
+        'id' => $params['serviceid']
+    ));
+}
+
+function colocrossing_UnassignDevice($params) {
+	$module = ColoCrossing_Module::getInstance();
+
+    return $module->dispatchRequestTo('admin', 'services', 'unassign-device', array(
+        'id' => $params['serviceid']
+    ));
+}
+
+function colocrossing_AdminCustomButtonArray() {
+    return array(
+        'Unassign Device' => 'UnassignDevice'
+    );
 }

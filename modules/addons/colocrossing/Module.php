@@ -26,16 +26,10 @@ class ColoCrossing_Module {
 	private static $instance;
 
 	/**
-	 * The Admin Router
-	 * @var ColoCrossing_Admins_Router
+	 * The Client and Admin Routers for this
+	 * @var array<ColoCrossing_Router>
 	 */
-	private $admin_router;
-
-	/**
-	 * The Client Router
-	 * @var ColoCrossing_Clients_Router
-	 */
-	private $client_router;
+	private $routers;
 
 	/**
 	 * Private Constructor to Prevent Instantiation Outside of this Class
@@ -159,54 +153,53 @@ class ColoCrossing_Module {
 	}
 
 	/**
-	 * Dispatch a Admin Request to the Controller
-	 *
-	 * @param  array  $params
-	 */
-	public function dispatchAdminRequest(array $params = array()) {
-		$router = $this->getAdminRouter();
-		$params = array_merge($params, $_POST, $_GET);
-
-		$router->dispatch($params);
-	}
-
-	/**
-	 * Get the router for the admin module
+	 * Get the router of the specified type
 	 *
 	 * @return ColoCrossing_Admins_Router
 	 */
-	public function getAdminRouter() {
-		if(empty($this->admin_router)) {
-			$this->admin_router = new ColoCrossing_Admins_Router();
+	public function getRouter($type = 'admin') {
+		if(isset($this->routers[$type])) {
+			return $this->routers[$type];
 		}
 
-		return $this->admin_router;
+		switch ($type) {
+			case 'admin':
+				return $this->routers[$type] = new ColoCrossing_Admins_Router();
+			case 'client':
+				return $this->routers[$type] = new ColoCrossing_Clients_Router();
+		}
+
+		throw new Exception('Unkown router type specified.');
 	}
 
 	/**
-	 * Dispatch a Client Request to the Controller
+	 * Dispatch a Request to the Controller
 	 *
-	 * @param  array  $params
+	 * @param string  $type 	The type of router to send request to.
+	 * @param  array  $params 	The Parameters to pass to router
+	 * @return mixed  			The Result of the Action
 	 */
-	public function dispatchClientRequest(array $params = array()) {
-		$router = $this->getClientRouter();
+	public function dispatchRequest($type, array $params = array()) {
+		$router = $this->getRouter($type);
 		$params = array_merge($params, $_POST, $_GET);
 
-		$router->dispatch($params);
+		return $router->dispatch($params);
 	}
 
-
 	/**
-	 * Get the router for the client module
+	 * Dispatch a Request to the Controller and Action Specified
 	 *
-	 * @return ColoCrossing_Clients_Router
+	 * @param string  $type 		The type of router to send request to.
+	 * @param string  $controller 	The contoller
+	 * @param string  $action 		The action
+	 * @param  array  $params 		The Parameters to pass to router
+	 * @return mixed  				The Result of the Action
 	 */
-	public function getClientRouter() {
-		if(empty($this->client_router)) {
-			$this->client_router = new ColoCrossing_Clients_Router();
-		}
+	public function dispatchRequestTo($type, $controller, $action, array $params = array()) {
+		$params['controller'] = $controller;
+		$params['action'] = $action;
 
-		return $this->client_router;
+		return $this->dispatchRequest($type, $params);
 	}
 
 	/**

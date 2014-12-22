@@ -11,7 +11,7 @@
 			<td width="35%" class="fieldarea">
 			<?php
 				if(isset($this->service) && isset($this->product) && isset($this->client)) {
-					$service_url = '/admin/clientsservices.php?' . http_build_query(array(
+					$service_url = ColoCrossing_Utilities::buildUrl('/admin/clientsservices.php', array(
 						'id' => $this->service->getId(),
 						'userid' => $this->client->getId()
 					));
@@ -29,7 +29,7 @@
 			<td width="35%" class="fieldarea">
 			<?php
 				if(isset($this->client)) {
-					$client_url = '/admin/clientssummary.php?' . http_build_query(array(
+					$client_url = ColoCrossing_Utilities::buildUrl('/admin/clientssummary.php', array(
 						'userid' => $this->client->getId()
 					));
 					echo '<a href="' . $client_url . '">' . $this->client->getFullName() . '</a>';

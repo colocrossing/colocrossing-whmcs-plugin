@@ -31,12 +31,20 @@ abstract class ColoCrossing_Controller {
     protected $base_url;
 
     /**
+     * Determines Whether or Not To Render Default View Template
+     * @var boolean
+     */
+    protected $render;
+
+    /**
      * Initialize References to Module and API Client
      */
     public function __construct() {
         $this->module = ColoCrossing_Module::getInstance();
         $this->api = ColoCrossing_API::getInstance();
         $this->base_url = $this->getBaseUrl();
+
+        $this->render = true;
     }
 
     /**
@@ -45,11 +53,51 @@ abstract class ColoCrossing_Controller {
     protected abstract function getBaseUrl();
 
     /**
+     * Sets the Provided Http Header
+     * @param string $key
+     * @param string $value
+     */
+    protected function setHeader($key, $value) {
+        header($key . ': ' . $value);
+    }
+
+    /**
+     * Sets the HTTP Response Code
+     * @param integer $code
+     */
+    protected function setResponseCode($code = 200) {
+        http_response_code($code);
+    }
+
+    /**
+     * Enables the controller to render the action's view after the action is called
+     */
+    protected function enableRendering() {
+        $this->render = true;
+    }
+
+    /**
+     * Disables the controller from rendering the action's view
+     */
+    protected function disableRendering() {
+        $this->render = false;
+    }
+
+    /**
+     * Determines if the the controller should render the action's view
+     * @return boolean True if it should render
+     */
+    protected function isRenderingEnabled() {
+        return $this->render;
+    }
+
+    /**
      * Dispatches Request to Action and Renders The Actions View
      * Throws Exaception if Action is not Found.
      *
      * @param  string $action
      * @param  array  $params
+     * @return mixed|null The Data Returned By the Action
      */
     public function dispatch($action, array $params) {
         $action = lcfirst(implode('', array_map(function ($word) {
@@ -60,10 +108,14 @@ abstract class ColoCrossing_Controller {
             throw new Exception('Action not found.');
         }
 
-        if($this->$action($params) !== false) {
-            $template_path = $this->getControllerActionTemplatePath($action);
-            $this->renderTemplate($template_path, $params);
+        $result = $this->$action($params);
+
+        if($this->isRenderingEnabled()) {
+            $path = $this->getControllerActionTemplatePath($action);
+            $this->renderTemplate($path, $params);
         }
+
+        return $result;
     }
 
     /**
@@ -95,6 +147,8 @@ abstract class ColoCrossing_Controller {
         ob_clean();
         ob_start();
 
+        $this->setHeader('Content-Type', 'application/json');
+
         echo json_encode($data);
 
         ob_end_flush();
@@ -110,8 +164,9 @@ abstract class ColoCrossing_Controller {
         ob_clean();
         ob_start();
 
-        header('Content-Type: image/png');
-        http_response_code(imagepng($image) ? 200 : 500);
+        $this->setHeader('Content-Type', 'image/png');
+        $this->setResponseCode(imagepng($image) ? 200 : 500);
+
         imagedestroy($image);
 
         ob_end_flush();
@@ -145,7 +200,7 @@ abstract class ColoCrossing_Controller {
      * @param  string $url The Destination URL
      */
     protected function redirectToUrl($url) {
-        header('Location: ' . $url);
+        $this->setHeader('Location', $url);
         exit;
     }
 
