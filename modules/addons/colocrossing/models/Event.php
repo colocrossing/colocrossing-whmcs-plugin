@@ -22,13 +22,24 @@ class ColoCrossing_Model_Event extends ColoCrossing_Model {
 	protected static $TABLE = 'mod_colocrossing_events';
 
 	/**
+	 * A Class Wide Cache of Users
+	 * @var array<string, ColoCrossing_Model_User>
+	 */
+	protected static $USERS = array();
+
+	/**
 	 * @return ColoCrossing_Admin|ColoCrossing_Client|null|false The User, False if not found, Null if System.
 	 */
 	public function getUser() {
 		$id = $this->getValue('user_id');
 		$type = $this->getValue('user_type');
+		$key = $type . '-' . $id;
 
-		return ColoCrossing_Model_User::getUser($id, $type);
+		if(isset(self::$USERS[$key])) {
+			return self::$USERS[$key];
+		}
+
+		return self::$USERS[$key] = ColoCrossing_Model_User::getUser($id, $type);
 	}
 
 	/**
