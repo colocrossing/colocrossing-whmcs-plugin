@@ -25,4 +25,16 @@ class ColoCrossing_Model_Client extends ColoCrossing_Model_User {
 		return $human_readable ? 'Client' : 2;
 	}
 
+	/**
+	 * Determines if this Client Has Access to the specified Device
+	 * @param  integer|ColoCrossing_Object_Device  $device The Device or Id
+	 * @return boolean  True if the Client has Access
+	 */
+	public function hasPermissionForDevice($device) {
+		$device_id = is_numeric($device) ? $device : $device->getId();
+		$service = ColoCrossing_Model_Service::findByDevice($device_id);
+
+		return isset($service) && $service->isActive();
+	}
+
 }

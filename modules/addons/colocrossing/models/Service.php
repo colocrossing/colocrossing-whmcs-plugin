@@ -48,6 +48,16 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
+	 * Determines if Service is Active
+	 * @return boolean True if service is active
+	 */
+	public function isActive() {
+		$status = $this->getStatus();
+
+		return isset($status) && $status == 'Active';
+	}
+
+	/**
 	 * @return ColoCrossing_Model_Client|null The Client this Service is Assigned to
 	 */
 	public function getClient() {

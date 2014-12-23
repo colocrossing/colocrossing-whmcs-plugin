@@ -26,7 +26,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		try {
 			$device = empty($service) ? null : $service->getDevice();
 		} catch (ColoCrossing_Error $e) {
-			$device = null;
+			$path = $this->getViewDirectoryPath() . '/services/api_unavailable.phtml';
+
+			return array(
+			    'ColoCrossing Device' => ColoCrossing_Utilities::parseTemplate($path)
+			);
 		}
 
 		//Device Not Found for Service, Render Device Select
@@ -69,7 +73,12 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		}
 
 		$device_id = intval($params['device_id']);
-		$device = $device_id > 0 ? $this->api->devices->find($device_id) : null;
+
+		try {
+			$device = $device_id > 0 ? $this->api->devices->find($device_id) : null;
+		} catch (ColoCrossing_Error $e) {
+			return 'Unable to access the API at this time. Please try again later.';
+		}
 
 		if(empty($device)) {
 			return 'Device not found!';
@@ -95,7 +104,12 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			return 'Client not found!';
 		}
 
-		$device = $service->getDevice();
+		try {
+			$device = $service->getDevice();
+		} catch (ColoCrossing_Error $e) {
+			$device = null;
+		}
+
 		$device_name = isset($device) ? $device->getName() : 'Device';
 
 		$service->unassignFromDevice();
@@ -118,7 +132,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			return 'Client not found!';
 		}
 
-		$device = $service->getDevice();
+		try {
+			$device = $service->getDevice();
+		} catch (ColoCrossing_Error $e) {
+			return 'Unable to access the API at this time. Please try again later.';
+		}
 
 		if(empty($device)) {
 			return 'Device not found!';
@@ -151,7 +169,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			return 'Client not found!';
 		}
 
-		$device = $service->getDevice();
+		try {
+			$device = $service->getDevice();
+		} catch (ColoCrossing_Error $e) {
+			return 'Unable to access the API at this time. Please try again later.';
+		}
 
 		if(empty($device)) {
 			return 'Device not found!';
@@ -182,7 +204,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			return 'Client not found!';
 		}
 
-		$device = $service->getDevice();
+		try {
+			$device = $service->getDevice();
+		} catch (ColoCrossing_Error $e) {
+			return 'Unable to access the API at this time. Please try again later.';
+		}
 
 		if(empty($device)) {
 			return 'Device not found!';

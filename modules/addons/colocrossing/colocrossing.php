@@ -50,3 +50,19 @@ function colocrossing_sidebar($params) {
     return $sidebar;
 
 }
+
+function colocrossing_clientarea($params) {
+    $module = ColoCrossing_Module::getInstance();
+
+    list($title, $output) = $module->dispatchRequest('client');
+
+    return array(
+        'pagetitle' => $title,
+        'breadcrumb' => array($_SERVER['REQUEST_URI'] => $title),
+        'templatefile' => 'clients/template',
+        'requirelogin' => true,
+        'vars' => array(
+            'output' => $output
+        ),
+    );
+}

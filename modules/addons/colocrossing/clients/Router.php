@@ -24,7 +24,9 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
 	 * @var array
 	 */
 	protected static $ROUTES = array(
-		'error' => array('index'),
+		'devices' => array('view'),
+		'services' => array('view-device'),
+		'error' => array('general', 'missing', 'unauthorized')
 	);
 
 	/**
@@ -53,6 +55,12 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
 	 */
     public function create($type) {
         switch ($type) {
+        	case 'devices':
+        		require_once('controllers/DevicesController.php');
+        		return new ColoCrossing_Clients_DevicesController();
+        	case 'services':
+        		require_once('controllers/ServicesController.php');
+        		return new ColoCrossing_Clients_ServicesController();
         	case 'error':
         		require_once('controllers/ErrorController.php');
         		return new ColoCrossing_Clients_ErrorController();

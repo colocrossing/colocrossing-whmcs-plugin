@@ -70,3 +70,56 @@ function colocrossing_AdminCustomButtonArray() {
         'Unassign Device' => 'UnassignDevice'
     );
 }
+
+function colocrossing_ViewDevice($params) {
+    $module = ColoCrossing_Module::getInstance();
+
+    list($result, $output) = $module->dispatchRequestTo('client', 'services', 'view-device', array(
+        'id' => $params['serviceid']
+    ));
+
+    echo $result; exit;
+
+    return $result;
+}
+
+function colocrossing_ClientAreaCustomButtonArray() {
+    return array(
+        'View Device' => 'ViewDevice'
+    );
+}
+
+function colocrossing_ClientArea($params) {
+    $module = ColoCrossing_Module::getInstance();
+    $service = ColoCrossing_Model_Service::find($params['serviceid']);
+
+    if(empty($service)) {
+        return null;
+    }
+
+    try {
+        $device = $service->getDevice();
+    } catch(ColoCrossing_Error $e) {
+        $device = null;
+    }
+
+    if(empty($device)) {
+        return null;
+    }
+
+    $device_id = $device->getId();
+    $device_name = $device->getName();
+    $device_url = ColoCrossing_Utilities::buildUrl($module->getBaseClientUrl(), array(
+        'controller' => 'devices',
+        'action' => 'view',
+        'id' => $device_id
+    ));
+
+    return array(
+        'templatefile' => 'client-area',
+        'vars' => array(
+            'device_url' => $device_url,
+            'device_name' => $device_name
+        )
+    );
+}

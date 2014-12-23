@@ -181,7 +181,7 @@ class ColoCrossing_Module {
 	 */
 	public function dispatchRequest($type, array $params = array()) {
 		$router = $this->getRouter($type);
-		$params = array_merge($params, $_POST, $_GET);
+		$params = array_merge($_POST, $_GET, $params);
 
 		return $router->dispatch($params);
 	}

@@ -28,7 +28,8 @@ class ColoCrossing_Admins_Router extends ColoCrossing_Router {
 		'services' => array('edit', 'assign-device', 'unassign-device', 'suspend', 'unsuspend', 'terminate'),
 		'subnets' => array('index', 'view', 'update'),
 		'null-routes' => array('index', 'create', 'destroy'),
-		'events' => array('index')
+		'events' => array('index'),
+		'error' => array('general', 'missing', 'unauthorized')
 	);
 
 	/**

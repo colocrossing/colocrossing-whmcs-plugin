@@ -22,7 +22,6 @@ abstract class ColoCrossing_Router {
 	 */
 	public function dispatch(array $params) {
 		$route = $this->getRouteFromParams($params);
-
 		try {
 			return $this->dispatchRoute($route, $params);
 		} catch (ColoCrossing_Error_Authorization $e) {

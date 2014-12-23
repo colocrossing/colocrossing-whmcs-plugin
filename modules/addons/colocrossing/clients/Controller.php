@@ -10,6 +10,23 @@ if(!defined('WHMCS')) {
 class ColoCrossing_Clients_Controller extends ColoCrossing_Controller {
 
     /**
+     * Dispatches Request to Action and Renders The Actions View
+     * Throws Exaception if Action is not Found.
+     *
+     * @param  string $action
+     * @param  array  $params
+     * @return array<string> 0 => The title, 1 => The Rendered Ouput
+     */
+    public function dispatch($action, array $params) {
+        ob_start();
+
+        $title = parent::dispatch($action, $params);
+        $output = ob_get_clean();
+
+        return array($title, $output);
+    }
+
+    /**
      * @return string The Base Url
      */
     protected function getBaseUrl() {
