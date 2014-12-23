@@ -1,1 +1,6 @@
-<a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a>
+<?php
+	$device_name = $device->getName();
+	$device_hostname = $device->getHostname();
+	$device_display = $device_name . (empty($device_hostname) ? '' : ' - ' . $device_hostname);
+?>
+<a href="<?php echo $device_url; ?>"><?php echo $device_display; ?></a>
