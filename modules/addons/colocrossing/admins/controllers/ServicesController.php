@@ -191,7 +191,18 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		$service->unassignFromDevice();
 		ColoCrossing_Model_Event::log($device->getName() . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
 
-		//TODO Cancel Device Via API
+		if($this->api->hasPermission('device_cancellation')) {
+			$success = $device->cancelService();
+		} else {
+			$success = $this->controlDeviceNetworkPorts($device, 'off');
+		}
+
+		if(!$success) {
+			$message = 'Failed to terminate service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
+
+			ColoCrossing_Model_Event::log($message);
+			return $message;
+		}
 
 		ColoCrossing_Model_Event::log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was terminated.');
 		return 'success';
