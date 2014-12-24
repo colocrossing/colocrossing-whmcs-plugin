@@ -24,7 +24,7 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
 	 * @var array
 	 */
 	protected static $ROUTES = array(
-		'devices' => array('view'),
+		'devices' => array('view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
 		'subnets' => array('view'),
 		'null-routes' => array('create', 'destroy'),
 		'services' => array('view-device'),

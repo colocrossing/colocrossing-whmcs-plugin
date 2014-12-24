@@ -4,12 +4,92 @@
             <div class="internalpadding">
                 <div class="styled_title"><h2>Network Ports</h2></div>
                 <p>You have the following network ports assigned to this device.</p>
+                <div class="actions" style="margin-top: 15px;">
+                    <input type="button" class="control-network-ports-button btn" data-status="on" value="Turn On" />
+                    <input type="button" class="control-network-ports-button btn" data-status="off" value="Turn Off" />
+                </div>
             </div>
         </div>
         <div class="col70">
-            <div class="internalpadding">
+            <form id="control-network-ports-form" class="internalpadding" action="<? echo $control_url; ?>" method="POST">
+                <table class="table table-striped table-framed table-centered">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Control</th>
+                            <th>Device</th>
+                            <th>Port</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        if(count($switches) == 0):
+                    ?>
+                        <tr>
+                            <td class="textcenter" colspan="3">No network ports configured to this device.</td>
+                        </tr>
+                    <?php
+                        endif;
 
-            </div>
+                        $device_id = $device->getId();
+
+                        foreach ($switches as $index => $switch):
+                            $switch_id = $switch->getId();
+                            $switch_display = $switch->getName();
+                            $switch_ports = $switch->getPorts();
+
+                            foreach ($switch_ports as $j => $port):
+                                $port_id = $port->getId();
+                                $port_display = $port->getDescription();
+                                $port_status = $port->getStatus();
+
+                                $control_status = $port->isControllable() ? '' : 'disabled';
+                                $control_name = 'switches[' . $switch_id . '][' . $port_id . ']';
+
+                    ?>
+                            <tr>
+                                <td>
+                                    <label style="display: block;">
+                                        <input type="checkbox" class="select-port-toggle" name="<?php echo $control_name; ?>"
+                                               value="<?php echo $device_id; ?>" <?php echo $control_status; ?> style="display: inline;" />
+                                    </label>
+                                </td>
+                                <td><?php echo $switch_display; ?></td>
+                                <td><?php echo $port_display; ?></td>
+                                <td><?php echo isset($port_status) ? $port_status : 'Unknown'; ?></td>
+                            </tr>
+                    <?php
+                            endforeach;
+                        endforeach;
+                    ?>
+                    </tbody>
+                </table>
+                <input type="hidden" name="status" />
+                <input type="hidden" name="origin_device_id" value="<?php echo $device_id; ?>" />
+            </form>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var form = $('#control-network-ports-form'),
+        table = form.find('table'),
+        button = $('.control-network-ports-button');
+
+        button.on('click',function(e) {
+            var button = $(this),
+            numSelected = table.find('.select-port-toggle:checked').length;
+
+            if(numSelected === 0) {
+                alert('Please select one or more network ports to ' + button.val().toLowerCase() + '.');
+            } else if (confirm('Are you sure you want to ' + button.val().toLowerCase() + ' these ports?')) {
+                form.find('input[name="status"]').val(button.data('status'));
+                form.submit();
+            }
+
+            e.preventDefault();
+            return false;
+        });
+    });
+</script>

@@ -74,7 +74,10 @@
 
 	if($this->type->isPowerEndpoint()) {
 		$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
-			'base_url' => $this->base_url,
+			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'devices',
+				'action' => 'update-power-ports'
+			)),
 			'device' => $this->device,
 			'power_distribution_units' => $this->power_distribution_units
 		));
@@ -82,14 +85,20 @@
 
 	if($this->type->isPowerDistribution()) {
 		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
-			'base_url' => $this->base_url,
+			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'devices',
+				'action' => 'update-power-ports'
+			)),
 			'pdu' => $this->device
 		));
 	}
 
 	if($this->type->isNetworkEndpoint()) {
 		$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
-			'base_url' => $this->base_url,
+			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'devices',
+				'action' => 'update-network-ports'
+			)),
 			'device' => $this->device,
 			'switches' => $this->switches
 		));
@@ -97,7 +106,10 @@
 
 	if($this->type->isNetworkDistribution()) {
 		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
-			'base_url' => $this->base_url,
+			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'devices',
+				'action' => 'update-network-ports'
+			)),
 			'switch' => $this->device
 		));
 	}
@@ -111,7 +123,10 @@
 
 	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
 		$this->renderTemplate('/devices/_bandwidth_usage.phtml', array(
-			'base_url' => $this->base_url,
+			'bandwidth_graph_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'devices',
+				'action' => 'bandwidth-graph'
+			)),
 			'bandwidth_graphs' => $this->bandwidth_graphs
 		));
 	}

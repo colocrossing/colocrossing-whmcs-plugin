@@ -53,4 +53,42 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		return $this->device->getName();
 	}
 
+	public function bandwidthGraph(array $params) {
+		$start = strtotime('-' . $params['duration']);
+		$end = time();
+
+		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $params['id'], $start, $end);
+
+		if (empty($graph))
+		{
+			$this->setResponseCode(404);
+			$this->disableRendering();
+			return null;
+		}
+
+		$this->renderImage($graph);
+	}
+
+
+	public function updatePowerPorts(array $params) {
+
+	}
+
+	public function updateNetworkPorts(array $params) {
+
+	}
+
+	private function getPortStatusDescription($status) {
+		switch ($status) {
+			case 'on':
+				return 'turned on';
+			case 'off':
+				return 'turned off';
+			case 'restart':
+				return 'restarted';
+		}
+
+		return 'controlled';
+	}
+
 }

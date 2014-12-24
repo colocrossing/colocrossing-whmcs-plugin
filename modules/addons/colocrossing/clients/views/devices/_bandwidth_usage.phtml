@@ -4,12 +4,93 @@
             <div class="internalpadding">
                 <div class="styled_title"><h2>Bandwidth Usage</h2></div>
                 <p>You have the following bandwidth usage graphs assigned to this device.</p>
+                <div class="form-inline" style="margin-top: 15px;">
+                    <label>Duration: </label>
+                    <select id="bandwidth-graph-duration-select">
+                        <option value="12 hours">Last 12 Hours</option>
+                        <option value="1 day" selected>Last Day</option>
+                        <option value="1 week">Last Week</option>
+                        <option value="2 weeks">Last 2 Weeks</option>
+                        <option value="1 month">Last Month</option>
+                        <option value="3 months">Last 3 Months</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="col70">
-            <div class="internalpadding">
-
-            </div>
+            <div id="bandwidth-graphs" style="text-align: center;"></div>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+
+    function loadImages(images, callback) {
+        var length = images.length,
+        count = length,
+        check = function () {
+            if (--count === 0) {
+                callback(images);
+            }
+        };
+
+        for (var i = 0; i < length; i++) {
+            var image = new Image();
+
+            image.onload = check;
+            image.onerror = check;
+
+            image.src = images[i];
+
+            images[i] = image;
+        }
+    }
+
+    $(document).ready(function() {
+        var link = '<?php echo $bandwidth_graph_url; ?>',
+        graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>'),
+        container = $('#bandwidth-graphs'),
+        durationSelect = $('#bandwidth-graph-duration-select'),
+        loading = false,
+        loadGraphs = function() {
+            var images = [];
+
+            if(loading) {
+                return false;
+            }
+
+            loading = true;
+            durationSelect.prop('disabled', true);
+
+            container.html('<img src="/images/loading.gif"/>');
+
+            for (var i = 0, length = graphs.length; i < length; i++) {
+                images.push(link + '&' + $.param({
+                    id: graphs[i].device_id,
+                    switch_id: graphs[i].switch_id,
+                    port_id: graphs[i].port_id,
+                    duration: durationSelect.val(),
+                }));
+            }
+
+            loadImages(images, function(images) {
+                container.html('');
+
+                for (var i = 0, length = images.length; i < length; i++) {
+                    container.append(images[i]);
+                }
+
+                loading = false;
+                durationSelect.prop('disabled', false);
+            });
+        };
+
+        setTimeout(loadGraphs, 50);
+
+        durationSelect.on('change', loadGraphs);
+    });
+</script>
+
+<style type="text/css">
+    div#bandwidth-graphs img { margin: 10px auto; }
+</style>
