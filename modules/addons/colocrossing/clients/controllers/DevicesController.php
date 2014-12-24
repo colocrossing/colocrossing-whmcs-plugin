@@ -107,7 +107,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 					continue;
 				}
 
-				$result = $this->api->devices->pdus->setPortStatus($pdu, $port, $device, $status, $comment);
+				$result = $this->api->devices->pdus->setPortStatus($pdu, $port, $device, $status);
 
 				if($result) {
 					$description = 'Power port ' . $port_id . ' of ' . $pdu->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
@@ -159,7 +159,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 					continue;
 				}
 
-				$result = $this->api->devices->switches->setPortStatus($switch, $port, $device, $status, $comment);
+				$result = $this->api->devices->switches->setPortStatus($switch, $port, $device, $status);
 
 				if($result) {
 					$description = 'Network port ' . $port_id . ' of ' . $switch->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
