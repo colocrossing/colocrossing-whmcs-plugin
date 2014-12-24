@@ -10,6 +10,7 @@ require 'models/Admin.php';
 require 'models/Client.php';
 require 'models/Service.php';
 require 'models/Product.php';
+require 'models/ProductGroup.php';
 
 /**
  * A Simple Model Implementation to interact with rows of a DB table

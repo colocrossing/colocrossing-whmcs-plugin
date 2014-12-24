@@ -13,7 +13,7 @@ class ColoCrossing_Model_Product extends ColoCrossing_Model {
 	 * The Product Columns
 	 * @var array<string>
 	 */
-	protected static $COLUMNS = array('id', 'name', 'description');
+	protected static $COLUMNS = array('id', 'gid', 'name', 'description');
 
 	/**
 	 * The Table Name
@@ -37,6 +37,14 @@ class ColoCrossing_Model_Product extends ColoCrossing_Model {
 		$description = $this->getValue('description');
 
 		return empty($description) ? '' : $description;
+	}
+
+	/**
+	 * @return ColoCrossing_Model_ProductGroup The Group of the Product
+	 */
+	public function getGroup() {
+		$group_id = $this->getValue('gid');
+		return ColoCrossing_Model_ProductGroup::find($group_id);
 	}
 
 }

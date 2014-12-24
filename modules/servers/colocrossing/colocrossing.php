@@ -78,8 +78,6 @@ function colocrossing_ViewDevice($params) {
         'id' => $params['serviceid']
     ));
 
-    echo $result; exit;
-
     return $result;
 }
 

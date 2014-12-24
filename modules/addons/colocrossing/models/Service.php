@@ -67,6 +67,28 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
+	 * @return integer The Client Id this Service is Assigned to
+	 */
+	public function getClientId() {
+		$client_id = $this->getValue('userid');
+
+		return empty($client_id) ? null : intval($client_id);
+	}
+
+	/**
+	 * Determines if this Service is Assigned to the User
+	 * @param  ColoCrossing_Object_User  $user The User
+	 * @return boolean  True if the Service is Assigned to User
+	 */
+	public function isAssignedToUser($user) {
+		if(empty($user) || $user->getType() != 2) {
+			return false;
+		}
+
+		return $this->getClientId() == $user->getId();
+	}
+
+	/**
 	 * @return ColoCrossing_Model_Product|null The Product this Service was created from
 	 */
 	public function getProduct() {
@@ -108,6 +130,17 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		}
 
 		return $this->api->devices->find($device_id);
+	}
+
+	/**
+	 * Determines if this Service is Assigned to the specified Device
+	 * @param  integer|ColoCrossing_Object_Device  $device The Device or Id
+	 * @return boolean  True if the Service is Assigned to Device
+	 */
+	public function isAssignedToDevice($device) {
+		$device_id = is_numeric($device) ? $device : $device->getId();
+
+		return $this->getDeviceId() == $device_id;
 	}
 
 	/**

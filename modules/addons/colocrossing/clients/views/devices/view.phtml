@@ -1,1 +1,126 @@
-view.phtml
+<?php
+	$title = $this->device->getName();
+
+	if(isset($this->product)) {
+		$title = $this->product->getName() . ' - ' . $title;
+	}
+?>
+
+<div class="page-header">
+    <div class="styled_title"><h1><?php echo $title; ?></h1></div>
+</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+<div id="tabs">
+    <ul class="nav nav-tabs" data-tabs="tabs">
+    <?php
+    	echo '<li class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
+    	echo '<li><a href="#assets" data-toggle="tab">Assets</a></li>';
+
+    	if($this->type->isNetworked() || $this->type->isVirtual()) {
+			echo '<li><a href="#subnets" data-toggle="tab">Subnets</a></li>';
+		}
+
+		if($this->type->isPowerEndpoint()) {
+			echo '<li><a href="#power-endpoint-ports" data-toggle="tab">Power Ports</a></li>';
+		}
+
+		if($this->type->isPowerDistribution()) {
+			echo '<li><a href="#power-distribution-ports" data-toggle="tab">Power Ports</a></li>';
+		}
+
+		if($this->type->isNetworkEndpoint()) {
+			echo '<li><a href="#network-endpoint-ports" data-toggle="tab">Network Ports</a></li>';
+		}
+
+		if($this->type->isNetworkDistribution()) {
+			echo '<li><a href="#network-distribution-ports" data-toggle="tab">Network Ports</a></li>';
+		}
+
+		if($this->type->isRack()) {
+			echo '<li><a href="#racked-devices" data-toggle="tab">Racked Devices</a></li>';
+		}
+
+		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
+			echo '<li><a href="#bandwidth-usage" data-toggle="tab">Bandwidth Usage</a></li>';
+
+		}
+    ?>
+    </ul>
+</div>
+
+<?php
+	$this->renderTemplate('/devices/_overview.phtml', array(
+		'device' => $this->device,
+		'type' => $this->type,
+		'service' => $this->service,
+		'product' => $this->product,
+		'product_group' => $this->product_group,
+	));
+
+	$this->renderTemplate('/devices/_assets.phtml', array(
+		'assets' => $this->assets,
+	));
+
+	if($this->type->isNetworked() || $this->type->isVirtual()) {
+		$this->renderTemplate('/devices/_subnets.phtml', array(
+			'base_url' => $this->base_url,
+			'subnets' => $this->subnets
+		));
+	}
+
+	if($this->type->isPowerEndpoint()) {
+		$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'device' => $this->device,
+			'power_distribution_units' => $this->power_distribution_units
+		));
+	}
+
+	if($this->type->isPowerDistribution()) {
+		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'pdu' => $this->device
+		));
+	}
+
+	if($this->type->isNetworkEndpoint()) {
+		$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'device' => $this->device,
+			'switches' => $this->switches
+		));
+	}
+
+	if($this->type->isNetworkDistribution()) {
+		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'switch' => $this->device
+		));
+	}
+
+	if($this->type->isRack()) {
+		$this->renderTemplate('/devices/_racked_devices.phtml', array(
+			'base_url' => $this->base_url,
+			'devices' => $this->device->getDevices()
+		));
+	}
+
+	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
+		$this->renderTemplate('/devices/_bandwidth_usage.phtml', array(
+			'base_url' => $this->base_url,
+			'bandwidth_graphs' => $this->bandwidth_graphs
+		));
+	}
+?>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('input#view-service-button').on('click', function(e) {
+			window.location = '/clientarea.php?action=productdetails&id=<?php echo $this->service->getId(); ?>';
+		});
+	});
+</script>

@@ -58,6 +58,13 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 	}
 
 	/**
+	 * Determines if this User Has Access to the specified Device
+	 * @param  integer|ColoCrossing_Object_Device  $device The Device or Id
+	 * @return boolean  True if the User has Access
+	 */
+	public abstract function hasPermissionForDevice($device);
+
+	/**
 	 * Retrieves the User of the specified type and id
 	 * @param integer $id The User ID
 	 * @return ColoCrossing_Model_Admin|ColoCrossing_Model_Client|null|false The User, False if not found, Null if System.

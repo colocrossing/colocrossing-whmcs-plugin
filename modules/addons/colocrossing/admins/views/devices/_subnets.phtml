@@ -17,10 +17,9 @@
 
 		foreach ($subnets as $index => $subnet):
 			$url = $base_url . '&controller=subnets&action=view&id=' . $subnet->getId();
-			$ip_address = $subnet->getIpAddress() . '/' . $subnet->getCidr();
 	?>
 		<tr>
-			<td><a href="<?php echo $url; ?>"><?php echo $ip_address; ?></a></td>
+			<td><a href="<?php echo $url; ?>"><?php echo $subnet->getCIDRIpAddress(); ?></a></td>
 			<td><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?></td>
 		</tr>
 	<?php

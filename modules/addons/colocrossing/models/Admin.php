@@ -25,4 +25,13 @@ class ColoCrossing_Model_Admin extends ColoCrossing_Model_User {
 		return $human_readable ? 'Admin' : 1;
 	}
 
+	/**
+	 * Determines if this User Has Access to the specified Device
+	 * @param  integer|ColoCrossing_Object_Device  $device The Device or Id
+	 * @return boolean  True if the User has Access
+	 */
+	public function hasPermissionForDevice($device) {
+		return !empty($device);
+	}
+
 }

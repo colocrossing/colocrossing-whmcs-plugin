@@ -10,6 +10,21 @@ if(!defined('WHMCS')) {
 class ColoCrossing_Clients_Controller extends ColoCrossing_Controller {
 
     /**
+     * The Current User
+     * @var ColoCrossing_Model_User
+     */
+    protected $current_user;
+
+    /**
+     * Initialize References to Module and API Client
+     */
+    public function __construct() {
+        parent::__construct();
+
+        $this->current_user = ColoCrossing_Model_User::getCurrentUser();
+    }
+
+    /**
      * Dispatches Request to Action and Renders The Actions View
      * Throws Exaception if Action is not Found.
      *

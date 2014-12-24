@@ -1,0 +1,60 @@
+<div data-toggle="tab" id="overview" class="tab-content">
+    <div class="row">
+        <div class="col30">
+            <div class="internalpadding">
+                <div class="styled_title"><h2>Information</h2></div>
+                <p>Here is an overview of your device.</p>
+                <input id="view-service-button" type="button" value="&laquo; Back to Service" class="btn" style="margin-top: 15px;" />
+            </div>
+        </div>
+        <div class="col70">
+            <div class="internalpadding">
+            <?php
+				if(isset($product) && isset($product_group)):
+			?>
+            	<div>
+                	<h4>Product/Service:</h4>
+                	<span><?php echo $product_group->getName() . ' - ' . $product->getName(); ?></span>
+                	<span class="label <?php echo strtolower($service->getStatus()); ?>"><?php echo $service->getStatus(); ?></span>
+                </div>
+            <?php
+				endif;
+			?>
+                <div class="col2half">
+                    <h4>Name:</h4>
+                    <span><?php echo $device->getName(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Type:</h4>
+                    <span><?php echo $type->getName(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Nickname:</h4>
+                    <span><?php echo $device->getNickname(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Hostname:</h4>
+                    <span><?php echo $device->getHostname(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Zone:</h4>
+                    <span><?php echo $device->getSubzone(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Rack:</h4>
+                    <span>
+                    <?php
+                    	if($type->isRacked()) {
+                    		$rack_name = $device->getRackName();
+							echo isset($rack_name) ? $rack_name . ' (U Slot: ' . $device->getUSpace() . ')' : 'Unassigned';
+                    	} else {
+                    		echo 'Self';
+                    	}
+                    ?>
+                    </span>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
