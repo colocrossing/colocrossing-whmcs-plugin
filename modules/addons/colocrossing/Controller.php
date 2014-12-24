@@ -211,11 +211,17 @@ abstract class ColoCrossing_Controller {
      * @param  string $action       The Action
      * @param  array  $params       The Query String Params
      */
-    protected function redirectTo($controller, $action, array $params = array()) {
+    protected function redirectTo($controller, $action, array $params = array(), $hash = null) {
         $params['controller'] = $controller;
         $params['action'] = $action;
 
-        $this->redirectToUrl($this->base_url . '&' . http_build_query($params));
+        $url = ColoCrossing_Utilities::buildUrl($this->base_url, $params);
+
+        if(isset($hash)) {
+            $url .= '#' . $hash;
+        }
+
+        $this->redirectToUrl($url);
     }
 
     /**

@@ -58,7 +58,7 @@ class ColoCrossing_Clients_SubnetsController extends ColoCrossing_Clients_Contro
 
 		$this->redirectTo('subnets', 'view', array(
 			'id' => $this->subnet->getId()
-		));
+		), 'rdns-records');
 	}
 
 }

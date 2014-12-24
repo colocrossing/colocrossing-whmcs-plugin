@@ -126,7 +126,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 		$this->redirectTo('devices', 'view', array(
 			'id' => $params['origin_device_id']
-		));
+		), 'power-ports');
 	}
 
 	public function updateNetworkPorts(array $params) {
@@ -178,9 +178,14 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 		$this->redirectTo('devices', 'view', array(
 			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
-		));
+		), 'network-ports');
 	}
 
+	/**
+	 * Converts Port Status to Description for use in messages
+	 * @param  string $status
+	 * @return string The Status Description
+	 */
 	private function getPortStatusDescription($status) {
 		switch ($status) {
 			case 'on':

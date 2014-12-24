@@ -33,7 +33,7 @@ class ColoCrossing_Clients_NullRoutesController extends ColoCrossing_Clients_Con
 
 		$this->redirectTo('subnets', 'view', array(
 			'id' => $params['subnet_id']
-		));
+		), 'null-routes');
 	}
 
 	public function destroy(array $params) {
@@ -66,7 +66,7 @@ class ColoCrossing_Clients_NullRoutesController extends ColoCrossing_Clients_Con
 
 		$this->redirectTo('subnets', 'view', array(
 			'id' => $this->subnet->getId()
-		));
+		), 'null-routes');
 	}
 
 }

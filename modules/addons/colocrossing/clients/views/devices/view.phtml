@@ -25,19 +25,15 @@
 		}
 
 		if($this->type->isPowerEndpoint()) {
-			echo '<li id="power-endpoint-portsnav"><a href="#power-endpoint-ports" data-toggle="tab">Power Ports</a></li>';
-		}
-
-		if($this->type->isPowerDistribution()) {
-			echo '<li id="power-distribution-portsnav"><a href="#power-distribution-ports" data-toggle="tab">Power Ports</a></li>';
+			echo '<li id="power-portsnav"><a href="#power-ports" data-toggle="tab">Power Ports</a></li>';
+		} else if($this->type->isPowerDistribution()) {
+			echo '<li id="power-portsnav"><a href="#power-ports" data-toggle="tab">Power Ports</a></li>';
 		}
 
 		if($this->type->isNetworkEndpoint()) {
-			echo '<li id="network-endpoint-portsnav"><a href="#network-endpoint-ports" data-toggle="tab">Network Ports</a></li>';
-		}
-
-		if($this->type->isNetworkDistribution()) {
-			echo '<li id="network-distribution-portsnav"><a href="#network-distribution-ports" data-toggle="tab">Network Ports</a></li>';
+			echo '<li id="network-portsnav"><a href="#network-ports" data-toggle="tab">Network Ports</a></li>';
+		} else if($this->type->isNetworkDistribution()) {
+			echo '<li id="network-portsnav"><a href="#network-ports" data-toggle="tab">Network Ports</a></li>';
 		}
 
 		if($this->type->isRack()) {
@@ -85,9 +81,7 @@
 			'device' => $this->device,
 			'power_distribution_units' => $this->power_distribution_units
 		));
-	}
-
-	if($this->type->isPowerDistribution()) {
+	} else if($this->type->isPowerDistribution()) {
 		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
 			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'devices',
@@ -106,9 +100,7 @@
 			'device' => $this->device,
 			'switches' => $this->switches
 		));
-	}
-
-	if($this->type->isNetworkDistribution()) {
+	} else if($this->type->isNetworkDistribution()) {
 		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
 			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'devices',
