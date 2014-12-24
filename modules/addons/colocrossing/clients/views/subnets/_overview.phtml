@@ -1,0 +1,24 @@
+<div data-toggle="tab" id="overview" class="tab-content">
+    <div class="row">
+        <div class="col30">
+            <div class="internalpadding">
+                <div class="styled_title"><h2>Information</h2></div>
+                <p>Here is an overview of your subnet.</p>
+                <input id="view-device-button" type="button" value="&laquo; Back to Device" class="btn" style="margin-top: 15px;" />
+            </div>
+        </div>
+        <div class="col70">
+            <div class="internalpadding">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('input#view-device-button').on('click', function(e) {
+            window.location = '<?php echo $device_url; ?>';
+        });
+    });
+</script>

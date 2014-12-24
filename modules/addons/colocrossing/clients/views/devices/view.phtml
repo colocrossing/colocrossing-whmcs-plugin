@@ -57,8 +57,12 @@
 		'device' => $this->device,
 		'type' => $this->type,
 		'service' => $this->service,
+		'service_url' => ColoCrossing_Utilities::buildUrl('/clientarea.php', array(
+			'action' => 'productdetails',
+			'id' => $this->service->getId()
+		)),
 		'product' => $this->product,
-		'product_group' => $this->product_group,
+		'product_group' => $this->product_group
 	));
 
 	$this->renderTemplate('/devices/_assets.phtml', array(
@@ -131,11 +135,3 @@
 		));
 	}
 ?>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('input#view-service-button').on('click', function(e) {
-			window.location = '/clientarea.php?action=productdetails&id=<?php echo $this->service->getId(); ?>';
-		});
-	});
-</script>

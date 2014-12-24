@@ -1,1 +1,59 @@
-view.phtml
+<div class="page-header">
+    <div class="styled_title"><h1><?php echo $this->subnet->getCIDRIpAddress(); ?></h1></div>
+</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+<div id="tabs">
+    <ul class="nav nav-tabs" data-tabs="tabs">
+    <?php
+    	echo '<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
+
+		if($this->subnet->isReverseDnsEnabled()) {
+			echo '<li id="rdns-recordsnav"><a href="#rdns-records" data-toggle="tab">Reverse DNS Records</a></li>';
+		}
+
+		if($this->subnet->isNullRoutesEnabled()) {
+			echo '<li id="null-routesnav"><a href="#null-routes" data-toggle="tab">Null Routes</a></li>';
+		}
+    ?>
+    </ul>
+</div>
+
+<?php
+	$this->renderTemplate('/subnets/_overview.phtml', array(
+		'subnet' => $this->subnet,
+		'device' => $this->device,
+		'device_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+			'controller' => 'devices',
+			'action' => 'view',
+			'id' => $this->device->getId()
+		))
+	));
+
+	if($this->subnet->isReverseDnsEnabled()) {
+		$this->renderTemplate('/subnets/_rdns_records.phtml', array(
+			'update_rdns_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'subnets',
+				'action' => 'update'
+			)),
+			'subnet' => $this->subnet
+		));
+	}
+
+	if($this->subnet->isNullRoutesEnabled()) {
+		$this->renderTemplate('/subnets/_null_routes.phtml', array(
+			'add_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'null-routes',
+				'action' => 'add'
+			)),
+			'remove_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'null-routes',
+				'action' => 'destroy'
+			)),
+			'subnet' => $this->subnet
+		));
+	}
+?>
