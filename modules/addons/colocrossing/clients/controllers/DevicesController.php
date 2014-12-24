@@ -58,7 +58,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 		$device = $this->api->devices->find($params['id']);
 
-		if(empty($device) || empty($this->current_user) || !$this->current_user->hasPermissionForDevice($device)) {
+		if(empty($device) || !$this->isCurrentUserAssignedToDevice($device)) {
 			$this->setResponseCode(404);
 			return null;
 		}
@@ -79,11 +79,106 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 
 	public function updatePowerPorts(array $params) {
+		$status = $params['status'];
+		$status_description = $this->getPortStatusDescription($status);
 
+		$success = true;
+
+		foreach ($params['power_distribution_units'] as $pdu_id => $ports) {
+			foreach ($ports as $port_id => $device_id) {
+				$device = $this->api->devices->find($device_id);
+
+				if(empty($device) || !$device->getType()->isPowerEndpoint() || !$this->isCurrentUserAssignedToDevice($device)) {
+					$success = false;
+					continue;
+				}
+
+				$pdu = $device->getPowerDistributionUnit($pdu_id);
+
+				if(empty($pdu)) {
+					$success = false;
+					continue;
+				}
+
+				$port = $pdu->getPort($port_id);
+
+				if(empty($port) || !$port->isControllable()) {
+					$success = false;
+					continue;
+				}
+
+				$result = $this->api->devices->pdus->setPortStatus($pdu, $port, $device, $status, $comment);
+
+				if($result) {
+					$description = 'Power port ' . $port_id . ' of ' . $pdu->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
+					ColoCrossing_Model_Event::log($description);
+				} else {
+					$success = false;
+				}
+			}
+		}
+
+		if($success) {
+			$this->setFlashMessage('The power ports have successfully been ' . $status_description . '.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while controlling the power ports.', 'error');
+		}
+
+		$this->redirectTo('devices', 'view', array(
+			'id' => $params['origin_device_id']
+		));
 	}
 
 	public function updateNetworkPorts(array $params) {
+		$status = $params['status'];
+		$status_description = $this->getPortStatusDescription($status);
+		$comment = empty($params['comment']) ? null : $params['comment'];
 
+		$success = true;
+
+		foreach ($params['switches'] as $switch_id => $ports) {
+			foreach ($ports as $port_id => $device_id) {
+				$device = $this->api->devices->find($device_id);
+
+				if(empty($device) || !$device->getType()->isNetworkEndpoint() || !$this->isCurrentUserAssignedToDevice($device)) {
+					$success = false;
+					continue;
+				}
+
+				$switch = $device->getSwitch($switch_id);
+
+				if(empty($switch)) {
+					$success = false;
+					continue;
+				}
+
+				$port = $switch->getPort($port_id);
+
+				if(empty($port) || !$port->isControllable()) {
+					$success = false;
+					continue;
+				}
+
+				$result = $this->api->devices->switches->setPortStatus($switch, $port, $device, $status, $comment);
+
+				if($result) {
+					$description = 'Network port ' . $port_id . ' of ' . $switch->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
+					ColoCrossing_Model_Event::log($description);
+				} else {
+					$success = false;
+				}
+			}
+		}
+
+		if($success) {
+			$this->setFlashMessage('The network ports have successfully been ' . $status_description . '.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while controlling the network ports.', 'error');
+		}
+
+		$this->redirectTo('devices', 'view', array(
+			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
+		));
 	}
 
 	private function getPortStatusDescription($status) {
@@ -97,6 +192,15 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		}
 
 		return 'controlled';
+	}
+
+	/**
+	 * Determines if Current User is Assigned to Device
+	 * @param  ColoCrossing_Object_Device  $device The Device
+	 * @return boolean       True if the current user has permissions to the device
+	 */
+	private function isCurrentUserAssignedToDevice($device) {
+		return isset($this->current_user) && $this->current_user->hasPermissionForDevice($device);
 	}
 
 }
