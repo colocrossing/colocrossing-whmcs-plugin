@@ -89,10 +89,11 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 	 * @return ColoCrossing_Model_Admin|ColoCrossing_Model_Client|null|false The User, False if not found, Null if System.
 	 */
 	public static function getCurrentUser() {
+		if(isset($_SESSION['uid'])) {
+			return self::getUser($_SESSION['uid'], 2);
+		}
 		if(isset($_SESSION['adminid'])) {
 			return self::getUser($_SESSION['adminid'], 1);
-		} else if(isset($_SESSION['clientid'])) {
-			return self::getUser($_SESSION['clientid'], 2);
 		}
 
 		return null;

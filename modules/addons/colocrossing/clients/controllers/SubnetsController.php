@@ -15,7 +15,7 @@ class ColoCrossing_Clients_SubnetsController extends ColoCrossing_Clients_Contro
 		$this->device = isset($this->subnet) ? $this->subnet->getDevice() : null;
 
 		if(empty($this->subnet) || empty($this->device) || empty($this->current_user)
-			|| $this->current_user->hasPermissionForDevice($this->device)) {
+			|| !$this->current_user->hasPermissionForDevice($this->device)) {
 			$this->setFlashMessage('The subnet was not found.', 'error');
 			$this->redirectTo('error', 'missing');
 		}

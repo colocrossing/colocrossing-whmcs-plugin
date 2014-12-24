@@ -14,7 +14,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		$this->device = $this->api->devices->find($params['id']);
 		$this->service = ColoCrossing_Model_Service::findByDevice($params['id']);
 
-		if(empty($this->device) || empty($this->service) || $this->service->isAssignedToUser($this->current_user)
+		if(empty($this->device) || empty($this->service) || !$this->service->isAssignedToUser($this->current_user)
 			|| !$this->service->isActive()) {
 			$this->setFlashMessage('The device/service was not found.', 'error');
 			$this->redirectTo('error', 'missing');
@@ -54,15 +54,23 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 	}
 
 	public function bandwidthGraph(array $params) {
+		$this->disableRendering();
+
+		$device = $this->api->devices->find($params['id']);
+
+		if(empty($device) || empty($this->current_user) || !$this->current_user->hasPermissionForDevice($device)) {
+			$this->setResponseCode(404);
+			return null;
+		}
+
 		$start = strtotime('-' . $params['duration']);
 		$end = time();
 
-		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $params['id'], $start, $end);
+		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $device, $start, $end);
 
 		if (empty($graph))
 		{
 			$this->setResponseCode(404);
-			$this->disableRendering();
 			return null;
 		}
 

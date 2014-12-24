@@ -17,35 +17,35 @@
 <div id="tabs">
     <ul class="nav nav-tabs" data-tabs="tabs">
     <?php
-    	echo '<li class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
-    	echo '<li><a href="#assets" data-toggle="tab">Assets</a></li>';
+    	echo '<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
+    	echo '<li id="assetsnav"><a href="#assets" data-toggle="tab">Assets</a></li>';
 
     	if($this->type->isNetworked() || $this->type->isVirtual()) {
-			echo '<li><a href="#subnets" data-toggle="tab">Subnets</a></li>';
+			echo '<li id="subnetsnav"><a href="#subnets" data-toggle="tab">Subnets</a></li>';
 		}
 
 		if($this->type->isPowerEndpoint()) {
-			echo '<li><a href="#power-endpoint-ports" data-toggle="tab">Power Ports</a></li>';
+			echo '<li id="power-endpoint-portsnav"><a href="#power-endpoint-ports" data-toggle="tab">Power Ports</a></li>';
 		}
 
 		if($this->type->isPowerDistribution()) {
-			echo '<li><a href="#power-distribution-ports" data-toggle="tab">Power Ports</a></li>';
+			echo '<li id="power-distribution-portsnav"><a href="#power-distribution-ports" data-toggle="tab">Power Ports</a></li>';
 		}
 
 		if($this->type->isNetworkEndpoint()) {
-			echo '<li><a href="#network-endpoint-ports" data-toggle="tab">Network Ports</a></li>';
+			echo '<li id="network-endpoint-portsnav"><a href="#network-endpoint-ports" data-toggle="tab">Network Ports</a></li>';
 		}
 
 		if($this->type->isNetworkDistribution()) {
-			echo '<li><a href="#network-distribution-ports" data-toggle="tab">Network Ports</a></li>';
+			echo '<li id="network-distribution-portsnav"><a href="#network-distribution-ports" data-toggle="tab">Network Ports</a></li>';
 		}
 
 		if($this->type->isRack()) {
-			echo '<li><a href="#racked-devices" data-toggle="tab">Racked Devices</a></li>';
+			echo '<li id="racked-devicesnav"><a href="#racked-devices" data-toggle="tab">Racked Devices</a></li>';
 		}
 
 		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
-			echo '<li><a href="#bandwidth-usage" data-toggle="tab">Bandwidth Usage</a></li>';
+			echo '<li id="bandwidth-usagenav"><a href="#bandwidth-usage" data-toggle="tab">Bandwidth Usage</a></li>';
 
 		}
     ?>
