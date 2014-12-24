@@ -11,7 +11,7 @@ if(!defined('WHMCS')) {
 class ColoCrossing_Clients_NullRoutesController extends ColoCrossing_Clients_Controller {
 
 	public function create(array $params) {
-		$this->subnet = $this->api->subnets->find($params['id']);
+		$this->subnet = $this->api->subnets->find($params['subnet_id']);
 		$this->device = isset($this->subnet) ? $this->subnet->getDevice() : null;
 
 		if(empty($this->subnet) || empty($this->device) || empty($this->current_user)

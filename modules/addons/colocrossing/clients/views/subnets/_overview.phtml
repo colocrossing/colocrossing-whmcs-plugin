@@ -18,11 +18,11 @@
                     <span><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?>&nbsp;</span>
                 </div>
                 <div class="col2half">
-                    <h4>Zone:</h4>
-                    <span><?php echo $subnet->getSubzone(); ?>&nbsp;</span>
+                    <h4>Usable Addresses:</h4>
+                    <span><?php echo $subnet->getNumberOfUsableIpAddresses(); ?>&nbsp;</span>
                 </div>
                 <div class="col2half">
-                    <h4>Total Number of Addresses:</h4>
+                    <h4>Total Addresses:</h4>
                     <span><?php echo $subnet->getNumberOfIpAddresses(); ?>&nbsp;</span>
                 </div>
             <?php
@@ -41,7 +41,11 @@
             ?>
             	<div class="col2half">
                     <h4>Device:</h4>
-                    <span><?php echo $device->getName(); ?>&nbsp;</span>
+                    <a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?>&nbsp;</a>
+                </div>
+                <div class="col2half">
+                    <h4>Zone:</h4>
+                    <span><?php echo $subnet->getSubzone(); ?>&nbsp;</span>
                 </div>
                 <div class="clear"></div>
             </div>
