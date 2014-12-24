@@ -1,15 +1,93 @@
 <div data-toggle="tab" id="rdns-records" class="tab-content">
+<?php
+    if($pending_service_request) {
+        $this->renderTemplate('/flash-messages/info.phtml', array(
+            'content' => 'This subnet is currently pending a service request. No reverse DNS records updates may be made at this time.'
+        ));
+    }
+?>
     <div class="row">
         <div class="col30">
             <div class="internalpadding">
                 <div class="styled_title"><h2>Reverse DNS Records</h2></div>
                 <p>You have the following reverse DNS records for this subnet.</p>
+            <?php
+                if(!$pending_service_request):
+            ?>
+                <div style="margin-top: 15px;">
+                    <input id="reset-rdns-records-button" type="button" class="btn" value="Reset" />
+                    <input id="edit-rdns-records-button" type="button" class="btn" value="Save Records" />
+                </div>
+            <?php
+                endif;
+            ?>
             </div>
         </div>
         <div class="col70">
-            <div class="internalpadding">
+            <form id="edit-rdns-records-form" class="internalpadding" action="<?php echo $update_rdns_url; ?>" method="POST">
+                <table class="table table-striped table-framed table-centered">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Record</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        if(count($rdns_records) == 0):
+                    ?>
+                        <tr>
+                            <td class="textcenter" colspan="2">No reverse DNS records found.</td>
+                        </tr>
+                    <?php
+                        endif;
 
-            </div>
+                        foreach ($rdns_records as $index => $rdns_record):
+                            $ip_address = $rdns_record->getIpAddress();
+                            $record = htmlspecialchars($rdns_record->getRecord());
+
+                            $read_only = $pending_service_request ? 'readonly' : '';
+                    ?>
+                        <tr class="rdns-record-row" data-ip-address="<?php echo $ip_address; ?>">
+                            <td><?php echo $ip_address; ?></td>
+                            <td>
+                                <input type="hidden" name="rdns_records[<?php echo $index; ?>][id]" value="<?php echo $rdns_record->getId(); ?>" />
+                                <input type="text" name="rdns_records[<?php echo $index; ?>][value]" value="<?php echo $record; ?>"
+                                       style="width: 225px; margin-bottom: 0px;" <?php echo $read_only; ?> />
+                            </td>
+                        </tr>
+                    <?php
+                        endforeach;
+                    ?>
+                    </tbody>
+                </table>
+            </form>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('input#edit-rdns-records-button').on('click', function(e) {
+            if(confirm('Are you sure you want to edit the reverse DNS records for this subnet?')) {
+                $('#edit-rdns-records-form').submit();
+            }
+
+            e.preventDefault();
+            return false;
+        });
+
+        $('input#reset-rdns-records-button').on('click', function(e) {
+            $('tr.rdns-record-row').each(function() {
+                var row = $(this),
+                ipAddress = row.data('ip-address'),
+                recordInput = row.find('input[type="text"]');
+
+                recordInput.val(ipAddress.split('.').join('-') + '-host.colocrossing.com');
+            });
+
+            e.preventDefault();
+            return false;
+        });
+    });
+</script>

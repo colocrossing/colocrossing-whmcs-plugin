@@ -9,7 +9,41 @@
         </div>
         <div class="col70">
             <div class="internalpadding">
-
+            	<div class="col2half">
+                    <h4>IP Address:</h4>
+                    <span><?php echo $subnet->getCIDRIpAddress(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>SWIP:</h4>
+                    <span><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Zone:</h4>
+                    <span><?php echo $subnet->getSubzone(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>Total Number of Addresses:</h4>
+                    <span><?php echo $subnet->getNumberOfIpAddresses(); ?>&nbsp;</span>
+                </div>
+            <?php
+            	if(count($ip_addresses) > 1):
+            ?>
+                <div class="col2half">
+                    <h4>Start IP Address:</h4>
+                    <span><?php echo $ip_addresses[0]; ?>&nbsp;</span>
+                </div>
+                <div class="col2half">
+                    <h4>End IP Address:</h4>
+                    <span><?php echo $ip_addresses[count($ip_addresses) - 1]; ?>&nbsp;</span>
+                </div>
+            <?php
+            	endif;
+            ?>
+            	<div class="col2half">
+                    <h4>Device:</h4>
+                    <span><?php echo $device->getName(); ?>&nbsp;</span>
+                </div>
+                <div class="clear"></div>
             </div>
         </div>
     </div>

@@ -30,16 +30,19 @@
 			'controller' => 'devices',
 			'action' => 'view',
 			'id' => $this->device->getId()
-		))
+		)),
+		'ip_addresses' => $this->ip_addresses
 	));
 
 	if($this->subnet->isReverseDnsEnabled()) {
 		$this->renderTemplate('/subnets/_rdns_records.phtml', array(
 			'update_rdns_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'subnets',
-				'action' => 'update'
+				'action' => 'update',
+				'id' => $this->subnet->getId()
 			)),
-			'subnet' => $this->subnet
+			'rdns_records' => $this->rdns_records,
+			'pending_service_request' => $this->subnet->isPendingServiceRequest()
 		));
 	}
 
@@ -47,13 +50,15 @@
 		$this->renderTemplate('/subnets/_null_routes.phtml', array(
 			'add_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'null-routes',
-				'action' => 'add'
+				'action' => 'create',
+				'subnet_id' => $this->subnet->getId()
 			)),
 			'remove_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'null-routes',
 				'action' => 'destroy'
 			)),
-			'subnet' => $this->subnet
+			'null_routes' => $this->null_routes,
+			'ip_addresses' => $this->ip_addresses
 		));
 	}
 ?>
