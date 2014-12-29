@@ -113,7 +113,8 @@
 	if($this->type->isRack()) {
 		$this->renderTemplate('/devices/_racked_devices.phtml', array(
 			'base_url' => $this->base_url,
-			'devices' => $this->device->getDevices()
+			'current_user' => $this->current_user,
+			'devices' => $this->devices
 		));
 	}
 

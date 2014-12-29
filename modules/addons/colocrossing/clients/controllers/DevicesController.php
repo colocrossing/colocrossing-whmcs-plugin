@@ -50,6 +50,10 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 			$this->power_distribution_units = $this->device->getPowerDistributionUnits();
 		}
 
+		if($this->type->isRack()) {
+			$this->devices = $this->device->getDevices();
+		}
+
 		return $this->device->getName();
 	}
 
