@@ -19,13 +19,33 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
 		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
 
-		$this->devices = $this->api->devices->findAll(array(
+		$devices = $this->api->devices->findAll(array(
 			'filters' => $this->filters,
 			'sort' => ($this->order == 'asc' ? '+' : '-') . $this->sort,
 			'page_number' => $this->page,
 			'page_size' => 30,
 			'format' => 'paged'
 		));
+
+		$this->num_records = $devices->getTotalRecordCount();
+		$this->num_pages = $devices->size();
+
+		$this->devices = $devices->current();
+		$this->devices_clients = array();
+
+		$clients = array();
+
+		foreach ($this->devices as $index => $device) {
+			$device_id = $device->getId();
+			$service = ColoCrossing_Model_Service::findByDevice($device_id);
+
+			if(isset($service)) {
+				$client_id = $service->getClientId();
+				$clients[$client_id] = isset($clients[$client_id]) ? $clients[$client_id] : $service->getClient();
+
+				$this->devices_clients[$device_id] = $clients[$client_id];
+			}
+		}
 	}
 
 	public function view(array $params) {

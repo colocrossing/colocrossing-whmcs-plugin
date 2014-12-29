@@ -1,14 +1,12 @@
 <?php
-	$num_records = $this->devices->getTotalRecordCount();
-	$num_pages = $this->devices->size();
-
 	$columns = array(
 		'name' => 'Name',
 		'nickname' => 'Nickname',
 		'type' => 'Type',
 		'hostname' => 'Hostname',
 		'subzone' => 'Zone',
-		'rack' => 'Rack'
+		'rack' => 'Rack',
+		'client' => 'Client'
 	);
 	$sortable_columns = array('name', 'nickname', 'type', 'hostname');
 ?>
@@ -28,12 +26,12 @@
 
 	<table width="100%" border="0" cellpadding="3" cellspacing="0">
 		<tr>
-			<td width="50%" align="left"><?php echo $num_records . ' Records Found, Page ' . $this->page . ' of ' . $num_pages ?></td>
+			<td width="50%" align="left"><?php echo $this->num_records . ' Records Found, Page ' . $this->page . ' of ' . $this->num_pages ?></td>
 			<td width="50%" align="right">
 				<label>Jump to Page:</label>
 				<select id='page-select'>
 				<?php
-					for ($page = 1; $page <= $num_pages; $page++) {
+					for ($page = 1; $page <= $this->num_pages; $page++) {
 						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
 					}
 				?>
@@ -58,25 +56,42 @@
 			?>
 			</tr>
 		<?php
-			if(count($this->devices->current()) == 0):
+			if(count($this->devices) == 0):
 		?>
 			<tr>
-				<td colspan="6">No devices found.</td>
+				<td colspan="7">No devices found.</td>
 			</tr>
 		<?php
 			endif;
 
-			foreach ($this->devices->current() as $index => $device):
-				$type = $device->getType();
-				$url = $this->base_url . '&controller=devices&action=view&id=' . $device->getId();
+			foreach ($this->devices as $index => $device):
+				$device_id = $device->getId();
+				$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'devices',
+					'action' => 'view',
+					'id' => $device_id
+				));
+				$device_type = $device->getType();
+				$device_client = 'Unassigned';
 
-				if($type->isRacked()) {
+				if(isset($this->devices_clients[$device_id])) {
+					$client = $this->devices_clients[$device_id];
+					$client_url = ColoCrossing_Utilities::buildUrl('/admin/clientssummary.php', array('userid' => $client->getId()));
+
+					$device_client = '<a href="' . $client_url . '">' . $client->getFullName() . '</a>';
+				}
+
+				if($device_type->isRacked()) {
 					$rack_id = $device->getRackId();
 					$rack_name = $device->getRackName();
 					$rack_owner = $device->getRackOwner();
 
 					if(isset($rack_id) && isset($rack_name) && isset($rack_owner)) {
-						$rack_url = $this->base_url . '&controller=devices&action=view&id=' . $rack_id;
+						$rack_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+							'controller' => 'devices',
+							'action' => 'view',
+							'id' => $rack_id
+						));
 						$rack_name = '<a href="' . $rack_url . '">' . $rack_name . '</a>';
 					}
 				} else {
@@ -84,12 +99,13 @@
 				}
 		?>
 			<tr>
-				<td><a href="<?php echo $url; ?>"><?php echo $device->getName(); ?></a></td>
+				<td><a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a></td>
 				<td><?php echo $device->getNickname(); ?></td>
-				<td><?php echo $type->getName(); ?></td>
+				<td><?php echo $device_type->getName(); ?></td>
 				<td><?php echo $device->getHostname(); ?></td>
 				<td><?php echo $device->getSubzone(); ?></td>
 				<td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
+				<td><?php echo $device_client; ?></td>
 			</tr>
 		<?php
 			endforeach;
@@ -107,7 +123,7 @@
 
 		echo '&nbsp;';
 
-		if($this->page < $num_pages) {
+		if($this->page < $this->num_pages) {
 			echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
 		} else {
 			echo '<span id="next-page-button">Next Page &raquo;</span>';

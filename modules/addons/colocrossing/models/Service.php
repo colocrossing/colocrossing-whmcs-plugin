@@ -186,11 +186,13 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 
 	/**
 	 * Finds the Service from the DB that is assigned to the provided Device Id
-	 * @param  integer $device_id The Device Id
+	 * @param  integer|ColoCrossing_Object_Device $device The Device or Id
 	 * @return ColoCrossing_Model_Service|null The Service, Null if it is not found or device is unassigned.
 	 * @static
 	 */
-	public static function findByDevice($device_id) {
+	public static function findByDevice($device) {
+		$device_id = is_numeric($device) ? intval($device) : $device->getId();
+
 		$columns = implode(',', static::$COLUMNS);
 		$where = array('device_id' => $device_id);
 		$join = '`' . static::$DEVICES_JOIN_TABLE . '` ON `' . static::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . static::$TABLE . '`.`id`';
