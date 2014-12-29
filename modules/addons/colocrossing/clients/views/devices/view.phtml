@@ -83,6 +83,8 @@
 		));
 	} else if($this->type->isPowerDistribution()) {
 		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'current_user' => $this->current_user,
 			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'devices',
 				'action' => 'update-power-ports'
@@ -102,6 +104,8 @@
 		));
 	} else if($this->type->isNetworkDistribution()) {
 		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
+			'base_url' => $this->base_url,
+			'current_user' => $this->current_user,
 			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
 				'controller' => 'devices',
 				'action' => 'update-network-ports'
