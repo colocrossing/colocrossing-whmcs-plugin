@@ -22,35 +22,24 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
     public function index(array $params) {
         $this->enableRendering();
 
-		//Build Assigned Services Set
-		$services = ColoCrossing_Model_Service::findAllAssignedToDevices();
-		$assigned_services = array();
+		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
+		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 50;
 
-		foreach ($services as $index => $service) {
-			$assigned_services[$service->getId()] = true;
-		}
+		$this->services = ColoCrossing_Model_Service::findAllUnassigned(array(
+			'pagination' => array(
+				'number' => $this->page,
+				'size' =>$this->page_size
+			)
+		));
 
-		//Get Unassigned Services
-		$services = ColoCrossing_Model_Service::findAllAssignedToActivatedProduct();
-		$this->services = array();
-
-		foreach ($services as $index => $service) {
-			$service_id = $service->getId();
-			$service_hostname = $service->getHostname();
-
-			//Ignore Assigned Services or those with empty hostnames
-			if(empty($assigned_services[$service_id]) && !empty($service_hostname)) {
-				$this->services[] = $service;
-			}
-		}
-
-		//Cleanup Services
-		unset($services);
+		$this->total_record_count = ColoCrossing_Model_Service::getTotalUnassigned();
+		$this->page_count = ceil($this->total_record_count / $this->page_size);
 
 		//Group Devices by Hostname
 		$devices = $this->api->devices->findAll(array(
 			'filters' => array('compact' => true)
 		));
+
 		$this->devices_by_hostname = array();
 
 		foreach ($devices as $index => $device) {

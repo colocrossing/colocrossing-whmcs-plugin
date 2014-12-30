@@ -219,17 +219,65 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
-	 * Retrieves a collection of Services that are assigned to a Product whose provision module is ColoCrossing
+	 * Retrieves a collection of Services that are unassigned
 	 * @param  array|null $options Optional options to modify the results. I.e. filters, sort, order, pagination
 	 * @return array<ColoCrossing_Model_Service> The Services
 	 * @static
 	 */
-	public static function findAllAssignedToActivatedProduct(array $options = array()) {
-		$options['join'] = '`' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `' . self::$TABLE . '`.`packageid`';
-		$options['filters'] = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : array();
-		$options['filters']['servertype'] = 'colocrossing';
+	public static function findAllUnassigned(array $options = array()) {
+		$table = '`' . static::$TABLE . '`';
 
-		return self::findAll($options);
+		$columns = array();
+		foreach (static::$COLUMNS as $i => $column) {
+			$columns[] = '`s`.`' . $column . '`';
+		}
+		$columns = implode(',', $columns);
+
+		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
+		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_JOIN_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+
+		$where = ' WHERE `p`.`servertype` = "colocrossing" AND (`d`.`device_id` IS NULL || `d`.`device_id` <= 0) ';
+
+		$limit = '';
+		if(isset($options['pagination']) && is_array($options['pagination'])) {
+			$pagination = array_merge(array('number' => 1, 'size' => 30), $options['pagination']);
+			$size = min(max($pagination['size'], 1), 100);
+			$offset = (max($pagination['number'], 1) - 1) * $size;
+			$limit = ' LIMIT ' . $offset . ', ' . $size;
+		}
+
+		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where . $limit;
+		$rows = full_query($query);
+
+		$services = array();
+
+		while ($values = mysql_fetch_array($rows)) {
+		    $services[] = self::createInstanceFromRow($values);
+		}
+
+		return $services;
+	}
+
+	/**
+	 * Gets the Count of Services that are Unassigned
+	 * @return integer The Num of Unassigned Services
+	 */
+	public static function getTotalUnassigned() {
+		$table = '`' . static::$TABLE . '`';
+
+		$columns = 'COUNT(*) as `total_count`';
+
+		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
+		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_JOIN_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+
+		$where = ' WHERE `p`.`servertype` = "colocrossing" AND (`d`.`device_id` IS NULL || `d`.`device_id` <= 0) ';
+
+		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where;
+		$result = full_query($query);
+
+		$data = mysql_fetch_array($result);
+
+		return isset($data) && isset($data['total_count']) ? intval($data['total_count']) : 0;
 	}
 
 	/**

@@ -3,6 +3,11 @@
 		'controller' => 'services',
 		'action' => 'assign-devices'
 	));
+	$current_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+		'controller' => 'services',
+		'action' => 'index',
+		'page_size' => $this->page_size
+	));
 ?>
 <form id="assign-devices-form" method="POST" action="<?php echo $assign_devices_url; ?>">
 	<div>
@@ -11,7 +16,22 @@
 			<input id="assign-devices-button" type="submit" value="Assign Devices" class="btn" />
 		</div>
 	</div>
-
+	<table width="100%" border="0" cellpadding="3" cellspacing="0">
+		<tr>
+			<td width="50%" align="left"><?php echo $this->total_record_count . ' Records Found, Page ' . $this->page . ' of ' . $this->page_count ?></td>
+			<td width="50%" align="right">
+				<label>Jump to Page:</label>
+				<select id='page-select'>
+				<?php
+					for ($page = 1; $page <= $this->page_count; $page++) {
+						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
+					}
+				?>
+				</select>
+				<input id='page-select-button' type="submit" value="Go" class="btn-small">
+			</td>
+		</tr>
+	</table>
 <?php
 	$this->renderFlashMessage();
 ?>
@@ -104,6 +124,26 @@
 		?>
 		</table>
 	</div>
+
+	<p align="center">
+	<?php
+		if($this->page > 1) {
+			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page - 1));
+			echo '<a href="' . $page_url . '">&laquo; Previous Page</a>';
+		} else {
+			echo '<span id="previous-page-button">&laquo; Previous Page</span>';
+		}
+
+		echo '&nbsp;';
+
+		if($this->page < $this->page_count) {
+			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page + 1));
+			echo '<a href="' . $page_url . '">Next Page &raquo;</a>';
+		} else {
+			echo '<span id="next-page-button">Next Page &raquo;</span>';
+		}
+	?>
+	</p>
 </form>
 
 <script type="text/javascript">
@@ -122,6 +162,24 @@
 			return false;
 		});
 
+		$('select#page-select').on('change', function() {
+			var url = '<?php echo $current_url; ?>',
+			page = $(this).val();
+
+			window.location = url + '&page=' + page;
+		});
+
+		$('input#page-select-button').on('click', function(e) {
+			$('select#page-select').trigger('change');
+
+			e.preventDefault();
+			return false;
+		});
+
 	});
 
 </script>
+
+<style type="text/css">
+	div#contentarea h1 { margin-bottom: 10px; }
+</style>
