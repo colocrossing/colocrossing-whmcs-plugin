@@ -304,4 +304,25 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		return self::createInstanceFromRow($values);
 	}
 
+	/**
+	 * Retrieves a Device Id to Service Id Mapping
+	 * @return array<int, int> The Mapping of Devices to Services
+	 * @static
+	 */
+	public static function getAssignedDevices() {
+		$table = '`' . self::$DEVICES_JOIN_TABLE . '`';
+		$columns = '`d`.`device_id, `d`.`service_id';
+		$join = '`' . self::$TABLE . '` AS `s` ON `s`.`id` = `d`.`service_id` ';
+
+		$rows = select_query($table, $columns, null, null, null, null, $join);
+
+		$devices_services = array();
+
+		while ($data = mysql_fetch_array($rows)) {
+			$devices_services[intval($data['device_id'])] = intval($data['service_id']);
+		}
+
+		return $devices_services;
+	}
+
 }

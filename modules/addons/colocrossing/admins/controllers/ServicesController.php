@@ -39,14 +39,16 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		$devices = $this->api->devices->findAll(array(
 			'filters' => array('compact' => true)
 		));
+		$devices_services = ColoCrossing_Model_Service::getAssignedDevices();
 
 		$this->devices_by_hostname = array();
 
 		foreach ($devices as $index => $device) {
+			$device_id = $device->getId();
 			$hostname = $device->getHostname();
 
-			//Ignore Devices Without Hostname
-			if(empty($hostname)) {
+			//Ignore Devices Without Hostname or that are already assigned
+			if(empty($hostname) || isset($devices_services[$device_id])) {
 				continue;
 			}
 
