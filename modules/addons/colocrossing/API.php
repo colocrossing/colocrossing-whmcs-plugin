@@ -4,7 +4,7 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
-require 'api/ColoCrossing.php';
+require 'api/src/ColoCrossing.php';
 
 /**
  * Creates a Singleton Implmentation of the ColoCrossing API Client.
