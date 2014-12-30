@@ -28,12 +28,30 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	protected static $DEVICES_JOIN_TABLE = 'mod_colocrossing_devices_services';
 
 	/**
-	 * @return string The Domain of the Service
+	 * The Products Table Name
+	 * @var string
 	 */
-	public function getDomain() {
-		$domain = $this->getValue('domain');
+	protected static $PRODUCTS_TABLE = 'tblproducts';
 
-		return empty($domain) ? '' : $domain;
+	/**
+	 * A Class Wide Cache of Products
+	 * @var array<integer, ColoCrossing_Model_Product>
+	 */
+	protected static $PRODUCTS = array();
+
+	/**
+	 * A Class Wide Cache of Clients
+	 * @var array<integer, ColoCrossing_Model_Client>
+	 */
+	protected static $CLIENTS = array();
+
+	/**
+	 * @return string The Hostname of the Service
+	 */
+	public function getHostname() {
+		$hostname = $this->getValue('domain');
+
+		return empty($hostname) ? '' : $hostname;
 	}
 
 	/**
@@ -61,9 +79,17 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return ColoCrossing_Model_Client|null The Client this Service is Assigned to
 	 */
 	public function getClient() {
-		$client_id = $this->getValue('userid');
+		$id = $this->getClientId();
 
-		return ColoCrossing_Model_Client::find($client_id);
+		if(empty($id)) {
+			return null;
+		}
+
+		if(isset(self::$CLIENTS[$id])) {
+			return self::$CLIENTS[$id];
+		}
+
+		return self::$CLIENTS[$id] = ColoCrossing_Model_Client::find($id);
 	}
 
 	/**
@@ -92,9 +118,17 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return ColoCrossing_Model_Product|null The Product this Service was created from
 	 */
 	public function getProduct() {
-		$product_id = $this->getValue('packageid');
+		$id = $this->getValue('packageid');
 
-		return ColoCrossing_Model_Product::find($product_id);
+		if(empty($id)) {
+			return null;
+		}
+
+		if(isset(self::$PRODUCTS[$id])) {
+			return self::$PRODUCTS[$id];
+		}
+
+		return self::$PRODUCTS[$id] = ColoCrossing_Model_Product::find($id);
 	}
 
 	/**
@@ -155,7 +189,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 			return false;
 		}
 
-		insert_query(static::$DEVICES_JOIN_TABLE, array(
+		insert_query(self::$DEVICES_JOIN_TABLE, array(
 			'service_id' => $this->getId(),
 			'device_id' => $device_id
 		));
@@ -167,7 +201,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * Unassigns This Service From Any Devices
 	 */
 	public function unassignFromDevice() {
-		full_query('DELETE FROM `' . static::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
+		full_query('DELETE FROM `' . self::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
 	}
 
 	/**
@@ -177,9 +211,23 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @static
 	 */
 	public static function findAllAssignedToDevices(array $options = array()) {
-		$options['join'] = '`' . static::$DEVICES_JOIN_TABLE . '` ON `' . static::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . static::$TABLE . '`.`id`';
+		$options['join'] = '`' . self::$DEVICES_JOIN_TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 		$options['filters'] = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : array();
 		$options['filters']['device_id'] = array('sqltype' => 'NEQ', 'value' => '0');
+
+		return self::findAll($options);
+	}
+
+	/**
+	 * Retrieves a collection of Services that are assigned to a Product whose provision module is ColoCrossing
+	 * @param  array|null $options Optional options to modify the results. I.e. filters, sort, order, pagination
+	 * @return array<ColoCrossing_Model_Service> The Services
+	 * @static
+	 */
+	public static function findAllAssignedToActivatedProduct(array $options = array()) {
+		$options['join'] = '`' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `' . self::$TABLE . '`.`packageid`';
+		$options['filters'] = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : array();
+		$options['filters']['servertype'] = 'colocrossing';
 
 		return self::findAll($options);
 	}
@@ -193,11 +241,11 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	public static function findByDevice($device) {
 		$device_id = is_numeric($device) ? intval($device) : $device->getId();
 
-		$columns = implode(',', static::$COLUMNS);
+		$columns = implode(',', self::$COLUMNS);
 		$where = array('device_id' => $device_id);
-		$join = '`' . static::$DEVICES_JOIN_TABLE . '` ON `' . static::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . static::$TABLE . '`.`id`';
+		$join = '`' . self::$DEVICES_JOIN_TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 
-		$rows = select_query(static::$TABLE, $columns, $where, null, null, 1, $join);
+		$rows = select_query(self::$TABLE, $columns, $where, null, null, 1, $join);
 
 		if(mysql_num_rows($rows) == 0) {
 			return null;

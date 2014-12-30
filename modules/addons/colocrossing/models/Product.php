@@ -22,6 +22,12 @@ class ColoCrossing_Model_Product extends ColoCrossing_Model {
 	protected static $TABLE = 'tblproducts';
 
 	/**
+	 * A Class Wide Cache of Product Groups
+	 * @var array<integer, ColoCrossing_Model_ProductGroup>
+	 */
+	protected static $GROUPS = array();
+
+	/**
 	 * @return string The Name of the Product
 	 */
 	public function getName() {
@@ -43,8 +49,17 @@ class ColoCrossing_Model_Product extends ColoCrossing_Model {
 	 * @return ColoCrossing_Model_ProductGroup The Group of the Product
 	 */
 	public function getGroup() {
-		$group_id = $this->getValue('gid');
-		return ColoCrossing_Model_ProductGroup::find($group_id);
+		$id = $this->getValue('gid');
+
+		if(empty($id)) {
+			return null;
+		}
+
+		if(isset(self::$GROUPS[$id])) {
+			return self::$GROUPS[$id];
+		}
+
+		return self::$GROUPS[$id] = ColoCrossing_Model_ProductGroup::find($id);
 	}
 
 }

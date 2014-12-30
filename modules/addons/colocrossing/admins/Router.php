@@ -25,7 +25,7 @@ class ColoCrossing_Admins_Router extends ColoCrossing_Router {
 	 */
 	protected static $ROUTES = array(
 		'devices' => array('index', 'view', 'unassigned-devices-index', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
-		'services' => array('edit', 'assign-device', 'unassign-device', 'suspend', 'unsuspend', 'terminate'),
+		'services' => array('index', 'edit', 'assign-devices', 'assign-device', 'unassign-device', 'suspend', 'unsuspend', 'terminate'),
 		'subnets' => array('index', 'view', 'update'),
 		'null-routes' => array('index', 'create', 'destroy'),
 		'events' => array('index'),

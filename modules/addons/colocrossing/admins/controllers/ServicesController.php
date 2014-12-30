@@ -19,6 +19,91 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
         $this->disableRendering();
     }
 
+    public function index(array $params) {
+        $this->enableRendering();
+
+		//Build Assigned Services Set
+		$services = ColoCrossing_Model_Service::findAllAssignedToDevices();
+		$assigned_services = array();
+
+		foreach ($services as $index => $service) {
+			$assigned_services[$service->getId()] = true;
+		}
+
+		//Get Unassigned Services
+		$services = ColoCrossing_Model_Service::findAllAssignedToActivatedProduct();
+		$this->services = array();
+
+		foreach ($services as $index => $service) {
+			$service_id = $service->getId();
+			$service_hostname = $service->getHostname();
+
+			//Ignore Assigned Services or those with empty hostnames
+			if(empty($assigned_services[$service_id]) && !empty($service_hostname)) {
+				$this->services[] = $service;
+			}
+		}
+
+		//Cleanup Services
+		unset($services);
+
+		//Group Devices by Hostname
+		$devices = $this->api->devices->findAll(array(
+			'filters' => array('compact' => true)
+		));
+		$this->devices_by_hostname = array();
+
+		foreach ($devices as $index => $device) {
+			$hostname = $device->getHostname();
+
+			//Ignore Devices Without Hostname
+			if(empty($hostname)) {
+				continue;
+			}
+
+			if(empty($devices_by_hostname[$hostname])) {
+				$devices_by_hostname[$hostname] = array();
+			}
+
+			$this->devices_by_hostname[$hostname][] = $device;
+		}
+	}
+
+	public function assignDevices(array $params) {
+		$success = true;
+
+		foreach ($params['services'] as $index => $service_id) {
+			$service = ColoCrossing_Model_Service::find($service_id);
+
+			$client = isset($service) ? $service->getClient() : null;
+
+			$device_id = intval($params['devices'][$service_id]);
+
+			try {
+				$device = $device_id > 0 ? $this->api->devices->find($device_id) : null;
+			} catch (ColoCrossing_Error $e) {
+				$device = null;
+			}
+
+			if(empty($service) || empty($device) || empty($client)) {
+				$success = false;
+				continue;
+			}
+
+			$service->assignToDevice($device_id);
+
+			ColoCrossing_Model_Event::log($device->getName() . ' assigned to ' . $client->getFullName() . ' for service #' . $service_id . '.');
+		}
+
+		if($success) {
+			$this->setFlashMessage('The devices have successfully been assigned to the services.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while assigning devices to services.', 'error');
+		}
+
+		$this->redirectTo('services', 'index');
+	}
+
 	public function edit(array $params) {
 		$service_id = intval($params['id']);
 		$service = ColoCrossing_Model_Service::find($service_id);

@@ -213,6 +213,7 @@ abstract class ColoCrossing_Model {
 	 * @static
 	 */
 	public static function findAll(array $options = array()) {
+		$table = static::$TABLE;
 		$where = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : null;
 		$sort = isset($options['sort']) && in_array($options['sort'], static::$COLUMNS) ? $options['sort'] : 'id';
 		$order = isset($options['order']) && strtolower($options['order']) == 'desc' ? 'DESC' : 'ASC';
@@ -225,7 +226,13 @@ abstract class ColoCrossing_Model {
 			$limit = $offset . ',' . $size;
 		}
 
-		$rows = select_query(static::$TABLE, implode(',', static::$COLUMNS), $where, $sort, $order, $limit, $join);
+		$columns = array();
+		foreach (static::$COLUMNS as $i => $column) {
+			$columns[] = '`' . $table . '`.`' . $column . '`';
+		}
+		$columns = implode(',', $columns);
+
+		$rows = select_query($table, $columns, $where, $sort, $order, $limit, $join);
 
 		$instances = array();
 		while ($values = mysql_fetch_array($rows)) {

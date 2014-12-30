@@ -13,6 +13,7 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 	public function index(array $params) {
 		$this->filters = array(
 			'query' => isset($params['query']) ? $params['query'] : '',
+			'compact' => true
 		);
 
 		$this->sort = isset($params['sort']) ? $params['sort'] : 'name';
@@ -33,17 +34,12 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		$this->devices = $devices->current();
 		$this->devices_clients = array();
 
-		$clients = array();
-
 		foreach ($this->devices as $index => $device) {
 			$device_id = $device->getId();
 			$service = ColoCrossing_Model_Service::findByDevice($device_id);
 
 			if(isset($service)) {
-				$client_id = $service->getClientId();
-				$clients[$client_id] = isset($clients[$client_id]) ? $clients[$client_id] : $service->getClient();
-
-				$this->devices_clients[$device_id] = $clients[$client_id];
+				$this->devices_clients[$device_id] = $service->getClient();;
 			}
 		}
 	}
@@ -113,7 +109,8 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		//Get All Devices that Match Query
 		$query_devices = $this->api->devices->findAll(array(
 			'filters' => array(
-				'query' => $params['query']
+				'query' => $params['query'],
+				'compact' => true
 			)
 		));
 

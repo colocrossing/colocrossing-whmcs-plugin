@@ -1,0 +1,127 @@
+<?php
+	$assign_devices_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+		'controller' => 'services',
+		'action' => 'assign-devices'
+	));
+?>
+<form id="assign-devices-form" method="POST" action="<?php echo $assign_devices_url; ?>">
+	<div>
+		<h1 style="display: inline-block;">Unassigned ColoCrossing Services</h1>
+		<div style="float: right;">
+			<input id="assign-devices-button" type="submit" value="Assign Devices" class="btn" />
+		</div>
+	</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+	<div class="tablebg">
+		<table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3" style="text-align: center;">
+			<tr>
+				<th style="width: 60px;">Assign</th>
+				<th>Product/Service</th>
+				<th>Client</th>
+				<th>Hostname</th>
+				<th>Device</th>
+			</tr>
+		<?php
+			if(count($this->services) == 0):
+		?>
+			<tr>
+				<td colspan="5">No unassigned services with matching hostnames found.</td>
+			</tr>
+		<?php
+			endif;
+
+			foreach ($this->services as $i => $service):
+				$service_id = $service->getId();
+				$service_url = ColoCrossing_Utilities::buildUrl('/admin/clientsservices.php', array(
+					'id' => $service_id
+				));
+				$service_hostname = $service->getHostname();
+
+				$possible_devices = isset($this->devices_by_hostname[$service_hostname]) ? $this->devices_by_hostname[$service_hostname] : array();
+
+				$product = $service->getProduct();
+				$product_group = empty($product) ? null : $product->getGroup();
+				$product_name = isset($product) && isset($product_group) ? $product_group->getName() . ' - ' . $product->getName() : 'Unassigned';
+
+				$client = $service->getClient();
+				$client_name = isset($client) ? $client->getFullName() : 'Unassigned';
+
+				if(isset($client)) {
+					$client_url = ColoCrossing_Utilities::buildUrl('/admin/clientssummary.php', array(
+						'userid' => $client->getId()
+					));
+					$client_name = '<a href="' . $client_url . '">' . $client_name . '</a>';
+				}
+
+				$select_status = empty($possible_devices) ? 'disabled' : 'checked';
+		?>
+			<tr>
+				<td>
+					<label style="display: block;">
+						<input type="checkbox" name="services[]" value="<? echo $service_id; ?>" <?php echo $select_status; ?> />
+					</label>
+				</td>
+				<td><a href="<?php echo $service_url; ?>"><?php echo $product_name; ?></a></td>
+				<td><?php echo $client_name; ?></td>
+				<td><?php echo $service_hostname; ?></td>
+				<td>
+				<?php
+					if(empty($possible_devices)):
+						echo 'Unassigned';
+					elseif(count($possible_devices) == 1):
+						$device = $possible_devices[0];
+						$device_id = $device->getId();
+						$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+							'controller' => 'devices',
+							'action' => 'view',
+							'id' => $device_id
+						));
+				?>
+					<a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a>
+					<input type="hidden" name="devices[<?php echo $service_id; ?>]" value="<?php echo $device_id; ?>" />
+				<?php
+					else:
+				?>
+					<a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a>
+					<select name="devices[<?php echo $service_id; ?>]">
+					<?php
+						foreach ($possible_devices as $j => $device) {
+							echo '<option value="' . $device->getId() . '">' . $device->getName() . '</option>';
+						}
+					?>
+					</select>
+				<?php
+					endif;
+				?>
+				</td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+		</table>
+	</div>
+</form>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('#contentarea, #content').find('h1').first().remove();
+
+		$('#assign-devices-button').on('click', function(e) {
+			if(confirm('Are you sure you want to assign these devices to the selected services?')) {
+				$('#assign-devices-button').prop('disabled', true);
+				$('#assign-devices-form').submit();
+			}
+
+			e.preventDefault();
+			return false;
+		});
+
+	});
+
+</script>
