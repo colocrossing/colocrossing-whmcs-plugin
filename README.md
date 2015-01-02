@@ -7,8 +7,6 @@ Installation
 * Download or Git clone the contents of this repository
 * Merge the `modules` with the `modules` directory in the root directory of your WHMCS installation.
 * This should add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
-* Download or Git clone the contents of the [Portal API Library](https://github.com/colocrossing/portal-api-php) repository into `<whmcs_root>/modules/servers/colocrossing/api/`.
-* This should result in the library being at `<whmcs_root>/modules/servers/colocrossing/api/src/ColoCrossing.php`
 
 Configuration
 -------------------------------
