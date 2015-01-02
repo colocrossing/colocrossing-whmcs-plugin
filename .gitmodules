@@ -1,3 +1,0 @@
-[submodule "modules/addons/colocrossing/api"]
-	path = modules/addons/colocrossing/api
-	url = git@github.com:colocrossing/portal-api-php.git
