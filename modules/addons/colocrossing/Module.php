@@ -16,9 +16,6 @@ require 'API.php';
  */
 class ColoCrossing_Module {
 
-	const BASE_ADMIN_URL = '/admin/addonmodules.php?module=colocrossing';
-	const BASE_CLIENT_URL = '/index.php?m=colocrossing';
-
 	/**
 	 * The Singleton Module Instance
 	 * @var ColoCrossing_Module
@@ -142,14 +139,14 @@ class ColoCrossing_Module {
 	 * @return string The Base Admin URL
 	 */
 	public function getBaseAdminUrl() {
-		return self::BASE_ADMIN_URL;
+		return BASE_ADMIN_URL;
 	}
 
 	/**
 	 * @return string The Base Client URL
 	 */
 	public function getBaseClientUrl() {
-		return self::BASE_CLIENT_URL;
+		return BASE_CLIENT_URL;
 	}
 
 	/**

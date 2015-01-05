@@ -9,6 +9,18 @@ if (!defined('WHMCS')){
     die('This file cannot be accessed directly');
 }
 
+/**
+ * The Url to the ColoCrossing Admin Addon. This may need to be changed for your WHMCS configuration.
+ * This should be '<url-to-admin-panel>/addonmodules.php?module=colocrossing' where <url-to-admin-panel>
+ * is '/admin' by default.
+ */
+define("BASE_ADMIN_URL", "/admin/addonmodules.php?module=colocrossing");
+
+/**
+ * The Url to the ColoCrossing Client Addon. This may need to be changed for your WHMCS configuration
+ */
+define("BASE_CLIENT_URL", "/index.php?m=colocrossing");
+
 require 'Module.php';
 
 function colocrossing_config() {
