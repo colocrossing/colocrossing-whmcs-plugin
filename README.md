@@ -7,7 +7,6 @@ Installation
 * Download or Git clone the contents of this repository
 * Merge the `modules` with the `modules` directory in the root directory of your WHMCS installation.
 * This should add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
-* If your WHMCS administrator panel has been moved from the default location, you may need to update the `BASE_ADMIN_URL` in `<whmcs_root>/modules/addons/colocrossing/colocrossing.php` to match your WHMCS configuration.
 
 Configuration
 -------------------------------

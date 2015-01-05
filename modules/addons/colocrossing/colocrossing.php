@@ -10,11 +10,9 @@ if (!defined('WHMCS')){
 }
 
 /**
- * The Url to the ColoCrossing Admin Addon. This may need to be changed for your WHMCS configuration.
- * This should be '<url-to-admin-panel>/addonmodules.php?module=colocrossing' where <url-to-admin-panel>
- * is '/admin' by default.
+ * The Url to the ColoCrossing Admin Addon.
  */
-define("BASE_ADMIN_URL", "/admin/addonmodules.php?module=colocrossing");
+define("BASE_ADMIN_URL", "/" . (isset($customadminpath) ? $customadminpath : 'admin') . "/addonmodules.php?module=colocrossing");
 
 /**
  * The Url to the ColoCrossing Client Addon. This may need to be changed for your WHMCS configuration
