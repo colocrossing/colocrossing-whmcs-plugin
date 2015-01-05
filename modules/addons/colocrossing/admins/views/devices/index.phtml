@@ -76,7 +76,7 @@
 
 				if(isset($this->devices_clients[$device_id])) {
 					$client = $this->devices_clients[$device_id];
-					$client_url = ColoCrossing_Utilities::buildUrl('/admin/clientssummary.php', array('userid' => $client->getId()));
+					$client_url = ColoCrossing_Utilities::buildUrl('clientssummary.php', array('userid' => $client->getId()));
 
 					$device_client = '<a href="' . $client_url . '">' . $client->getFullName() . '</a>';
 				}

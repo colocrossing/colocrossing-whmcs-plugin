@@ -56,7 +56,7 @@
 
 			foreach ($this->services as $i => $service):
 				$service_id = $service->getId();
-				$service_url = ColoCrossing_Utilities::buildUrl('/admin/clientsservices.php', array(
+				$service_url = ColoCrossing_Utilities::buildUrl('clientsservices.php', array(
 					'id' => $service_id
 				));
 				$service_hostname = $service->getHostname();
@@ -71,7 +71,7 @@
 				$client_name = isset($client) ? $client->getFullName() : 'Unassigned';
 
 				if(isset($client)) {
-					$client_url = ColoCrossing_Utilities::buildUrl('/admin/clientssummary.php', array(
+					$client_url = ColoCrossing_Utilities::buildUrl('clientssummary.php', array(
 						'userid' => $client->getId()
 					));
 					$client_name = '<a href="' . $client_url . '">' . $client_name . '</a>';
@@ -106,7 +106,6 @@
 				<?php
 					else:
 				?>
-					<a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a>
 					<select name="devices[<?php echo $service_id; ?>]">
 					<?php
 						foreach ($possible_devices as $j => $device) {
