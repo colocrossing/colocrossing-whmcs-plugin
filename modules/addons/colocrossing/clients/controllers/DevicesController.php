@@ -44,6 +44,27 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 					}
 				}
 			}
+
+			if(count($this->bandwidth_graphs)) {
+				$this->bandwidth_graph_durations = array(
+					"current" => 'Current Billing Period',
+					"previous" => 'Previous Billing Period',
+					"12 hours" => "Last 12 Hours",
+					"1 day" => "Last Day",
+					"1 week" => "Last Week",
+					"2 weeks" => "Last 2 Weeks",
+					"1 month" => "Last Month",
+					"3 months" => "Last 3 Months"
+				);
+
+				$start_date = $this->service->getRegistrationDate();
+				$due_date = $this->service->getNextDueDate();
+				$length = $this->service->getBillingCycleLength();
+
+				if($start_date > strtotime('-' . $length, $due_date)) {
+					unset($this->bandwidth_graph_durations["previous"]);
+				}
+			}
 		}
 
 		if($this->type->isPowerEndpoint()) {
@@ -61,19 +82,33 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		$this->disableRendering();
 
 		$device = $this->api->devices->find($params['id']);
+		$service = ColoCrossing_Model_Service::findByDevice($params['id']);
 
-		if(empty($device) || !$this->isCurrentUserAssignedToDevice($device)) {
+		if(empty($device) || empty($service) || !$service->isAssignedToUser($this->current_user) || !$service->isActive()) {
 			$this->setResponseCode(404);
 			return null;
 		}
 
-		$start = strtotime('-' . $params['duration']);
-		$end = time();
+		switch ($params['duration']) {
+			case 'current':
+				$end = $service->getNextDueDate();
+				$length = $service->getBillingCycleLength();
+				$start = strtotime('-' . $length, $end);
+				break;
+			case 'previous':
+				$length = $service->getBillingCycleLength();
+				$end = strtotime('-' . $length, $service->getNextDueDate());
+				$start = strtotime('-' . $length, $end);
+				break;
+			default:
+				$start = strtotime('-' . $params['duration']);
+				$end = time();
+				break;
+		}
 
 		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $device, $start, $end);
 
-		if (empty($graph))
-		{
+		if (empty($graph)) {
 			$this->setResponseCode(404);
 			return null;
 		}

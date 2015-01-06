@@ -7,12 +7,11 @@
                 <div class="form-inline" style="margin-top: 15px;">
                     <label>Duration: </label>
                     <select id="bandwidth-graph-duration-select">
-                        <option value="12 hours">Last 12 Hours</option>
-                        <option value="1 day" selected>Last Day</option>
-                        <option value="1 week">Last Week</option>
-                        <option value="2 weeks">Last 2 Weeks</option>
-                        <option value="1 month">Last Month</option>
-                        <option value="3 months">Last 3 Months</option>
+                    <?php
+                        foreach ($bandwidth_graph_durations as $value => $display) {
+                            echo '<option value="' . $value . '">' . $display . '</option>';
+                        }
+                    ?>
                     </select>
                 </div>
             </div>
