@@ -1,0 +1,98 @@
+<div id="bandwidth-graphs-container">
+	<div id="bandwidth-graph-range">
+	    <label>Date Range: </label>
+	    <select>
+	    <?php
+	        foreach ($bandwidth_graph_durations as $value => $display) {
+	            echo '<option value="' . $value . '">' . $display . '</option>';
+	        }
+	    ?>
+	    </select>
+	</div>
+
+	<div id="bandwidth-graphs"></div>
+</div>
+
+<img id="bandwidth-graphs-loading" src="/images/loading.gif" style="display: block;" />
+
+<script type="text/javascript">
+
+    function loadImages(images, callback) {
+        var length = images.length,
+        count = length,
+        check = function () {
+            if (--count === 0) {
+                callback(images);
+            }
+        };
+
+        for (var i = 0; i < length; i++) {
+            var image = new Image();
+
+            image.onload = check;
+            image.onerror = check;
+
+            image.src = images[i];
+
+            images[i] = image;
+        }
+    }
+
+    $(document).ready(function() {
+        var link = '<?php echo $bandwidth_graph_url; ?>',
+        graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>'),
+        container = $('#bandwidth-graphs-container'),
+        graphsContainer = $('#bandwidth-graphs'),
+        rangeSelect = $('#bandwidth-graph-range select'),
+        loadingBar = $('#bandwidth-graphs-loading'),
+        isLoading = false,
+        setLoading = function(loading) {
+        	isLoading = loading;
+        	container.toggle(!loading);
+        	loadingBar.toggle(loading);
+        },
+        loadGraphs = function() {
+            if(isLoading) {
+                return false;
+            }
+
+            setLoading(true);
+
+            var images = [];
+            for (var i = 0, length = graphs.length; i < length; i++) {
+                images.push(link + '&' + $.param({
+                    switch_id: graphs[i].switch_id,
+                    port_id: graphs[i].port_id,
+                    range: rangeSelect.val(),
+                }));
+            }
+
+            loadImages(images, function(images) {
+                graphsContainer.html('');
+
+                for (var i = 0, length = images.length; i < length; i++) {
+                    graphsContainer.append(images[i]);
+                }
+
+                setLoading(false);
+            });
+        };
+
+        setTimeout(loadGraphs, 50);
+
+        rangeSelect.on('change', loadGraphs);
+    });
+</script>
+
+<style type="text/css">
+	div#bandwidth-graphs-container { display: none; }
+
+	div#bandwidth-graph-range { margin: 8px auto 0px auto; width: 300px; }
+	div#bandwidth-graph-range label { width: 100px; display: inline-block; }
+	div#bandwidth-graph-range select { width: 195px; }
+
+	div#bandwidth-graphs { text-align: center; }
+	div#bandwidth-graphs img { display: inline-block; margin: 10px 10px; }
+
+	img#bandwidth-graphs-loading { display: none; margin: 10px auto; }
+</style>

@@ -111,27 +111,126 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 		//Device Not Found for Service, Render Device Select
 		if(empty($device)) {
-			$path = '/services/device_select.phtml';
-			$data = array(
+			$path = $this->getViewDirectoryPath() . '/services/device_select.phtml';
+			$template = ColoCrossing_Utilities::parseTemplate($path, array(
 	    		'base_url' => $this->base_url
-			);
-		} else {
-			$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'view',
-				'id' => $device->getId()
 			));
 
-			$path = '/services/device_display.phtml';
-			$data = array(
-				'device' => $device,
-				'device_url' => $device_url
+			return array(
+			    'ColoCrossing Device' => $template
 			);
 		}
 
-		return array(
-		    'ColoCrossing Device' => ColoCrossing_Utilities::parseTemplate($this->getViewDirectoryPath() . $path, $data)
+		$fields = array();
+
+		$device_id = $device->getId();
+		$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+			'controller' => 'devices',
+			'action' => 'view',
+			'id' => $device_id
+		));
+
+		$path = $this->getViewDirectoryPath() . '/services/device_display.phtml';
+		$fields['ColoCrossing Device'] = ColoCrossing_Utilities::parseTemplate($path, array(
+			'device' => $device,
+			'device_url' => $device_url
+		));
+
+		$bandwidth_graphs = $this->getDeviceBandwidthGraphs($device);
+		$bandwidth_graph_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+			'controller' => 'services',
+			'action' => 'bandwidth-graph',
+			'id' => $service_id
+		));
+		$bandwidth_graph_durations = array(
+			"current" => 'Current Billing Period',
+			"previous" => 'Previous Billing Period',
+			"12 hours" => "Last 12 Hours",
+			"1 day" => "Last Day",
+			"1 week" => "Last Week",
+			"2 weeks" => "Last 2 Weeks",
+			"1 month" => "Last Month",
+			"3 months" => "Last 3 Months"
 		);
+
+		if(count($bandwidth_graphs)) {
+			$path = $this->getViewDirectoryPath() . '/services/device_bandwidth_graphs.phtml';
+			$fields['Bandwidth Usage'] = ColoCrossing_Utilities::parseTemplate($path, array(
+				'bandwidth_graphs' => $bandwidth_graphs,
+				'bandwidth_graph_url' => $bandwidth_graph_url,
+				'bandwidth_graph_durations' => $bandwidth_graph_durations
+			));
+		}
+
+		return $fields;
+	}
+
+	public function bandwidthGraph(array $params) {
+		$this->disableRendering();
+
+		$device = $this->api->devices->find($params['id']);
+		$service = ColoCrossing_Model_Service::find($params['id']);
+		$device = isset($service) ? $service->getDevice() : null;
+
+		if(empty($device)) {
+			$this->setResponseCode(404);
+			return null;
+		}
+
+		switch ($params['range']) {
+			case 'current':
+				$end = $service->getNextDueDate();
+				$length = $service->getBillingCycleLength();
+				$start = strtotime('-' . $length, $end);
+				break;
+			case 'previous':
+				$length = $service->getBillingCycleLength();
+				$end = strtotime('-' . $length, $service->getNextDueDate());
+				$start = strtotime('-' . $length, $end);
+				break;
+			default:
+				$start = strtotime('-' . $params['range']);
+				$end = time();
+				break;
+		}
+
+		$graph = $this->api->devices->switches->getBandwidthGraph($params['switch_id'], $params['port_id'], $device, $start, $end);
+
+		if (empty($graph)) {
+			$this->setResponseCode(404);
+			return null;
+		}
+
+		$this->renderImage($graph);
+	}
+
+	private function getDeviceBandwidthGraphs($device) {
+		$device_id = $device->getId();
+		$device_type = $device->getType();
+
+		if(!$device_type->isNetworkEndpoint()) {
+			return array();
+		}
+
+		$switches = $device->getSwitches();
+		$bandwidth_graphs = array();
+
+		foreach ($switches as $i => $switch) {
+			$switch_id = $switch->getId();
+			$switch_ports = $switch->getPorts();
+
+			foreach ($switch_ports as $j => $port) {
+				if($port->isBandwidthGraphAvailable()) {
+					$bandwidth_graphs[] = array(
+						'device_id' => $device_id,
+						'switch_id' => $switch_id,
+						'port_id' => $port->getId()
+					);
+				}
+			}
+		}
+
+		return $bandwidth_graphs;
 	}
 
 	public function assignDevice(array $params) {
