@@ -88,11 +88,12 @@ class ColoCrossing_Model_Event extends ColoCrossing_Model {
 	/**
 	 * Creates an Event for the Current User at the Current Time with
 	 * the description provided.
+	 * @param string|integer $type The Type of User to Performing Action (Admin|Client)
 	 * @param  string $description A description of the event.
 	 * @return boolean True if created successfully
 	 */
-	public static function log($description = '') {
-		list($user_id, $user_type) = ColoCrossing_Model_User::getCurrentUserId();
+	public static function log($type, $description = '') {
+		list($user_id, $user_type) = ColoCrossing_Model_User::getCurrentUserId($type);
 
 		$event = self::create(array(
 			'user_id' => $user_id,

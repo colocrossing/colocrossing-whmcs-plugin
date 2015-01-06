@@ -83,7 +83,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 			$service->assignToDevice($device_id);
 
-			ColoCrossing_Model_Event::log($device->getName() . ' assigned to ' . $client->getFullName() . ' for service #' . $service_id . '.');
+			$this->log($device->getName() . ' assigned to ' . $client->getFullName() . ' for service #' . $service_id . '.');
 		}
 
 		if($success) {
@@ -265,7 +265,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 		$service->assignToDevice($device_id);
 
-		ColoCrossing_Model_Event::log($device->getName() . ' assigned to ' . $client->getFullName() . ' for service #' . $service_id . '.');
+		$this->log($device->getName() . ' assigned to ' . $client->getFullName() . ' for service #' . $service_id . '.');
 		return 'success';
 	}
 
@@ -293,7 +293,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 		$service->unassignFromDevice();
 
-		ColoCrossing_Model_Event::log($device_name . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
+		$this->log($device_name . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
 		return 'success';
 	}
 
@@ -326,11 +326,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		if(!$this->controlDeviceNetworkPorts($device, 'off', $comment)) {
 			$message = 'Failed to suspend service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
 
-			ColoCrossing_Model_Event::log($message);
+			$this->log($message);
 			return $message;
 		}
 
-		ColoCrossing_Model_Event::log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was suspended.');
+		$this->log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was suspended.');
 		return 'success';
 	}
 
@@ -361,11 +361,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		if(!$this->controlDeviceNetworkPorts($device, 'on')) {
 			$message = 'Failed to unsuspend service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
 
-			ColoCrossing_Model_Event::log($message);
+			$this->log($message);
 			return $message;
 		}
 
-		ColoCrossing_Model_Event::log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was unsuspended.');
+		$this->log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was unsuspended.');
 		return 'success';
 	}
 
@@ -394,7 +394,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		}
 
 		$service->unassignFromDevice();
-		ColoCrossing_Model_Event::log($device->getName() . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
+		$this->log($device->getName() . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
 
 		if($this->api->hasPermission('device_cancellation')) {
 			$success = $device->cancelService();
@@ -405,11 +405,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		if(!$success) {
 			$message = 'Failed to terminate service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
 
-			ColoCrossing_Model_Event::log($message);
+			$this->log($message);
 			return $message;
 		}
 
-		ColoCrossing_Model_Event::log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was terminated.');
+		$this->log('Service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . ' was terminated.');
 		return 'success';
 	}
 

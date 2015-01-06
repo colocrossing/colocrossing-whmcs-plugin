@@ -70,12 +70,14 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 	 * @return ColoCrossing_Model_Admin|ColoCrossing_Model_Client|null|false The User, False if not found, Null if System.
 	 */
 	public static function getUser($id, $type) {
+		$type = strtolower($type);
+
 		switch ($type) {
-			case 'Admin':
+			case 'admin':
 			case 1:
 				$admin = ColoCrossing_Model_Admin::find($id);
 				return isset($admin) ? $admin : false;
-			case 'Client':
+			case 'client':
 			case 2:
 				$client = ColoCrossing_Model_Client::find($id);
 				return isset($client) ? $client : false;
@@ -86,14 +88,19 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 
 	/**
 	 * Retrieves the Currently Signed In User
+	 * @param string|integer $type The Type of User to get (Admin|Client)
 	 * @return ColoCrossing_Model_Admin|ColoCrossing_Model_Client|null|false The User, False if not found, Null if System.
 	 */
-	public static function getCurrentUser() {
-		if(isset($_SESSION['uid'])) {
-			return self::getUser($_SESSION['uid'], 2);
-		}
-		if(isset($_SESSION['adminid'])) {
-			return self::getUser($_SESSION['adminid'], 1);
+	public static function getCurrentUser($type) {
+		$type = strtolower($type);
+
+		switch ($type) {
+			case 'admin':
+			case 1:
+				return isset($_SESSION['adminid'])? self::getUser($_SESSION['adminid'], 1) : null;
+			case 'client':
+			case 2:
+				return isset($_SESSION['uid'])? self::getUser($_SESSION['uid'], 2) : null;
 		}
 
 		return null;
@@ -101,11 +108,12 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 
 	/**
 	 * Retrieves the Currently Signed In User
+	 * @param string|integer $type The Type of User to get (Admin|Client)
 	 * @return array(int, int) 	An array where the 1st element is the id and the 2nd
 	 *                          	is the type
 	 */
-	public static function getCurrentUserId() {
-		$current_user = self::getCurrentUser();
+	public static function getCurrentUserId($type) {
+		$current_user = self::getCurrentUser($type);
 
 		if(empty($current_user)) {
 			return array(0, 0);

@@ -150,7 +150,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 				if($result) {
 					$description = 'Power port ' . $port_id . ' of ' . $pdu->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
-					ColoCrossing_Model_Event::log($description);
+					$this->log($description);
 				} else {
 					$success = false;
 				}
@@ -202,7 +202,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 				if($result) {
 					$description = 'Network port ' . $port_id . ' of ' . $switch->getName() . ' assigned to ' . $device->getName() . ' was '  . $status_description . '.';
-					ColoCrossing_Model_Event::log($description);
+					$this->log($description);
 				} else {
 					$success = false;
 				}

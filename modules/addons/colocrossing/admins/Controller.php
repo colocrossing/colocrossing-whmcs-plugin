@@ -17,6 +17,14 @@ class ColoCrossing_Admins_Controller extends ColoCrossing_Controller {
     }
 
     /**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    protected function log($description = ''){
+        ColoCrossing_Model_Event::log('admin', $description);
+    }
+
+    /**
      * Retrieves the View Directory Path
      *
      * @return string The Path

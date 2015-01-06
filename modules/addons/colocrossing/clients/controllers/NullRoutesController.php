@@ -27,7 +27,7 @@ class ColoCrossing_Clients_NullRoutesController extends ColoCrossing_Clients_Con
 		if($this->null_route === false) {
 			$this->setFlashMessage('An error occurred while adding null route.', 'error');
 		} else {
-			ColoCrossing_Model_Event::log('Null route for ' . $params['ip_address'] . ' was added.');
+			$this->log('Null route for ' . $params['ip_address'] . ' was added.');
 			$this->setFlashMessage('The null route for ' . $params['ip_address'] . ' was added successfully!', 'success');
 		}
 
@@ -58,7 +58,7 @@ class ColoCrossing_Clients_NullRoutesController extends ColoCrossing_Clients_Con
 		if(!$this->null_route->isRemovable()) {
 			$this->setFlashMessage('The null route on ' . $this->ip_address . ' is not removable.', 'error');
 		} else if($this->null_route->remove()) {
-			ColoCrossing_Model_Event::log('Null route on ' . $this->ip_address . ' was removed.');
+			$this->log('Null route on ' . $this->ip_address . ' was removed.');
 			$this->setFlashMessage('The null route on ' . $this->ip_address . ' was removed successfully!', 'success');
 		} else {
 			$this->setFlashMessage('An error occurred while removing null route on ' . $this->ip_address . '.', 'error');

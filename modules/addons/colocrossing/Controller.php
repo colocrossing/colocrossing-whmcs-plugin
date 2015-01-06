@@ -53,6 +53,12 @@ abstract class ColoCrossing_Controller {
     protected abstract function getBaseUrl();
 
     /**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    protected function log($description = '');
+
+    /**
      * Sets the Provided Http Header
      * @param string $key
      * @param string $value

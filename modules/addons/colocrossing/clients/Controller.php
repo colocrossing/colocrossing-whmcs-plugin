@@ -21,7 +21,15 @@ class ColoCrossing_Clients_Controller extends ColoCrossing_Controller {
     public function __construct() {
         parent::__construct();
 
-        $this->current_user = ColoCrossing_Model_User::getCurrentUser();
+        $this->current_user = ColoCrossing_Model_User::getCurrentUser('client');
+    }
+
+    /**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    protected function log($description = ''){
+        ColoCrossing_Model_Event::log('client', $description);
     }
 
     /**
