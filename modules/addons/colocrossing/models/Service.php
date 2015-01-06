@@ -13,7 +13,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * The Service Columns
 	 * @var array<string>
 	 */
-	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus');
+	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus', 'nextduedate', 'billingcycle', 'regdate');
 
 	/**
 	 * The Table Name
@@ -52,6 +52,55 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$hostname = $this->getValue('domain');
 
 		return empty($hostname) ? '' : $hostname;
+	}
+
+	/**
+	 * @return string The Registration Date of the Service
+	 */
+	public function getRegistrationDate() {
+		$date = strtotime($this->getValue('regdate'));
+
+		return empty($date) ? time() : $date;
+	}
+
+	/**
+	 * @return string The Next Due Date of the Service
+	 */
+	public function getNextDueDate() {
+		$date = strtotime($this->getValue('nextduedate'));
+
+		return empty($date) ? time() : $date;
+	}
+
+	/**
+	 * @return string The Billing Cycle of the Service
+	 */
+	public function getBillingCycle() {
+		$cycle = $this->getValue('billingcycle');
+
+		return empty($cycle) ? 'Monthly' : $cycle;
+	}
+
+	/**
+	 * @return string The Length of the Services Billing Cycle in text
+	 */
+	public function getBillingCycleLength() {
+		$billing_cycle = $this->getBillingCycle();
+
+		switch ($billing_cycle) {
+			case 'Quarterly':
+				return '3 months';
+			case 'Semi-Annually':
+				return '6 months';
+			case 'Annually':
+				return '1 year';
+			case 'Biennially':
+				return '2 years';
+			case 'Triennially':
+				return '3 years';
+		}
+
+		return '1 month';
 	}
 
 	/**
