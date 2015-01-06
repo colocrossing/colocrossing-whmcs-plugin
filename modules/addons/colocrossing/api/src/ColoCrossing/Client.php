@@ -18,7 +18,7 @@ class ColoCrossing_Client
 	 */
 	private static $DEFAULT_OPTIONS = array(
 		'application_name' => 'ColoCrossing PHP API Client',
-		'api_url' => 'https://portal.colocrossing/api/',
+		'api_url' => 'https://portal.colocrossing.com/api/',
 		'api_version' => 1,
 		'request_timeout' => 60,
 		'connection_timeout' => 5,
