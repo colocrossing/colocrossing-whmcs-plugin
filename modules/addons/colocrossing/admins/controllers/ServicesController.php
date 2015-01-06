@@ -153,6 +153,10 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			"3 months" => "Last 3 Months"
 		);
 
+		if($service->getRegistrationDate() > strtotime('-' . $service->getBillingCycleLength(), $service->getNextDueDate())) {
+			unset($bandwidth_graph_durations["previous"]);
+		}
+
 		if(count($bandwidth_graphs)) {
 			$path = $this->getViewDirectoryPath() . '/services/device_bandwidth_graphs.phtml';
 			$fields['Bandwidth Usage'] = ColoCrossing_Utilities::parseTemplate($path, array(
