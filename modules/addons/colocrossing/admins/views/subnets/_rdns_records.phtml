@@ -5,6 +5,7 @@
 		if(!$subnet->isPendingServiceRequest()):
 	?>
 		<div class="actions">
+			<input id="mass-edit-rdns-records-button" type="button" class="button" value="Mass Edit" />
 			<input id="reset-rdns-records-button" type="button" class="button" value="Reset" />
 			<input id="edit-rdns-records-button" type="button" class="button" value="Save Records" />
 		</div>
@@ -65,6 +66,52 @@
 					$(this).dialog('close');
 				}
 			}
+		}),
+		recordInputs = [],
+		massEditDialog = $('#mass-edit-rdns-dialog').dialog({
+			autoOpen: false,
+			modal: true,
+			resizable: false,
+			width: 400,
+			buttons: {
+				Confim: function() {
+					var input = massEditDialog.find('textarea').val(),
+					lines = input.split('\n');
+
+					massEditDialog.find('.error').hide();
+
+					for (var i = 0, length = lines.length; i < length; i++) {
+						//Blank Line Skip
+						if(lines[i].length === 0) {
+							continue;
+						}
+
+						var words = lines[i].split(' ');
+
+						if(words.length < 2) {
+							massEditDialog.find('.error').show();
+							return false;
+						}
+
+						var ipAddress = words[0],
+						record = words.pop();
+
+						if(recordInputs[ipAddress] && !recordInputs[ipAddress].prop('readonly')) {
+							recordInputs[ipAddress].val(record);
+						}
+					}
+
+					massEditDialog.dialog('close');
+				},
+				Cancel: function() {
+					massEditDialog.dialog('close');
+				}
+			}
+		});
+
+		$('.rdns-record-row').each(function() {
+			var row = $(this);
+			recordInputs[row.data('ip-address')] = row.find('input[type="text"]');
 		});
 
 		$('input#edit-rdns-records-button').on('click', function(e) {
@@ -86,9 +133,33 @@
 			e.preventDefault();
 			return false;
 		});
+
+		$('input#mass-edit-rdns-records-button').on('click', function(e) {
+			massEditDialog.dialog('open');
+
+			e.preventDefault();
+			return false;
+		});
+
 	});
 </script>
 
 <div id="rdns-confirm-edit-dialog" title="Edit Reverse DNS Records">
 	<p>Are you sure you want to edit the reverse DNS records for this subnet?</p>
 </div>
+
+<div id="mass-edit-rdns-dialog" title="Mass Edit rDNS Records">
+	<div class="error errorbox" style="margin: 0px 0px 10px 0px; display: none;">
+		<span class="title">Error!</span>
+		<br>
+		<span>There was an error in the formatting.</span>
+	</div>
+	<p>Enter one record per line with the IP address followed by the record.</p>
+	<textarea style="width: 375px; max-width: 375px; height: 250px; max-height: 600px;" placeholder=
+"127.0.0.1 host.colocrossing.com
+127.0.0.2 host.colocrossing.com
+127.0.0.3 host.colocrossing.com
+127.0.0.4 host.colocrossing.com
+127.0.0.5 host.colocrossing.com"></textarea>
+</div>
+
