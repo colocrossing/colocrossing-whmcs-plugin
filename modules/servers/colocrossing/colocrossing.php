@@ -9,7 +9,10 @@ if (!defined('WHMCS')){
     die('This file cannot be accessed directly');
 }
 
-require implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', '..', 'addons', 'colocrossing', 'Module.php'));
+define('ADDON_DIRECTORY', implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', '..', 'addons', 'colocrossing', '')));
+
+require ADDON_DIRECTORY . 'Configuration.php';
+require ADDON_DIRECTORY . 'Module.php';
 
 function colocrossing_AdminServicesTabFields($params) {
 	$module = ColoCrossing_Module::getInstance();
