@@ -13,7 +13,8 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * The Service Columns
 	 * @var array<string>
 	 */
-	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus', 'nextduedate', 'billingcycle', 'regdate');
+	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus', 'nextduedate',
+										'billingcycle', 'regdate', 'dedicatedip', 'assignedips');
 
 	/**
 	 * The Table Name
@@ -79,6 +80,18 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$cycle = $this->getValue('billingcycle');
 
 		return empty($cycle) ? 'Monthly' : $cycle;
+	}
+
+	/**
+	 * Clears the data on the service associated with a device. That is,
+	 * it clears the Dedicated IP and the Assigned IPs
+	 * @return boolean True if successful
+	 */
+	public function clearDeviceData() {
+		$this->setValue('dedicatedip', '');
+		$this->setValue('assignedips', '');
+
+		return $this->save();
 	}
 
 	/**
@@ -250,6 +263,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * Unassigns This Service From Any Devices
 	 */
 	public function unassignFromDevice() {
+		$this->clearDeviceData();
 		full_query('DELETE FROM `' . self::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
 	}
 
