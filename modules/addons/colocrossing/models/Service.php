@@ -338,7 +338,12 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
 		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_JOIN_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
 
-		$where = ' WHERE `p`.`servertype` = "colocrossing" AND (`d`.`device_id` IS NULL || `d`.`device_id` <= 0) ';
+		$conditions = array();
+		$conditions[] = '`p`.`servertype` = "colocrossing"';
+		$conditions[] = '`d`.`device_id` IS NULL OR `d`.`device_id` <= 0';
+		$conditions[] = '`s`.`domainstatus` = "Pending" OR `s`.`domainstatus` = "Active"';
+
+		$where = ' WHERE  (' . implode (') AND (', $conditions) . ') ';
 
 		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where;
 		$result = full_query($query);
