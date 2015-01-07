@@ -15,13 +15,11 @@
 ?>
 
 <form id="null-routes-table-form" method="get">
-	<div>
-		<h1 style="display: inline-block;">ColoCrossing Null Routes</h1>
-		<div style="float: right;">
-			<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
-			<input type="submit" value="Search" class="btn-small" />
-		</div>
+	<div style="float: right;">
+		<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
+		<input type="submit" value="Search" class="btn-small" />
 	</div>
+	<h1>ColoCrossing Null Routes</h1>
 
 <?php
 	$this->renderFlashMessage();

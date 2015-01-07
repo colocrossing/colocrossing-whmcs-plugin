@@ -10,12 +10,11 @@
 	));
 ?>
 <form id="assign-devices-form" method="POST" action="<?php echo $assign_devices_url; ?>">
-	<div>
-		<h1 style="display: inline-block;">Unassigned ColoCrossing Services</h1>
-		<div style="float: right;">
-			<input id="assign-devices-button" type="submit" value="Assign Devices" class="btn" />
-		</div>
+	<div style="float: right;">
+		<input id="assign-devices-button" type="submit" value="Assign Devices" class="btn-small" />
 	</div>
+	<h1>Unassigned ColoCrossing Services</h1>
+
 	<table width="100%" border="0" cellpadding="3" cellspacing="0">
 		<tr>
 			<td width="50%" align="left"><?php echo $this->total_record_count . ' Records Found, Page ' . $this->page . ' of ' . $this->page_count ?></td>
@@ -42,6 +41,7 @@
 				<th style="width: 60px;">Assign</th>
 				<th>Product/Service</th>
 				<th>Client</th>
+				<th>Status</th>
 				<th>Hostname</th>
 				<th>Device</th>
 			</tr>
@@ -49,7 +49,7 @@
 			if(count($this->services) == 0):
 		?>
 			<tr>
-				<td colspan="5">No unassigned services with matching hostnames found.</td>
+				<td colspan="6">No unassigned services with matching hostnames found.</td>
 			</tr>
 		<?php
 			endif;
@@ -87,6 +87,7 @@
 				</td>
 				<td><a href="<?php echo $service_url; ?>"><?php echo $product_name; ?></a></td>
 				<td><?php echo $client_name; ?></td>
+				<td><?php echo $service->getStatus(); ?></td>
 				<td><?php echo $service_hostname; ?></td>
 				<td>
 				<?php

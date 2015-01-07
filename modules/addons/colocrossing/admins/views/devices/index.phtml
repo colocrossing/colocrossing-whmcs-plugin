@@ -12,13 +12,11 @@
 ?>
 
 <form id="devices-table-form" method="get">
-	<div>
-		<h1 style="display: inline-block;">ColoCrossing Devices</h1>
-		<div style="float: right;">
-			<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
-			<input type="submit" value="Search" class="btn-small" />
-		</div>
+	<div style="float: right;">
+		<input type="text" name="query" value="<?php echo $this->filters['query']; ?>" />
+		<input type="submit" value="Search" class="btn-small" />
 	</div>
+	<h1>ColoCrossing Devices</h1>
 
 <?php
 	$this->renderFlashMessage();
