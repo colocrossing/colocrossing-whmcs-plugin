@@ -56,7 +56,7 @@ abstract class ColoCrossing_Controller {
      * Logs Message to Events
      * @param  string $description
      */
-    protected function log($description = '');
+    protected abstract function log($description = '');
 
     /**
      * Sets the Provided Http Header
