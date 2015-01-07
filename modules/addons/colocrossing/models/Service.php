@@ -245,7 +245,11 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return boolean True if the service is successfully assigned to a device.
 	 */
 	public function assignToDevice($device_id) {
-		$this->unassignFromDevice();
+		$current_device_id = $this->getDeviceId();
+
+		if(isset($current_device_id) && $current_device_id > 0) {
+			$this->unassignFromDevice();
+		}
 
 		if(empty($device_id) || $device_id <= 0) {
 			return false;
