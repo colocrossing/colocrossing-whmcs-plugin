@@ -396,14 +396,18 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		$service->unassignFromDevice();
 		$this->log($device->getName() . ' unassigned from ' . $client->getFullName() . ' for service #' . $service_id . '.');
 
-		if($this->api->hasPermission('device_cancellation')) {
+		try {
+			if($this->api->hasPermission('device_cancellation')) {
 			$success = $device->cancelService();
-		} else {
-			$success = $this->controlDeviceNetworkPorts($device, 'off');
+			} else {
+				$success = $this->controlDeviceNetworkPorts($device, 'off');
+			}
+		} catch (ColoCrossing_Error $e) {
+			$success = false;
 		}
 
 		if(!$success) {
-			$message = 'Failed to terminate service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
+			$message = 'An error occurred while terminating service #' . $service_id . ' for ' . $client->getFullName() . ' on ' . $device->getName() . '.';
 
 			$this->log($message);
 			return $message;
