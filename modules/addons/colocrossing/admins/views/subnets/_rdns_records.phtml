@@ -86,7 +86,7 @@
 							continue;
 						}
 
-						var words = lines[i].split(' ');
+						var words = lines[i].match(/\S+/g);
 
 						if(words.length < 2) {
 							massEditDialog.find('.error').show();
