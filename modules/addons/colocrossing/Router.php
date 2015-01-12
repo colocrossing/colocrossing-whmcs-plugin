@@ -25,16 +25,19 @@ abstract class ColoCrossing_Router {
 		try {
 			return $this->dispatchRoute($route, $params);
 		} catch (ColoCrossing_Error_Authorization $e) {
+			echo $e->getMessage();
 			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'authentication'
 			), $params);
 		} catch (ColoCrossing_Error_NotFound $e) {
+			echo $e->getMessage();
 			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'missing'
 			), $params);
 		} catch (Exception $e) {
+			echo $e->getMessage();
 			return $this->dispatchRoute(array(
 				'controller' => 'error',
     			'action' => 'generic'
