@@ -18,24 +18,6 @@ class ColoCrossing_API extends ColoCrossing_Client {
 	 */
 	private static $instance;
 
-    /**
-     * The Module
-     * @var ColoCrossing_Module
-     */
-    protected $module;
-
-    /**
-     * Constructs the instance of the API Client with the API Key from the Module.
-     * Call getInstance instead of this.
-     */
-	public function __construct($api_key = null, array $options = array()) {
-		$this->module = ColoCrossing_Module::getInstance();
-
-		$api_key = isset($api_key) ? $api_key : $this->module->getAPIKey();
-
-		parent::__construct($api_key, $options);
-	}
-
 	/**
 	 * Returns the Singleton Instance of this class.
 	 *
@@ -43,8 +25,14 @@ class ColoCrossing_API extends ColoCrossing_Client {
 	 */
     public static function getInstance()
     {
+        $module = ColoCrossing_Module::getInstance();
+        $api_key = $this->module->getAPIKey();
+
         if (empty(self::$instance)) {
-            self::$instance = new ColoCrossing_API();
+            self::$instance = new ColoCrossing_API($api_key, array(
+                //'api_url' => 'https://portal.matt/api/',
+                //'ssl_verify' => false
+            ));
         }
 
         return self::$instance;

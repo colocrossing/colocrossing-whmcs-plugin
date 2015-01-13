@@ -207,7 +207,7 @@ class ColoCrossing_Module {
 	public function getAPIKey() {
 		$configuration = $this->getConfiguration();
 
-	    return isset($configuration['api_key']) ? $configuration['api_key'] : null;
+	    return empty($configuration['api_key']) ? null : $configuration['api_key'];
 	}
 
 	/**
