@@ -7,6 +7,7 @@ Installation
 * Download or Git clone the contents of this repository
 * Merge the `modules` with the `modules` directory in the root directory of your WHMCS installation.
 * This should add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
+* If you are running on a Windows system, you will need to modify the cookie jar location in `<whmcs_root>/modules/addons/colocrossing/API.php`. By default it is set to `/tmp/colocrossing_cookie_jar.txt` for Linux systems. Your Web Server will need permissions to write to the cookie jar file.
 
 Configuration
 -------------------------------

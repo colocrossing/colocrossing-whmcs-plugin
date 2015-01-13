@@ -26,12 +26,12 @@ class ColoCrossing_API extends ColoCrossing_Client {
     public static function getInstance()
     {
         $module = ColoCrossing_Module::getInstance();
-        $api_key = $this->module->getAPIKey();
+        $api_key = $module->getAPIKey();
 
         if (empty(self::$instance)) {
             self::$instance = new ColoCrossing_API($api_key, array(
-                //'api_url' => 'https://portal.matt/api/',
-                //'ssl_verify' => false
+                'cookies' => true, //Determines Whether or Not to use Cookies
+                'cookie_jar' => '/tmp/colocrossing_cookie_jar.txt' //Will Need to be Modified on Windows Systems
             ));
         }
 
