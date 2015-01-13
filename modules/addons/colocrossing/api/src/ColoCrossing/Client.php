@@ -17,14 +17,16 @@ class ColoCrossing_Client
 	 * @var array
 	 */
 	private static $DEFAULT_OPTIONS = array(
-		'application_name' => 'ColoCrossing PHP API Client',
+		'application_name' => 'ColoCrossing-PHP-API-Client',
 		'api_url' => 'https://portal.colocrossing.com/api/',
 		'api_version' => 1,
 		'request_timeout' => 60,
 		'connection_timeout' => 5,
 		'follow_redirects' => false,
 		'ssl_verify' => true,
-		'page_size' => 30
+		'page_size' => 30,
+		'cookies' => true, //Determines Whether or Not to use Cookies
+		'cookie_jar' => '/tmp/colocrossing_cookie_jar.txt' //Will Need to be Modified on Windows Systems
 	);
 
 	/**

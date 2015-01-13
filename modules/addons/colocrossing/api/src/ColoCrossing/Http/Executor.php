@@ -65,6 +65,11 @@ class ColoCrossing_Http_Executor
     	curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $this->client->getOption('connection_timeout'));
     	curl_setopt($this->curl, CURLOPT_TIMEOUT, $this->client->getOption('request_timeout'));
 
+    	if($this->client->getOption('cookies')) {
+    		curl_setopt($this->curl, CURLOPT_COOKIEJAR, $this->client->getOption('cookie_jar'));
+         	curl_setopt($this->curl, CURLOPT_COOKIEFILE, $this->client->getOption('cookie_jar'));
+        }
+
     	return $this->curl;
 	}
 
@@ -131,7 +136,8 @@ class ColoCrossing_Http_Executor
 
 		if (is_bool($body) && !$body)
 		{
-			throw new ColoCrossing_Error('Unable to make connection to ColoCrossing API.');
+			throw new ColoCrossing_Error('Unable to make connection. The ColoCrossing API may temporarily be unavailable or your IP address may be blocked. ' .
+											'Contact ColoCrossing Support to with your IP address to verify it is configured correctly.');
 		}
 
 		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);

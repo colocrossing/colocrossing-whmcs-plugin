@@ -33,9 +33,7 @@ class ColoCrossing_API extends ColoCrossing_Client {
 
 		$api_key = isset($api_key) ? $api_key : $this->module->getAPIKey();
 
-		parent::__construct($api_key, array_merge(array(
-			'application_name' => 'ColoCrossing WHMCS Module'
-		), $options));
+		parent::__construct($api_key, $options);
 	}
 
 	/**
