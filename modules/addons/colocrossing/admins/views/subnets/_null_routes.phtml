@@ -111,7 +111,7 @@
 
 <div id="add-null-route-dialog" title="Add Null Route">
 	<p>Are you sure you want to null route <span class="ip-address"></span>?</p>
-	<form action="<? echo $base_url . '&controller=null-routes&action=create'; ?>" method="POST">
+	<form action="<?php echo $base_url . '&controller=null-routes&action=create'; ?>" method="POST">
 		<div class="field-group">
 			<label>Comment</label>
 			<input type="text" name="comment" />
@@ -144,7 +144,7 @@
 
 <div id="remove-null-route-dialog" title="Remove Null Route">
 	<p>Are you sure you want to remove the null route on <span class="ip-address"></span>?</p>
-	<form action="<? echo $base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
+	<form action="<?php echo $base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
 		<input type="hidden" name="id"/>
 		<input type="hidden" name="origin" value="subnets#view"/>
 	</form>

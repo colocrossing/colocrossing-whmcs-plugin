@@ -14,8 +14,8 @@
 	$this->renderFlashMessage();
 ?>
 
-<div id="tabs">
-    <ul class="nav nav-tabs" data-tabs="tabs">
+<div id="cc-tabs">
+    <ul class="nav nav-tabs tabs" data-tabs="tabs" style="float: none;">
     <?php
     	echo '<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
     	echo '<li id="assetsnav"><a href="#assets" data-toggle="tab">Assets</a></li>';
@@ -133,3 +133,26 @@
 		));
 	}
 ?>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+		$(".cc-tab-content").hide(); //Hide all content
+		$("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
+		$(".cc-tab-content:first").show(); //Show first tab content
+
+		//On Click Event
+		$("#cc-tabs ul.tabs li").click(function() {
+	        $("ul").find('li').removeClass('open');
+			$("ul.tabs li").removeClass("active"); //Remove any "active" class
+			$(this).addClass("active"); //Add "active" class to selected tab
+			var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+	        if (activeTab.substr(0,1)=="#" && activeTab.substr(1)!="") { //Determine if a tab or link
+	            $(".cc-tab-content").hide(); //Hide all tab content
+	    		$(activeTab).fadeIn(); //Fade in the active content
+	            return false;
+	        } else {
+	            return true; // If link allow redirect
+	        }
+		});
+    });
+</script>
