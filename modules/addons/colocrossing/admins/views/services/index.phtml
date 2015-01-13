@@ -31,9 +31,18 @@
 			</td>
 		</tr>
 	</table>
+
 <?php
 	$this->renderFlashMessage();
 ?>
+
+	<div id="duplicate-assignment-error" style="display: none;">
+	<?php
+		$this->renderTemplate('/flash-messages/error.phtml', array(
+			'content' => 'A device can be assigned to only one service at a time. Please verify you are assigning each device only once.'
+		));
+	?>
+	</div>
 
 	<div class="tablebg">
 		<table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3" style="text-align: center;">
@@ -77,13 +86,19 @@
 					$client_name = '<a href="' . $client_url . '">' . $client_name . '</a>';
 				}
 
-				$select_status = empty($possible_devices) ? 'disabled' : 'checked';
+				$select_status = count($possible_devices) ? 'disabled' : '';
 		?>
-			<tr>
+			<tr class="service-row">
 				<td>
+				<?php
+					if(count($possible_devices)):
+				?>
 					<label style="display: block;">
-						<input type="checkbox" name="services[]" value="<? echo $service_id; ?>" <?php echo $select_status; ?> />
+						<input class="service-input" type="checkbox" name="services[]" value="<? echo $service_id; ?>" />
 					</label>
+				<?php
+					endif;
+				?>
 				</td>
 				<td><a href="<?php echo $service_url; ?>"><?php echo $product_name; ?></a></td>
 				<td><?php echo $client_name; ?></td>
@@ -103,11 +118,11 @@
 						));
 				?>
 					<a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a>
-					<input type="hidden" name="devices[<?php echo $service_id; ?>]" value="<?php echo $device_id; ?>" />
+					<input class="device-input" type="hidden" name="devices[<?php echo $service_id; ?>]" value="<?php echo $device_id; ?>" />
 				<?php
 					else:
 				?>
-					<select name="devices[<?php echo $service_id; ?>]">
+					<select class="device-input" name="devices[<?php echo $service_id; ?>]">
 					<?php
 						foreach ($possible_devices as $j => $device) {
 							echo '<option value="' . $device->getId() . '">' . $device->getName() . '</option>';
@@ -153,7 +168,30 @@
 		$('#contentarea, #content').find('h1').first().remove();
 
 		$('#assign-devices-button').on('click', function(e) {
-			if(confirm('Are you sure you want to assign these devices to the selected services?')) {
+			var devices = {},
+			validAssignments = true;
+
+			$('tr.service-row').each(function() {
+				var row = $(this),
+				serviceInput = row.find('.service-input'),
+				deviceInput = row.find('.device-input');
+
+				if(serviceInput.prop('disabled') || !serviceInput.prop('checked')) {
+					return;
+				}
+
+				if(devices[deviceInput.val()]) {
+					validAssignments = false;
+				}
+
+				devices[deviceInput.val()] = true;
+			});
+
+			$('#duplicate-assignment-error').hide();
+
+			if(!validAssignments) {
+				$('#duplicate-assignment-error').show();
+			} else if(confirm('Are you sure you want to assign these devices to the selected services?')) {
 				$('#assign-devices-button').prop('disabled', true);
 				$('#assign-devices-form').submit();
 			}
@@ -175,6 +213,8 @@
 			e.preventDefault();
 			return false;
 		});
+
+
 
 	});
 

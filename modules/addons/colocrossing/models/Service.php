@@ -245,11 +245,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return boolean True if the service is successfully assigned to a device.
 	 */
 	public function assignToDevice($device_id) {
-		$current_device_id = $this->getDeviceId();
-
-		if(isset($current_device_id) && $current_device_id > 0) {
-			$this->unassignFromDevice();
-		}
+		full_query('DELETE FROM `' . self::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
 
 		if(empty($device_id) || $device_id <= 0) {
 			return false;
@@ -387,9 +383,9 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @static
 	 */
 	public static function getAssignedDevices() {
-		$table = '`' . self::$DEVICES_JOIN_TABLE . '`';
-		$columns = '`d`.`device_id, `d`.`service_id';
-		$join = '`' . self::$TABLE . '` AS `s` ON `s`.`id` = `d`.`service_id` ';
+		$table = self::$DEVICES_JOIN_TABLE;
+		$columns = 'device_id,service_id';
+		$join = '`' . self::$TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 
 		$rows = select_query($table, $columns, null, null, null, null, $join);
 

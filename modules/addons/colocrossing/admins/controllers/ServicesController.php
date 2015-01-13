@@ -61,14 +61,24 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 	}
 
 	public function assignDevices(array $params) {
-		$success = true;
+		$devices_services = array();
 
 		foreach ($params['services'] as $index => $service_id) {
-			$service = ColoCrossing_Model_Service::find($service_id);
-
-			$client = isset($service) ? $service->getClient() : null;
-
 			$device_id = intval($params['devices'][$service_id]);
+
+			if(isset($devices_services[$device_id])) {
+				$this->setFlashMessage('A device can be assigned to only one service at a time.', 'error');
+				return $this->redirectTo('services', 'index');
+			}
+
+			$devices_services[$device_id] = intval($service_id);
+		}
+
+		$success = true;
+
+		foreach ($devices_services as $device_id => $service_id) {
+			$service = ColoCrossing_Model_Service::find($service_id);
+			$client = isset($service) ? $service->getClient() : null;
 
 			try {
 				$device = $device_id > 0 ? $this->api->devices->find($device_id) : null;
