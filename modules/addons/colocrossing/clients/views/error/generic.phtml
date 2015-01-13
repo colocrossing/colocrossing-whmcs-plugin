@@ -4,6 +4,10 @@
 
 <?php
 	$this->renderFlashMessage();
-?>
 
-<p>An error occured while trying to load this page. Please try again later.</p>
+	if(empty($this->message)) {
+		$this->message = 'An error occured while trying to load this page. Please try again later.';
+	}
+
+	echo '<p>' . $this->message . '</p>';
+?>
