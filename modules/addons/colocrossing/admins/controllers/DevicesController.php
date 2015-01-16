@@ -32,14 +32,14 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		$this->num_pages = $devices->size();
 
 		$this->devices = $devices->current();
-		$this->devices_clients = array();
+		$this->devices_services = array();
 
 		foreach ($this->devices as $index => $device) {
 			$device_id = $device->getId();
 			$service = ColoCrossing_Model_Service::findByDevice($device_id);
 
 			if(isset($service)) {
-				$this->devices_clients[$device_id] = $service->getClient();;
+				$this->devices_services[$device_id] = $service;
 			}
 		}
 	}
