@@ -61,7 +61,6 @@ class ColoCrossing_Clients_ServicesController extends ColoCrossing_Clients_Contr
 	            foreach ($switch->getPorts() as $j => $port) {
 	                if($port->isBandwidthGraphAvailable()) {
 	                    $this->bandwidth_graphs[] = array(
-	                        'device_id' => $this->device->getId(),
 	                        'switch_id' => $switch->getId(),
 	                        'port_id' => $port->getId()
 	                    );

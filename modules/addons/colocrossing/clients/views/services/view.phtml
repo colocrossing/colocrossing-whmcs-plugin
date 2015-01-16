@@ -139,7 +139,19 @@
 	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)):
 ?>
 	<h3 style="text-align: left; margin-bottom: 10px;">Graphs</h3>
-	<img src="/index.php?m=colocrossing&controller=devices&action=bandwidth-graph&id=23&switch_id=38&port_id=7&duration=current" style="width: 100%;">
+	<?php
+		foreach ($this->bandwidth_graphs as $index => $graph) {
+			$graph_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+		        'controller' => 'devices',
+		        'action' => 'bandwidth-graph',
+		        'id' => $this->device->getId(),
+		        'switch_id' => $graph['switch_id'],
+		        'port_id' => $graph['port_id'],
+		        'duration' => 'current'
+		    ));
+		    echo '<img src="' . $graph_url . '" style="width: 100%; margin-bottom: 10px;">';
+		}
+	?>
 <?php
 	endif;
 ?>
