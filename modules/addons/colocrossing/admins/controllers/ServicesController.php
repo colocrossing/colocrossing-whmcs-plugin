@@ -408,9 +408,9 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 		try {
 			if($this->api->hasPermission('device_cancellation')) {
-			$success = $device->cancelService();
+				$success = $device->cancelService();
 			} else {
-				$success = $this->controlDeviceNetworkPorts($device, 'off');
+				$success = $this->controlDeviceNetworkPorts($device, 'off') || $this->controlDevicePowerPorts($device, 'off');
 			}
 		} catch (ColoCrossing_Error $e) {
 			$success = false;
@@ -446,6 +446,34 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		$success = true;
 		foreach ($switches as $switch) {
 			$ports = $switch->getPorts();
+
+			foreach ($ports as $port) {
+				$result = $port->setStatus($status, $comment);
+				$success &= $result;
+			}
+		}
+		return $success;
+	}
+
+	/**
+	 * Sets the status of all the ports of a power endpoint device to the status specified
+	 * @param  ColoCrossing_Device 	$device  The Device
+	 * @param  string 				$status  The Status, on, off, or restart
+	 * @param  string|null 			$comment The Reason for controlling
+	 * @return boolean		True if Successful
+	 */
+	private function controlDevicePowerPorts($device, $status, $comment = null) {
+		$type = $device->getType();
+
+		if(!$type->isPowerEndpoint()) {
+			return true;
+		}
+
+		$pdus = $device->getPowerDistributionUnits();
+
+		$success = true;
+		foreach ($pdus as $pdu) {
+			$ports = $pdu->getPorts();
 
 			foreach ($ports as $port) {
 				$result = $port->setStatus($status, $comment);
