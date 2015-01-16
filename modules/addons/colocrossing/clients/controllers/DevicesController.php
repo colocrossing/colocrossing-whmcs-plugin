@@ -116,10 +116,9 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		$this->renderImage($graph);
 	}
 
-
 	public function updatePowerPorts(array $params) {
 		$status = $params['status'];
-		$status_description = $this->getPortStatusDescription($status);
+		$status_description = ColoCrossing_Utilities::getPortStatusDescription($status);
 
 		$success = true;
 
@@ -170,7 +169,7 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 	public function updateNetworkPorts(array $params) {
 		$status = $params['status'];
-		$status_description = $this->getPortStatusDescription($status);
+		$status_description = ColoCrossing_Utilities::getPortStatusDescription($status);
 		$comment = empty($params['comment']) ? null : $params['comment'];
 
 		$success = true;
@@ -218,24 +217,6 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		$this->redirectTo('devices', 'view', array(
 			'id' => isset($params['origin_device_id']) ? $params['origin_device_id'] : $params['device_id']
 		), 'network-ports');
-	}
-
-	/**
-	 * Converts Port Status to Description for use in messages
-	 * @param  string $status
-	 * @return string The Status Description
-	 */
-	private function getPortStatusDescription($status) {
-		switch ($status) {
-			case 'on':
-				return 'turned on';
-			case 'off':
-				return 'turned off';
-			case 'restart':
-				return 'restarted';
-		}
-
-		return 'controlled';
 	}
 
 	/**

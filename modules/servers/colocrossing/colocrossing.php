@@ -92,82 +92,15 @@ function colocrossing_ClientAreaCustomButtonArray() {
 
 function colocrossing_ClientArea($params) {
     $module = ColoCrossing_Module::getInstance();
-    $service = ColoCrossing_Model_Service::find($params['serviceid']);
 
-    if(empty($service)) {
-        return null;
-    }
-
-    try {
-        $device = $service->getDevice();
-    } catch(ColoCrossing_Error $e) {
-        $device = null;
-    }
-
-    if(empty($device)) {
-        return null;
-    }
-
-    $device_id = $device->getId();
-    $device_name = $device->getName();
-    $device_url = ColoCrossing_Utilities::buildUrl($module->getBaseClientUrl(), array(
-        'controller' => 'devices',
-        'action' => 'view',
-        'id' => $device_id
+    list($result, $output) = $module->dispatchRequestTo('client', 'services', 'view', array(
+        'id' => $params['serviceid']
     ));
 
-    $type = $device->getType();
-
-    if($type->isNetworkEndpoint()) {
-        $switches = $device->getSwitches();
-
-        $bandwidth_graphs = array();
-
-        foreach ($switches as $i => $switch) {
-            foreach ($switch->getPorts() as $j => $port) {
-                if($port->isBandwidthGraphAvailable()) {
-                    $bandwidth_graphs[] = array(
-                        'device_id' => $device_id,
-                        'switch_id' => $switch->getId(),
-                        'port_id' => $port->getId()
-                    );
-                }
-            }
-        }
-
-        if(count($bandwidth_graphs)) {
-            $bandwidth_graph_durations = array(
-                "current" => 'Current Billing Period',
-                "previous" => 'Previous Billing Period',
-                "12 hours" => "Last 12 Hours",
-                "1 day" => "Last Day",
-                "1 week" => "Last Week",
-                "2 weeks" => "Last 2 Weeks",
-                "1 month" => "Last Month",
-                "3 months" => "Last 3 Months"
-            );
-
-            $start_date = $service->getRegistrationDate();
-            $due_date = $service->getNextDueDate();
-            $length = $service->getBillingCycleLength();
-
-            if($start_date > strtotime('-' . $length, $due_date)) {
-                unset($bandwidth_graph_durations["previous"]);
-            }
-        }
-    }
-
-    if($type->isPowerEndpoint()) {
-        $power_distribution_units = $device->getPowerDistributionUnits();
-    }
-
-
-
     return array(
-        'templatefile' => 'client-area',
+        'templatefile' => 'template',
         'vars' => array(
-            'device_url' => $device_url,
-            'device_name' => $device_name
+            'output' => $output
         )
     );
 }

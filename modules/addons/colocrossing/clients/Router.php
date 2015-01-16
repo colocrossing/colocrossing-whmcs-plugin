@@ -27,7 +27,7 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
 		'devices' => array('view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
 		'subnets' => array('view', 'update'),
 		'null-routes' => array('create', 'destroy'),
-		'services' => array('view-device'),
+		'services' => array('view', 'view-device', 'control-device-power', 'control-device-network'),
 		'error' => array('general', 'missing', 'unauthorized')
 	);
 

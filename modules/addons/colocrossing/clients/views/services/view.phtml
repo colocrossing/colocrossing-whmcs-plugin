@@ -1,0 +1,148 @@
+<?php
+	$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        'controller' => 'devices',
+        'action' => 'view',
+        'id' => $this->device->getId()
+    ));
+    $network_control_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        'controller' => 'services',
+        'action' => 'control-device-network',
+        'id' => $this->service->getId()
+    ));
+    $power_control_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        'controller' => 'services',
+        'action' => 'control-device-power',
+        'id' => $this->service->getId()
+    ));
+?>
+
+<div id="colocrossing-flash-message">
+<?php
+	$this->renderFlashMessage();
+?>
+</div>
+
+<div id="colocrossing-module">
+	<h4>Device:</h4>
+	<a href="<?php echo $device_url; ?>"><?php echo $this->device->getName(); ?></a>
+</div>
+
+<?php
+	if($this->type->isPowerEndpoint() || $this->type->isNetworkEndpoint()):
+?>
+	<h3 style="text-align: left; margin-bottom: 10px;">Ports</h3>
+	<table class="table table-bordered table-striped" style="width: 100%;">
+	<?php
+		if($this->type->isPowerEndpoint() && isset($this->power_status)):
+	?>
+		<tr>
+			<td style="width: 25%;">Power Status</td>
+			<td style="width: 75%;">
+				<strong style="color: <?php echo $this->power_status_color; ?>;"><?php echo $this->power_status; ?></strong>
+				<?php
+					if($this->power_status == 'Mixed') {
+						echo '<a href="' . $device_url . '#power-ports">(Details)</a>';
+					}
+				?>
+			</td>
+		</tr>
+		<?php
+			if($this->is_power_controllable):
+		?>
+			<tr>
+				<td style="width: 25%;">Power Control</td>
+				<td style="width: 75%;">
+					<button class="power-control-btn btn btn-success" data-status="on">Turn On</button>
+					<button class="power-control-btn btn btn-danger" data-status="off">Turn Off</button>
+					<button class="power-control-btn btn btn-primary" data-status="restart">Restart</button>
+				</td>
+			</tr>
+	<?php
+			endif;
+		endif;
+
+		if($this->type->isNetworkEndpoint() && isset($this->network_status)):
+	?>
+		<tr>
+			<td style="width: 25%;">Network Status</td>
+			<td style="width: 75%;">
+				<strong style="color: <?php echo $this->network_status_color; ?>;"><?php echo $this->network_status; ?></strong>
+				<?php
+					if($this->network_status == 'Mixed') {
+						echo '<a href="' . $device_url . '#network-ports">(Details)</a>';
+					}
+				?>
+			</td>
+		</tr>
+		<?php
+			if($this->is_network_controllable):
+		?>
+			<tr>
+				<td style="width: 25%;">Network Control</td>
+				<td style="width: 75%;">
+					<button class="network-control-btn btn btn-success" data-status="on">Turn On</button>
+					<button class="network-control-btn btn btn-danger" data-status="off">Turn Off</button>
+				</td>
+			</tr>
+	<?php
+			endif;
+		endif;
+	?>
+	</table>
+<?php
+	endif;
+?>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		//Move Module Content To Top of Page and Delete Container
+		var module = $('#colocrossing-module'),
+		moduleContainer = module.parent(),
+		infoContainer = moduleContainer.parent(),
+		flashMessage = $('#colocrossing-flash-message'),
+		tabs = $('#tabs');
+
+		infoContainer.prepend(module);
+		tabs.before(flashMessage);
+
+		$('button.power-control-btn').on('click', function(e) {
+			var button = $(this),
+			action = button.html().toLowerCase(),
+			status = button.data('status');
+
+			if(confirm('Are you sure you want to ' + action + ' the power for this device?')) {
+				$('form#control-power-form').find('input[name="status"]').val(status);
+				$('form#control-power-form').submit();
+			}
+
+			e.preventDefault();
+			return false;
+		});
+
+		$('button.network-control-btn').on('click', function(e) {
+			var button = $(this),
+			action = button.html().toLowerCase(),
+			status = button.data('status');
+
+			if(confirm('Are you sure you want to ' + action + ' the network for this device?')) {
+				$('form#control-network-form').find('input[name="status"]').val(status);
+				$('form#control-network-form').submit();
+			}
+
+			e.preventDefault();
+			return false;
+		});
+	});
+</script>
+
+<style type="text/css">
+	.moduleoutput { border: none !important; padding: 0px !important; }
+</style>
+
+<form id="control-power-form" action="<?php echo $power_control_url; ?>" method="POST">
+	<input type="hidden" name="status" />
+</form>
+
+<form id="control-network-form" action="<?php echo $network_control_url; ?>" method="POST">
+	<input type="hidden" name="status" />
+</form>

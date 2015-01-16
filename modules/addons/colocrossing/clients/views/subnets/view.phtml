@@ -65,9 +65,17 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-		$(".cc-tab-content").hide(); //Hide all content
-		$("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
-		$(".cc-tab-content:first").show(); //Show first tab content
+    	$(".cc-tab-content").hide(); //Hide all content
+	    if ($(location).attr('hash').substr(1)!="") {
+	        var activeTab = $(location).attr('hash');
+	        $("ul").find('li').removeClass('open');
+	        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+	        $(activeTab+"nav").addClass("active");
+	        $(activeTab).show();
+	    } else {
+	        $("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
+	        $(".cc-tab-content:first").show(); //Show first tab content   
+	    }
 
 		//On Click Event
 		$("#cc-tabs ul.tabs li").click(function() {
