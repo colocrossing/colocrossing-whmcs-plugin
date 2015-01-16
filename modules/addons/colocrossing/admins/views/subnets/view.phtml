@@ -11,7 +11,7 @@
 
 	<table class="form" width="100%" border="0" cellspacing="2" cellpadding="3">
 		<tr>
-			<td width="15%" class="fieldlabel">IP Address</td>
+			<td width="15%" class="fieldlabel">Subnet CIDR</td>
 			<td width="35%" class="fieldarea"><?php echo $this->subnet->getCIDRIpAddress(); ?></td>
 			<td width="15%" class="fieldlabel">SWIP</td>
 			<td width="35%" class="fieldarea"><?php echo $this->subnet->isSwip() ? 'Yes' : 'No'; ?></td>
@@ -30,6 +30,28 @@
 			</td>
 			<td width="15%" class="fieldlabel">Zone</td>
 			<td width="35%" class="fieldarea"><?php echo $this->subnet->getSubzone(); ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">First Usable IP</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getFirstUsableIpAddress(); ?></td>
+			<td width="15%" class="fieldlabel">Mask</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getMask(); ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Last Usable IP</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getLastUsableIpAddress(); ?></td>
+			<td width="15%" class="fieldlabel">Gateway</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getGateway(); ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Usable Addresses</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getNumberOfUsableIpAddresses(); ?></td>
+			<td width="15%" class="fieldlabel">Broadcast</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getBroadcast(); ?></td>
+		</tr>
+		<tr>
+			<td width="15%" class="fieldlabel">Total Addresses</td>
+			<td width="35%" class="fieldarea"><?php echo $this->subnet->getNumberOfIpAddresses(); ?></td>
 		</tr>
 	</table>
 
