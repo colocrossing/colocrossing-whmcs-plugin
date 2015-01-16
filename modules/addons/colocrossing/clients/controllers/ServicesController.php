@@ -45,6 +45,7 @@ class ColoCrossing_Clients_ServicesController extends ColoCrossing_Clients_Contr
 	    }
 
 	    $this->type = $this->device->getType();
+	    $this->subnets = $this->type->isNetworkEndpoint() || $this->type->isVirtual() ? $this->device->getSubnets() : null;
 
 	    if($this->type->isNetworkEndpoint()) {
 	        $switches = $this->device->getSwitches();

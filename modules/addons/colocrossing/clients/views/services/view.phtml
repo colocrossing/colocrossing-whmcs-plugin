@@ -92,6 +92,50 @@
 <?php
 	endif;
 
+	if(isset($this->subnets)):
+?>
+
+	<h3 style="text-align: left; margin-bottom: 10px;">IP Allocations</h3>
+	<table class="table table-bordered table-striped" style="width: 100%;">
+		<thead>
+	        <tr>
+	            <th>Subnet</th>
+	            <th>First Usable IP</th>
+	            <th>Last Usable IP</th>
+	            <th style="width: 125px"></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+		<?php
+			if(count($this->subnets) == 0):
+		?>
+			<tr>
+				<td class="textcenter" colspan="3">No IP addresses allocated to this device.</td>
+			</tr>
+		<?php
+			endif;
+
+			foreach ($this->subnets as $index => $subnet):
+				$subnet_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+			        'controller' => 'subnets',
+			        'action' => 'view',
+			        'id' => $subnet->getId()
+			    ));
+		?>
+			<tr>
+				<td><a href="<?php echo $subnet_url; ?>"><?php echo $subnet->getCIDRIpAddress(); ?></a></td>
+				<td><?php echo $subnet->getFirstUsableIpAddress(); ?></td>
+				<td><?php echo $subnet->getLastUsableIpAddress(); ?></td>
+				<td style="text-align: center;"><a class="btn" href="<?php echo $subnet_url; ?>"><i class="icon icon-list-alt"></i> View Details</a></td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+	    </tbody>
+	</table>
+<?php
+	endif;
+
 	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)):
 ?>
 	<h3 style="text-align: left; margin-bottom: 10px;">Graphs</h3>
@@ -99,6 +143,7 @@
 <?php
 	endif;
 ?>
+
 
 <script type="text/javascript">
 	$(document).ready(function() {
