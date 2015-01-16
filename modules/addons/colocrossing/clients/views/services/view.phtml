@@ -91,6 +91,13 @@
 	</table>
 <?php
 	endif;
+
+	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)):
+?>
+	<h3 style="text-align: left; margin-bottom: 10px;">Graphs</h3>
+	<img src="/index.php?m=colocrossing&controller=devices&action=bandwidth-graph&id=23&switch_id=38&port_id=7&duration=current" style="width: 100%;">
+<?php
+	endif;
 ?>
 
 <script type="text/javascript">

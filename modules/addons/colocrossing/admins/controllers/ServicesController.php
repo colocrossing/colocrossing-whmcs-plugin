@@ -146,37 +146,91 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			'device_url' => $device_url
 		));
 
-		$bandwidth_graphs = $this->getDeviceBandwidthGraphs($device);
-		$bandwidth_graph_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
-			'controller' => 'services',
-			'action' => 'bandwidth-graph',
-			'id' => $service_id
-		));
-		$bandwidth_graph_durations = array(
-			"current" => 'Current Billing Period',
-			"previous" => 'Previous Billing Period',
-			"12 hours" => "Last 12 Hours",
-			"1 day" => "Last Day",
-			"1 week" => "Last Week",
-			"2 weeks" => "Last 2 Weeks",
-			"1 month" => "Last Month",
-			"3 months" => "Last 3 Months"
-		);
+		$device_type = $device->getType();
 
-		if($service->getRegistrationDate() > strtotime('-' . $service->getBillingCycleLength(), $service->getNextDueDate())) {
-			unset($bandwidth_graph_durations["previous"]);
+		if($device_type->isNetworkEndpoint()) {
+			$power_distribution_units = $device->getPowerDistributionUnits();
+
+			$power_status = ColoCrossing_Utilities::getDeviceOverallStatus($power_distribution_units);
+
+			if(isset($power_status)) {
+				$path = $this->getViewDirectoryPath() . '/services/device_port_status.phtml';
+				$fields['Power Status'] = ColoCrossing_Utilities::parseTemplate($path, array(
+					'status' => $power_status,
+					'color' => ColoCrossing_Utilities::getPortStatusColor($power_status),
+					'device_url' => $device_url
+				));
+			}
 		}
 
-		if(count($bandwidth_graphs)) {
-			$path = $this->getViewDirectoryPath() . '/services/device_bandwidth_graphs.phtml';
-			$fields['Bandwidth Usage'] = ColoCrossing_Utilities::parseTemplate($path, array(
-				'bandwidth_graphs' => $bandwidth_graphs,
-				'bandwidth_graph_url' => $bandwidth_graph_url,
-				'bandwidth_graph_durations' => $bandwidth_graph_durations
+		if($device_type->isNetworkEndpoint()) {
+			$switches = $device->getSwitches();
+
+			$network_status = ColoCrossing_Utilities::getDeviceOverallStatus($switches);
+
+			if(isset($network_status)) {
+				$path = $this->getViewDirectoryPath() . '/services/device_port_status.phtml';
+				$fields['Network Status'] = ColoCrossing_Utilities::parseTemplate($path, array(
+					'status' => $network_status,
+					'color' => ColoCrossing_Utilities::getPortStatusColor($network_status),
+					'device_url' => $device_url
+				));
+			}
+
+			$bandwidth_graphs = $this->getDeviceBandwidthGraphs($device, $switches);
+			$bandwidth_graph_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+				'controller' => 'services',
+				'action' => 'bandwidth-graph',
+				'id' => $service_id
 			));
+			$bandwidth_graph_durations = array(
+				"current" => 'Current Billing Period',
+				"previous" => 'Previous Billing Period',
+				"12 hours" => "Last 12 Hours",
+				"1 day" => "Last Day",
+				"1 week" => "Last Week",
+				"2 weeks" => "Last 2 Weeks",
+				"1 month" => "Last Month",
+				"3 months" => "Last 3 Months"
+			);
+
+			if($service->getRegistrationDate() > strtotime('-' . $service->getBillingCycleLength(), $service->getNextDueDate())) {
+				unset($bandwidth_graph_durations["previous"]);
+			}
+
+			if(count($bandwidth_graphs)) {
+				$path = $this->getViewDirectoryPath() . '/services/device_bandwidth_graphs.phtml';
+				$fields['Bandwidth Usage'] = ColoCrossing_Utilities::parseTemplate($path, array(
+					'bandwidth_graphs' => $bandwidth_graphs,
+					'bandwidth_graph_url' => $bandwidth_graph_url,
+					'bandwidth_graph_durations' => $bandwidth_graph_durations
+				));
+			}
 		}
 
 		return $fields;
+	}
+
+	private function getDeviceBandwidthGraphs($device, $switches) {
+		$device_id = $device->getId();
+		$bandwidth_graphs = array();
+
+		foreach ($switches as $i => $switch) {
+			$switch_id = $switch->getId();
+			$switch_ports = $switch->getPorts();
+
+			foreach ($switch_ports as $j => $port) {
+				if($port->isBandwidthGraphAvailable()) {
+					$bandwidth_graphs[] = array(
+						'device_id' => $device_id,
+						'switch_id' => $switch_id,
+						'port_id' => $port->getId()
+					);
+				}
+			}
+		}
+
+		return $bandwidth_graphs;
 	}
 
 	public function bandwidthGraph(array $params) {
@@ -216,35 +270,6 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		}
 
 		$this->renderImage($graph);
-	}
-
-	private function getDeviceBandwidthGraphs($device) {
-		$device_id = $device->getId();
-		$device_type = $device->getType();
-
-		if(!$device_type->isNetworkEndpoint()) {
-			return array();
-		}
-
-		$switches = $device->getSwitches();
-		$bandwidth_graphs = array();
-
-		foreach ($switches as $i => $switch) {
-			$switch_id = $switch->getId();
-			$switch_ports = $switch->getPorts();
-
-			foreach ($switch_ports as $j => $port) {
-				if($port->isBandwidthGraphAvailable()) {
-					$bandwidth_graphs[] = array(
-						'device_id' => $device_id,
-						'switch_id' => $switch_id,
-						'port_id' => $port->getId()
-					);
-				}
-			}
-		}
-
-		return $bandwidth_graphs;
 	}
 
 	public function assignDevice(array $params) {
