@@ -96,7 +96,7 @@ class ColoCrossing_Module {
 	    return array(
 	    	'name' => 'ColoCrossing Portal',
 	    	'description' => 'This is an addon module that can be used to interact with the ColoCrossing Portal.',
-	    	'version' => '1.0',
+	    	'version' => '1.1',
 	    	'author' => 'ColoCrossing',
 	    	'language' => 'english',
 	    	'fields' => $this->getConfigurationFields()
