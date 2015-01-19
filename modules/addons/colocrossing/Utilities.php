@@ -30,7 +30,8 @@ class ColoCrossing_Utilities {
 
 		$params = isset($query) && is_array($query) ?  array_merge($query, $params) : $params;
 
-		return explode('?', $url)[0] . '?' . http_build_query($params);
+		$url_parts = explode('?', $url);
+		return (count($url_parts) ? $url_parts[0] : '/') . '?' . http_build_query($params);
 	}
 
 	/**
