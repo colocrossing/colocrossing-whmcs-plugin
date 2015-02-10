@@ -1,6 +1,8 @@
 <?php
 	$columns = array(
 		'device_name' => 'Device',
+		'service_assigment' => 'Assignment',
+		'service_status' => 'Status',
 		'total_usage' => 'Total Usage',
 		'ninety_fifth_usage' => '95th Percentile Usage',
 		'start_date' => 'Metering Start',
@@ -51,7 +53,7 @@
 			if(count($this->bandwidth_usages) == 0):
 		?>
 			<tr>
-				<td colspan="5">No devices with metering found.</td>
+				<td colspan="7">No devices with metering found.</td>
 			</tr>
 		<?php
 			endif;
@@ -65,6 +67,22 @@
 					'id' => $device_id
 				));
 
+				$assignment = 'Unassigned';
+				$status = 'Unassigned';
+
+				$service = isset($this->devices_services[$device_id]) ? $this->devices_services[$device_id] : null;
+				$client = isset($service) ? $service->getClient(): null;
+
+				if(isset($service) && isset($client)) {
+					$client_service_url = ColoCrossing_Utilities::buildUrl('clientsservices.php', array(
+						'id' => $service->getId(),
+						'userid' => $client->getId()
+					));
+
+					$assignment = '<a href="' . $client_service_url . '">' . $client->getFullName() . '</a>';
+					$status = $service->getStatus();
+				}
+
 				$start = $bandwidth_usage->getStartDate();
 				$start = isset($start) ? date('m/d/Y', $start) : 'Unknown';
 
@@ -73,6 +91,8 @@
 		?>
 			<tr>
 				<td><a href="<?php echo $device_url; ?>"><?php echo $device_name; ?></a></td>
+				<td><?php echo $assignment; ?></td>
+				<td><?php echo $status; ?></td>
 				<td><?php echo $bandwidth_usage->getTotalUsage(); ?> GB</td>
 				<td><?php echo $bandwidth_usage->getNinetyFifthUsage(); ?> mbit</td>
 				<td><?php echo $start; ?></td>
