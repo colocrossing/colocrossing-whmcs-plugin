@@ -16,6 +16,7 @@ class ColoCrossing_Resource_Factory
 	 * @static
 	 */
 	private static $AVAILABLE_RESOURCES = array(
+		'bandwidth_usages' => '/BandwidthUsages.php',
 		'devices' => '/Devices.php',
 		'networks' => '/Networks.php',
 		'null_routes' => '/NullRoutes.php',
@@ -40,6 +41,8 @@ class ColoCrossing_Resource_Factory
 
 		switch ($type)
 		{
+			case 'bandwidth_usages':
+				return new ColoCrossing_Resource_BandwidthUsages($client);
 			case 'devices':
 				return new ColoCrossing_Resource_Devices($client);
 			case 'networks':

@@ -10,7 +10,7 @@ class ColoCrossing_Client
 	/**
 	 * The Version of this Library
 	 */
-	const VERSION = '1.1.0';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The Default Options

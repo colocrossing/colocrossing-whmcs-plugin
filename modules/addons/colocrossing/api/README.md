@@ -24,6 +24,8 @@ Alternatively the API Token may be passed in the constructor as seen below.
 $colocrossing_client = new ColoCrossing_Client('YOUR_API_TOKEN');
 ```
 
+If you are running on a Windows system, you will need to modify the cookie jar location in `src/ColoCrossing/Client.php`. By default it is set to `/tmp/colocrossing_cookie_jar.txt` for Linux systems. Your Web Server will need permissions to write to the cookie jar file.
+
 Accessing Resources
 -------------------------------
 Once the ColoCrossing_Client is created, you can access numerous resources from the client object. The resources available are devices, networks, null_routes, and subnets.
