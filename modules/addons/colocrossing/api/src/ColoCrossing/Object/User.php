@@ -12,13 +12,13 @@ class ColoCrossing_Object_User extends ColoCrossing_Object
 {
 
 	/**
-	 * @return string The type of user. Either client or subuser.
+	 * @return string The type of user. Either system, admin, client, or subuser.
 	 */
 	public function getType()
 	{
 		$type = $this->getValue('type');
 
-		return isset($type) && $type == 'client' ? $type : 'subuser';
+		return isset($type) ?  $type  : null;
 	}
 
 }

@@ -33,6 +33,9 @@ class ColoCrossing_Resource_Child_Factory
 		'subnets' => array(
 			'null_routes' => '/Subnets/NullRoutes.php',
 			'rdns_records' => '/Subnets/ReverseDNSRecords.php'
+		),
+		'ddos_zones' => array(
+			'attacks' => '/DdosZones/Attacks.php'
 		)
 	);
 
@@ -86,6 +89,13 @@ class ColoCrossing_Resource_Child_Factory
 						return new ColoCrossing_Resource_Child_Subnets_NullRoutes($client);
 					case 'rdns_records':
 						return new ColoCrossing_Resource_Child_Subnets_ReverseDNSRecords($client);
+				}
+				break;
+			case 'ddos_zones':
+				switch ($child_type)
+				{
+					case 'attacks':
+						return new ColoCrossing_Resource_Child_DdosZones_Attacks($client);
 				}
 				break;
 		}

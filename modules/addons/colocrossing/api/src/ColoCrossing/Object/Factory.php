@@ -68,6 +68,18 @@ class ColoCrossing_Object_Factory
 			case 'subnet':
 				require_once(dirname(__FILE__) . '/Subnet.php');
 				return new ColoCrossing_Object_Subnet($client, $resource, $values);
+			case 'support_ticket':
+				require_once(dirname(__FILE__) . '/SupportTicket.php');
+				return new ColoCrossing_Object_SupportTicket($client, $resource, $values);
+			case 'support_response':
+				require_once(dirname(__FILE__) . '/SupportResponse.php');
+				return new ColoCrossing_Object_SupportResponse($client, $resource, $values);
+			case 'support_department':
+				require_once(dirname(__FILE__) . '/SupportDepartment.php');
+				return new ColoCrossing_Object_SupportDepartment($client, $resource, $values);
+			case 'ddos_zone':
+				require_once(dirname(__FILE__) . '/DdosZone.php');
+				return new ColoCrossing_Object_DdosZone($client, $resource, $values);
 		}
 
 		return new ColoCrossing_Object($client, $values);
@@ -131,6 +143,14 @@ class ColoCrossing_Object_Factory
 					case 'rdns_record':
 						require_once(dirname(__FILE__) . '/Subnet/ReverseDNSRecord.php');
 						return new ColoCrossing_Object_Subnet_ReverseDNSRecord($client, $child_resource, $values);
+				}
+				break;
+			case 'ddos_zone':
+				switch ($child_type)
+				{
+					case 'attack':
+						require_once(dirname(__FILE__) . '/DdosZone/Attack.php');
+						return new ColoCrossing_Object_DdosZone_Attack($client, $child_resource, $values);
 				}
 				break;
 		}

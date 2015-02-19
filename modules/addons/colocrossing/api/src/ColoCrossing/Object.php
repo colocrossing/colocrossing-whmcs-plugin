@@ -171,7 +171,7 @@ class ColoCrossing_Object
 	 * @param  mixed 					$default  The value to return if the key's value is not found.
 	 * @return ColoCrossing_Object 				  The Object.
 	 */
-	protected function getObject($key, ColoCrossing_Resource $resource = null, $type = null, $default = null)
+	protected function getObject($key, ColoCrossing_Resource $resource = null, $type = null, $default = null, $load = true)
 	{
 		if (isset($this->objects[$key]))
 		{
@@ -182,7 +182,7 @@ class ColoCrossing_Object
 
 		if ($value && is_array($value))
 		{
-			if (isset($resource) && isset($value['id']))
+			if (isset($resource) && isset($value['id']) && $load)
 			{
 				return $this->objects[$key] = $resource->find($value['id']);
 			}

@@ -20,7 +20,11 @@ class ColoCrossing_Resource_Factory
 		'devices' => '/Devices.php',
 		'networks' => '/Networks.php',
 		'null_routes' => '/NullRoutes.php',
-		'subnets' => '/Subnets.php'
+		'subnets' => '/Subnets.php',
+		'support_tickets' => '/SupportTickets.php',
+		'support_responses' => '/SupportResponses.php',
+		'support_departments' => '/SupportDepartments.php',
+		'ddos_zones' => '/DdosZones.php'
 	);
 
 	/**
@@ -51,6 +55,14 @@ class ColoCrossing_Resource_Factory
 				return new ColoCrossing_Resource_NullRoutes($client);
 			case 'subnets':
 				return new ColoCrossing_Resource_Subnets($client);
+			case 'support_tickets':
+				return new ColoCrossing_Resource_SupportTickets($client);
+			case 'support_responses':
+				return new ColoCrossing_Resource_SupportResponses($client);
+			case 'support_departments':
+				return new ColoCrossing_Resource_SupportDepartments($client);
+			case 'ddos_zones':
+				return new ColoCrossing_Resource_DdosZones($client);
 		}
 
 		throw new ColoCrossing_Error('ColoCrossing API Resource not found.');

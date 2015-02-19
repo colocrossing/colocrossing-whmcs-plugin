@@ -20,10 +20,16 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	private $client;
 
 	/**
-	 * The Name in plural and singular forms
-	 * @var array<string>
+	 * The Resource Name singular form
+	 * @var string
 	 */
 	private $name;
+
+	/**
+	 * The Field Name singular form
+	 * @var string
+	 */
+	private $field_name;
 
 	/**
 	 * The Url of the Resource Relative to the root of parent.
@@ -39,19 +45,20 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 
 	/**
 	 * @param ColoCrossing_Client 	$client The API Client
-	 * @param string|array<string>  $name   The Resource Name. If string, it is assumed the
+	 * @param string  $name   The Resource Name. If string, it is assumed the
 	 *                                      	singular form is provided and the plural form
 	 *                                      	is created by appending an 's'.
 	 * @param string              	$url    The Url of the Resource Relative to the root of parent.
 	 */
-	public function __construct(ColoCrossing_Client $client, $name, $url)
+	public function __construct(ColoCrossing_Client $client, $name, $url, $field_name = null)
 	{
 		$this->client = $client;
 		$this->url = $url;
 
 		$this->child_resources = array();
 
-		$this->setName($name);
+		$this->name = $name;
+		$this->field_name = isset($field_name) ? $field_name : $name;
 	}
 
 	/**
@@ -64,12 +71,22 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 
 	/**
 	 * @param  boolean $plural 	Specifies if the plural form of the name is wanted.
-	 * @return string         	The name of the resource. If $plural is true the name is in plural form,
+	 * @return string         	The resource name. If $plural is true the name is in plural form,
 	 *                            otherwise it is in singular form.
 	 */
 	public function getName($plural = false)
 	{
-		return $this->name[$plural ? 'plural' : 'singular'];
+		return $this->name . ($plural ? 's' : '');
+	}
+
+		/**
+	 * @param  boolean $plural 	Specifies if the plural form of the name is wanted.
+	 * @return string         	The field name. If $plural is true the name is in plural form,
+	 *                            otherwise it is in singular form.
+	 */
+	public function getFieldName($plural = false)
+	{
+		return $this->field_name . ($plural ? 's' : '');
 	}
 
 	/**
@@ -112,7 +129,8 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 */
 	public function __get($name)
 	{
-		$available_child_resources = ColoCrossing_Resource_Child_Factory::getAvailableChildResources($this->getName(true));
+		$parent_name = $this->getName(true);
+		$available_child_resources = ColoCrossing_Resource_Child_Factory::getAvailableChildResources($parent_name);
 
 		if (isset($available_child_resources) && isset($available_child_resources[$name]))
 		{
@@ -316,7 +334,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 		}
 
 		$data = $response->getContent();
-		$name = $this->getName($is_collection);
+		$name = $this->getFieldName($is_collection);
 
 		$content = isset($data) && isset($data[$name]) && is_array($data[$name]) ? $data[$name] : null;
 
@@ -326,28 +344,6 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 		}
 
 		return $content;
-	}
-
-	/**
-	 * Sets the name of the Resource.
-	 * @param string|array<string> 	$name 	If string, it is assumed the singular form is provided and
-	 *                                    		the plural form is created by appending an 's'.
-	 *                                    		Otherwise, an array with a singular and plural keys is
-	 *                                    		expected.
-	 */
-	private function setName($name)
-	{
-		if (is_array($name))
-		{
-			$this->name = $name;
-		}
-		else
-		{
-			$this->name = array(
-				'singular' => $name,
-				'plural' => $name . 's'
-			);
-		}
 	}
 
 }
