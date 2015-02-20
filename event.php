@@ -54,7 +54,7 @@ try {
 
 //Execute Event
 try {
-	$event->execute();
+	echo $event->execute() ? 'True' : 'False';
 } catch (Exception $e) {
 	http_response_code(500);
 	exit($e->getMessage());

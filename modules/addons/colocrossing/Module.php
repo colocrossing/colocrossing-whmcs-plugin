@@ -110,6 +110,8 @@ class ColoCrossing_Module {
 	 * @return array The Fields
 	 */
 	public function getConfigurationFields() {
+		$department_names = ColoCrossing_Model_SupportDepartment::getNames();
+
 	    return array(
         	'api_key' => array(
         		'FriendlyName' => 'API Key',
@@ -123,9 +125,15 @@ class ColoCrossing_Module {
         	),
         	'system_username' => array(
         		'FriendlyName' => 'System Username',
-        		"Description" => "The user that will be used to perform automated tasks such as creating tickets.",
+        		'Description' => 'The user that will be used to perform automated tasks such as creating tickets.',
         		'Type' => 'text',
         		'Size' => '50'
+        	),
+        	'abuse_department' => array (
+        		'FriendlyName' => 'Abuse Department',
+        		'Type' => 'dropdown',
+        		'Options' => implode(',', $department_names),
+        		'Description' => 'The support department that will be used for abuse tickets.'
         	)
    	    );
 	}
@@ -136,7 +144,7 @@ class ColoCrossing_Module {
 	 * @return array The Config
 	 */
 	public function getConfiguration() {
-		$configuration = $this->getDefaultConfiguration();
+		$configuration = array();
 
 	    $results = select_query('tbladdonmodules', 'setting,value', array('module' => 'colocrossing'));
 

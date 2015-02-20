@@ -40,14 +40,134 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	 * @return boolean True if executes succesfully
 	 */
 	public function execute() {
- 		return $this->executeWHMCSCommand('openticket', array(
-			'clientid' => '1',
-			'deptid' => '1',
-			'admin' => '1',
- 			'subject' => $this->ticket->getSubject(),
-			'message' => 'This is a sample ticket opened by the API as an admin user',
- 			'priority' => 'Low'
- 		));
+		$cc_department = $this->ticket->getDepartment();
+
+		if(empty($cc_department) && $cc_department->getId() != 11 && $cc_department->getName() != 'Abuse') {
+			return false;
+		}
+
+		$department = $this->getDepartment();
+
+		if(empty($department)) {
+			return false;
+		}
+
+		$department_id = intval($department->getId());
+
+		$message = $this->getMessage();
+
+		if(empty($message)) {
+			return false;
+		}
+
+		$subject = $this->ticket->getSubject();
+		$priority = $this->getPriority();
+
+		$clients = $this->getClients();
+
+		foreach ($clients as $client) {
+			$client_id = intval($client->getId());
+
+			$this->executeWHMCSCommand('openticket', array(
+				'clientid' => $client_id,
+				'deptid' => $department_id,
+				'admin' => true,
+	 			'subject' => $subject,
+				'message' => $message,
+	 			'priority' => $priority
+	 		));
+		}
+
+ 		return count($clients) > 0;
+	}
+
+	/**
+	 * Retrieves the Message from the First Response. Must be from Admin or System.
+	 * @return string|null The Message
+	 */
+	private function getMessage() {
+		$responses = $this->ticket->getResponses();
+
+		if(empty($responses)) {
+			return null;
+		}
+
+		$response = $responses->get(0);
+		$responder = $response->getUser();
+
+		if(empty($responder) || !in_array($responder->getType(), array('system', 'admin'))) {
+			return null;
+		}
+
+		return $response->getMessage();
+	}
+
+	/**
+	 * Retrieves the Priority of the Ticket
+	 * @return string|null The Priority
+	 */
+	private function getPriority() {
+		$priority = $this->ticket->getPriority();
+
+		if(empty($priority)) {
+			return 'Low';
+		}
+
+		switch ($priority->getId()) {
+			case 1:
+				return 'Low';
+			case 2:
+				return 'Medium';
+			case 3:
+			case 4:
+				return 'High';
+		}
+
+		return 'Low';
+	}
+
+	/**
+	 * Get the Department
+	 *
+	 * @return ColoCrossing_Model_SupportDepartment The Department
+	 */
+	public function getDepartment() {
+		$configuration = $this->module->getConfiguration();
+		$options = array();
+
+		if(isset($configuration['abuse_department'])) {
+			$options['filters'] = array(
+				'name' => $configuration['abuse_department']
+			);
+		}
+
+		$departments = ColoCrossing_Model_SupportDepartment::findAll($options);
+
+	    return count($departments) ? $departments[0] : null;
+	}
+
+	/**
+	 * Get the Clients with Devices Assigned to Ticket
+	 *
+	 * @return array<ColoCrossing_Model_Client> The Clients
+	 */
+	public function getClients() {
+		$devices = $this->ticket->getDevices();
+		$clients = array();
+
+		foreach ($devices as $device) {
+			$service = ColoCrossing_Model_Service::findByDevice($device);
+
+			if(isset($service)) {
+				$client = $service->getClient();
+
+				if(isset($client)) {
+					$clients[] = $client;
+				}
+			}
+		}
+
+		return array_unique($clients);
 	}
 
 }

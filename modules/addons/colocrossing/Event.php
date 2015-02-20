@@ -68,9 +68,13 @@ abstract class ColoCrossing_Event {
 	protected function executeWHMCSCommand($type, array $data) {
 		$user = $this->module->getSystemUsername();
 
+		if(empty($user)) {
+			throw new Exception('System user not defined');
+		}
+
         $command = localAPI($type, $data, $user);
 
-	 	if($command['result'] == 'error') {
+	 	if($command['result'] != 'success') {
 	 		throw new Exception($command['message']);
 	 	}
 
