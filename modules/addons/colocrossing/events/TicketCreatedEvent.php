@@ -93,13 +93,23 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		}
 
 		$response = $responses->get(0);
-		$responder = $response->getUser();
+		$user = $response->getUser();
 
-		if(empty($responder) || !in_array($responder->getType(), array('system', 'admin'))) {
+		if(empty($user) || $user->getType() != 'system') {
 			return null;
 		}
 
-		return $response->getMessage();
+		$message = $response->getMessage();
+
+		$lines = preg_split("/\r\n|\n|\r/", $message);
+
+		if(count($lines) > 2 && substr($lines[0], -1) == ',' && empty($lines[1])) {
+			$lines = array_slice($lines, 2);
+
+			return implode("\n", $lines);
+		}
+
+		return $message;
 	}
 
 	/**

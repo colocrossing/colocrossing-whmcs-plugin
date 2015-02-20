@@ -180,6 +180,15 @@ abstract class ColoCrossing_Model {
 	}
 
 	/**
+	 * @return string The Object in string form.
+	 */
+	public function __toString()
+	{
+    	$class = get_class($this);
+    	return $class . ' #' . $this->getId();
+	}
+
+	/**
 	 * Creates a new instance of this Model that has not yet been persisted.
 	 * @param  array  $values The values of this model
 	 * @return ColoCrossing_Model An instance of this model.
