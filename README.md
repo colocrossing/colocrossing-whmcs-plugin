@@ -5,8 +5,8 @@ This is a plugin for WHMCS that integrates with the ColoCrossing Portal. It prov
 Installation
 -------------------------------
 * Download or Git clone the contents of this repository
-* Merge the `modules` with the `modules` directory in the root directory of your WHMCS installation.
-* This should add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
+* Merge the repository directory with the root directory of your WHMCS installation.
+* This should add `event.php` to `<whmcs_root>/event.php` and add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and add a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
 * If you are running on a Windows system, you will need to modify the cookie jar location in `<whmcs_root>/modules/addons/colocrossing/API.php`. By default it is set to `/tmp/colocrossing_cookie_jar.txt` for Linux systems. Your Web Server will need permissions to write to the cookie jar file.
 
 Configuration
@@ -14,10 +14,12 @@ Configuration
 * Login to the [ColoCrossing Portal](https://portal.colocrossing.com/api).
 * Go to the API section by clicking on the link at the footer of the page.
 * Go to the API Keys tab and generate an API Key with the IP address of your WHMCS server.
+* Go to the API Webhooks tab and create a webhook for the `Ticket Created` event. Randomly generate a token for the secret. The URL should point to `https://your-whmcs-installation/event.php`.
 * Login to the WHMCS administrator panel.
+* In WHMCS, setup a support ticket department to handle abuse complaints along with a system user acount to be used by the module.
 * Go to Setup > Addon Modules
 * Activate the ColoCrossing Portal module.
-* Configure the module by entering the API Key you generated above and by setting the access controls accordingly.
+* Configure the module by entering the API Key and API Webhook you generated above and by setting the access controls, abuse department, and system account accordingly.
 * Go to Setup > Products/Services > Products/Services
 * Select a product you would like to enable ColoCrossing integrations for.
 * Edit the module settings of the product by setting the Module Name to Colocrossing.
