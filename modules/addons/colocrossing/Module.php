@@ -9,6 +9,7 @@ require 'Controller.php';
 require 'Utilities.php';
 require 'Model.php';
 require 'API.php';
+require 'Event.php';
 
 /**
  * ColoCrossing Module for WHMCS Module
@@ -114,6 +115,17 @@ class ColoCrossing_Module {
         		'FriendlyName' => 'API Key',
         		'Type' => 'text',
         		'Size' => '50'
+        	),
+        	'api_hook_secret' => array(
+        		'FriendlyName' => 'API Webhook Secret',
+        		'Type' => 'text',
+        		'Size' => '50'
+        	),
+        	'system_username' => array(
+        		'FriendlyName' => 'System Username',
+        		"Description" => "The user that will be used to perform automated tasks such as creating tickets.",
+        		'Type' => 'text',
+        		'Size' => '50'
         	)
    	    );
 	}
@@ -208,6 +220,28 @@ class ColoCrossing_Module {
 		$configuration = $this->getConfiguration();
 
 	    return empty($configuration['api_key']) ? null : $configuration['api_key'];
+	}
+
+	/**
+	 * Get the API Hook Secret
+	 *
+	 * @return string The API Hook Secret
+	 */
+	public function getAPIHookSecret() {
+		$configuration = $this->getConfiguration();
+
+	    return empty($configuration['api_hook_secret']) ? null : $configuration['api_hook_secret'];
+	}
+
+	/**
+	 * Get the System Username
+	 *
+	 * @return string The System Username
+	 */
+	public function getSystemUsername() {
+		$configuration = $this->getConfiguration();
+
+	    return empty($configuration['system_username']) ? null : $configuration['system_username'];
 	}
 
 	/**
