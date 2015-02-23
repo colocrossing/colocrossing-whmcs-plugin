@@ -27,9 +27,9 @@ abstract class ColoCrossing_Resource_Child_Abstract extends ColoCrossing_Resourc
 	 *                                      	     		is created by appending an 's'.
 	 * @param string              	$url    			The Url of the Resource Relative to the root of parent.
 	 */
-	public function __construct(ColoCrossing_Resource $parent_resource, ColoCrossing_Client $client, $name, $url)
+	public function __construct(ColoCrossing_Resource $parent_resource, ColoCrossing_Client $client, $name, $url, $field_name = null, $plural_name_suffix = null)
 	{
-		parent::__construct($client, $name, $url);
+		parent::__construct($client, $name, $url, $field_name, $plural_name_suffix);
 
 		$this->parent_resource = $parent_resource;
 	}

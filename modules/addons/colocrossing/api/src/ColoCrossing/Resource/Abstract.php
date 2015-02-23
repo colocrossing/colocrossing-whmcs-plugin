@@ -32,6 +32,13 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	private $field_name;
 
 	/**
+	 * The Suffix to The Resource/Field Name in its Plural form.
+	 * Default value is `s`
+	 * @var string
+	 */
+	private $plural_name_suffix;
+
+	/**
 	 * The Url of the Resource Relative to the root of parent.
 	 * @var string
 	 */
@@ -50,7 +57,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 *                                      	is created by appending an 's'.
 	 * @param string              	$url    The Url of the Resource Relative to the root of parent.
 	 */
-	public function __construct(ColoCrossing_Client $client, $name, $url, $field_name = null)
+	public function __construct(ColoCrossing_Client $client, $name, $url, $field_name = null, $plural_name_suffix = null)
 	{
 		$this->client = $client;
 		$this->url = $url;
@@ -59,6 +66,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 
 		$this->name = $name;
 		$this->field_name = isset($field_name) ? $field_name : $name;
+		$this->plural_name_suffix = isset($plural_name_suffix) ? $plural_name_suffix : 's';
 	}
 
 	/**
@@ -76,7 +84,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 */
 	public function getName($plural = false)
 	{
-		return $this->name . ($plural ? 's' : '');
+		return $this->name . ($plural ? $this->plural_name_suffix : '');
 	}
 
 		/**
@@ -86,7 +94,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 */
 	public function getFieldName($plural = false)
 	{
-		return $this->field_name . ($plural ? 's' : '');
+		return $this->field_name . ($plural ? $this->plural_name_suffix : '');
 	}
 
 	/**
