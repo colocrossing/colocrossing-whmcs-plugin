@@ -78,7 +78,7 @@ abstract class ColoCrossing_Event {
 	 		throw new Exception($command['message']);
 	 	}
 
-	 	return $command['result'] == 'success';
+	 	return $command;
 	}
 
 	/**

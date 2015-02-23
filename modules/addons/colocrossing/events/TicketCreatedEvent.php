@@ -52,33 +52,49 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 			return false;
 		}
 
-		$department_id = intval($department->getId());
-
+		$subject = $this->getSubject();
 		$message = $this->getMessage();
 
-		if(empty($message)) {
+		if(empty($subject) || empty($message)) {
 			return false;
 		}
 
-		$subject = $this->ticket->getSubject();
 		$priority = $this->getPriority();
+		$status = $this->getStatus();
 
-		$clients = $this->getClients();
+		$devices = $this->ticket->getDevices();
 
-		foreach ($clients as $client) {
-			$client_id = intval($client->getId());
+		foreach ($devices as $device) {
+			$service = ColoCrossing_Model_Service::findByDevice($device);
 
-			$this->executeWHMCSCommand('openticket', array(
-				'clientid' => $client_id,
-				'deptid' => $department_id,
+			if(empty($service)) {
+				continue;
+			}
+
+			$client = $service->getClient();
+
+			if(empty($service)) {
+				continue;
+			}
+
+			$subject = $this->getSubject($device);
+
+			$ticket = $this->executeWHMCSCommand('openticket', array(
+	 			'subject' => $this->formatSubject($subject, $device, $service),
+				'message' => $this->formatMessage($message, $device, $service),
+				'clientid' => $client->getId(),
+				'deptid' => $department->getId(),
 				'admin' => true,
-	 			'subject' => $subject,
-				'message' => $message,
 	 			'priority' => $priority
+	 		));
+
+	 		$this->executeWHMCSCommand('updateticket', array(
+	 			'ticketid' => intval($ticket['id']),
+	 			'status' => $status
 	 		));
 		}
 
- 		return count($clients) > 0;
+ 		return true;
 	}
 
 	/**
@@ -110,6 +126,14 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		}
 
 		return $message;
+	}
+
+	/**
+	 * Retrieves the Subject of the Ticket
+	 * @return string The Subject
+	 */
+	private function getSubject() {
+		return $this->ticket->getSubject();
 	}
 
 	/**
@@ -157,27 +181,50 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	}
 
 	/**
-	 * Get the Clients with Devices Assigned to Ticket
+	 * Get the Status for the new Ticket
 	 *
-	 * @return array<ColoCrossing_Model_Client> The Clients
+	 * @return string The Status
 	 */
-	public function getClients() {
-		$devices = $this->ticket->getDevices();
-		$clients = array();
+	public function getStatus() {
+		return 'On Hold';
+	}
 
-		foreach ($devices as $device) {
-			$service = ColoCrossing_Model_Service::findByDevice($device);
+	/**
+	 * Formats the Subject for the new Ticket
+	 * @param  string 						$subject The Subject
+	 * @param  ColoCrossing_Object_Device 	$device  The Device
+	 * @param  ColoCrogging_Model_Service 	$service The Service
+	 * @return string         The Formatted Subject
+	 */
+	public function formatSubject($subject, $device, $service) {
+		$service_hostname = $service->getHostname();
 
-			if(isset($service)) {
-				$client = $service->getClient();
-
-				if(isset($client)) {
-					$clients[] = $client;
-				}
-			}
+		if(empty($service_hostname)) {
+			return $subject;
 		}
 
-		return array_unique($clients);
+		$device_name = $device->getName();
+
+		return str_replace($device_name, $service_hostname, $subject);
+	}
+
+	/**
+	 * Formats the Message for the new Ticket
+	 * @param  string 						$message The Message
+	 * @param  ColoCrossing_Object_Device 	$device  The Device
+	 * @param  ColoCrogging_Model_Service 	$service The Service
+	 * @return string         The Formatted Message
+	 */
+	public function formatMessage($message, $device, $service) {
+		$service_hostname = $service->getHostname();
+
+		if(empty($service_hostname)) {
+			return $message;
+		}
+
+		$device_name = $device->getName();
+
+		return str_replace($device_name, $device_name . ' (' . $service_hostname . ')', $message);
 	}
 
 }
