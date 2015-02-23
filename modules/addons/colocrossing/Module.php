@@ -110,16 +110,19 @@ class ColoCrossing_Module {
 	 * @return array The Fields
 	 */
 	public function getConfigurationFields() {
-		$department_names = ColoCrossing_Model_SupportDepartment::getNames();
+		$support_department_names = ColoCrossing_Model_SupportDepartment::getNames();
+		$support_status_names = ColoCrossing_Model_SupportStatus::getNames();
 
 	    return array(
         	'api_key' => array(
         		'FriendlyName' => 'API Key',
+        		'Description' => 'The token provided to you when creating the key in the ColoCrossing Portal.',
         		'Type' => 'text',
         		'Size' => '50'
         	),
         	'api_hook_secret' => array(
         		'FriendlyName' => 'API Webhook Secret',
+        		'Description' => 'The secret used when creating the webhook in the ColoCrossing Portal.',
         		'Type' => 'text',
         		'Size' => '50'
         	),
@@ -129,11 +132,17 @@ class ColoCrossing_Module {
         		'Type' => 'text',
         		'Size' => '50'
         	),
-        	'abuse_department' => array (
-        		'FriendlyName' => 'Abuse Department',
+        	'abuse_ticket_department' => array (
+        		'FriendlyName' => 'Abuse Ticket Department',
         		'Type' => 'dropdown',
-        		'Options' => implode(',', $department_names),
-        		'Description' => 'The support department that will be used for abuse tickets.'
+        		'Options' => implode(',', $support_department_names),
+        		'Description' => 'The department that abuse tickets will be assigned to.'
+        	),
+        	'abuse_ticket_status' => array (
+        		'FriendlyName' => 'Abuse Ticket Status',
+        		'Type' => 'dropdown',
+        		'Options' => implode(',', $support_status_names),
+        		'Description' => 'The status that abuse tickets will be set to upon opening.'
         	)
    	    );
 	}

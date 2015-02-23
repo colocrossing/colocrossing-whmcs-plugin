@@ -12,6 +12,7 @@ require 'models/Service.php';
 require 'models/Product.php';
 require 'models/ProductGroup.php';
 require 'models/SupportDepartment.php';
+require 'models/SupportStatus.php';
 
 /**
  * A Simple Model Implementation to interact with rows of a DB table

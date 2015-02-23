@@ -169,9 +169,9 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		$configuration = $this->module->getConfiguration();
 		$options = array();
 
-		if(isset($configuration['abuse_department'])) {
+		if(isset($configuration['abuse_ticket_department'])) {
 			$options['filters'] = array(
-				'name' => $configuration['abuse_department']
+				'name' => $configuration['abuse_ticket_department']
 			);
 		}
 
@@ -186,7 +186,9 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	 * @return string The Status
 	 */
 	public function getStatus() {
-		return 'On Hold';
+		$configuration = $this->module->getConfiguration();
+
+		return isset($configuration['abuse_ticket_status']) ? $configuration['abuse_ticket_status'] : 'Open';
 	}
 
 	/**
