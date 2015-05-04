@@ -32,6 +32,14 @@ Getting Started
 * To get started assigning devices to your clients go to the Unassigned Services link in the left side navigation. Here you are able to mass assign ColoCrossing devices whose hostnames match those of existing WHMCS services.
 * You can also assign ColoCrossing devices to WHMCS services by navigating to the client and finding the corresponding product/service.
 
+Dependencies
+-------------------------------
+This module requires PHP version 5.4 or greater to fully operate. It also assumes cURL and JSON modules are installed with PHP. On a Debian based system, these can be installed with the following command:
+
+```
+sudo apt-get install php5-curl php5-json
+```
+
 Reporting Issues/Contributing
 -------------------------------
 If you find an issue with the addon, please report the issue to us by using the repository's issue tracker and we will try to resolve the issue. If you resolve the issue or make other improvements feel free to create a pull request so we can merge it into a future release.
