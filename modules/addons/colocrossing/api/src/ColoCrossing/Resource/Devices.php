@@ -78,6 +78,21 @@ class ColoCrossing_Resource_Devices extends ColoCrossing_Resource_Abstract
 	}
 
 	/**
+	 * Retrieve a Collection of Devices associated with the provided announcement id.
+	 * @param  string 	$announcement_id 	The announcement id to filter by
+	 * @param  array 	$options    	The Options for the page and sort.
+	 * @return array|ColoCrossing_Collection<ColoCrossing_Object_Device> The Devices
+	 */
+	public function findByAnnouncement($announcement_id, array $options = null)
+	{
+		$options = isset($options) && is_array($options) ? $options : array();
+		$options['filters'] = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : array();
+		$options['filters']['announcement'] = $announcement_id;
+
+		return $this->findAll($options);
+	}
+
+	/**
 	 * Cancels the Service Associated with the Provided Device
 	 * @param  int|ColoCrossing_Object_Device $device 	The Device or Id
 	 * @return boolean		True if the cancellation suceeds, false otherwise.

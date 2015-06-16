@@ -79,6 +79,14 @@ Examples
 -------------------------------
 Numerous examples have been provided in the repository's examples folder. The examples demonstrate how to accomplish most actions possible in the library. You are encouraged to look at these examples to learn the best practices for using the library.
 
+Dependencies
+-------------------------------
+This library requires PHP version 5.4 or greater to fully operate. It also assumes cURL and JSON modules are installed with PHP. On a Debian based system, these can be installed with the following command:
+
+```
+sudo apt-get install php5-curl php5-json
+```
+
 Reporting Issues/Contributing
 -------------------------------
 If you find an issue with the library, please report the issue to us by using the repository's issue tracker and we will try to resolve the issue. If you resolve the issue or make other improvements feel free to create a pull request so we can merge it into a future release.

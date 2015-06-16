@@ -54,6 +54,9 @@ class ColoCrossing_Object_Factory
 
 		switch ($resource->getName(false))
 		{
+			case 'announcement':
+				require_once(dirname(__FILE__) . '/Announcement.php');
+				return new ColoCrossing_Object_Announcement($client, $resource, $values);
 			case 'bandwidth_usage':
 				require_once(dirname(__FILE__) . '/BandwidthUsage.php');
 				return new ColoCrossing_Object_BandwidthUsage($client, $resource, $values);
