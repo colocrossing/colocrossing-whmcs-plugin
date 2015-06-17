@@ -1,0 +1,77 @@
+<div class="full-section">
+  <div class="heading">
+    <h2>Affected Devices</h2>
+  </div>
+
+  <table class="datatable">
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Type</th>
+      <th>Hostname</th>
+      <th>Zone</th>
+      <th>Rack</th>
+      <th>Assignment</th>
+    </tr>
+    <?php
+      if(count($devices) == 0):
+    ?>
+      <tr>
+        <td colspan="7">No devices found.</td>
+      </tr>
+    <?php
+      endif;
+
+      foreach ($devices as $index => $device):
+        $device_id = $device->getId();
+        $device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+          'controller' => 'devices',
+          'action' => 'view',
+          'id' => $device_id
+        ));
+        $device_type = $device->getType();
+        $device_assignment = 'Unassigned';
+
+        $service = isset($services[$device_id]) ? $services[$device_id] : null;
+        $client = isset($service) ? $service->getClient(): null;
+
+        if(isset($service) && isset($client)) {
+          $client_service_url = ColoCrossing_Utilities::buildUrl('clientsservices.php', array(
+            'id' => $service->getId(),
+            'userid' => $client->getId()
+          ));
+
+          $device_assignment = '<a href="' . $client_service_url . '">' . $client->getFullName() . '</a>';
+        }
+
+        if($device_type->isRacked()) {
+          $rack_id = $device->getRackId();
+          $rack_name = $device->getRackName();
+          $rack_owner = $device->getRackOwner();
+
+          if(isset($rack_id) && isset($rack_name) && isset($rack_owner)) {
+            $rack_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+              'controller' => 'devices',
+              'action' => 'view',
+              'id' => $rack_id
+            ));
+            $rack_name = '<a href="' . $rack_url . '">' . $rack_name . '</a>';
+          }
+        } else {
+          $rack_name = 'Self';
+        }
+    ?>
+      <tr>
+        <td><a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a></td>
+        <td><?php echo $device->getNickname(); ?></td>
+        <td><?php echo $device_type->getName(); ?></td>
+        <td><?php echo $device->getHostname(); ?></td>
+        <td><?php echo $device->getSubzone(); ?></td>
+        <td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
+        <td><?php echo $device_assignment; ?></td>
+      </tr>
+    <?php
+      endforeach;
+    ?>
+  </table>
+</div>

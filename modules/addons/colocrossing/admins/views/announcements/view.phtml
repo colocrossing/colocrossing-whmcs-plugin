@@ -1,0 +1,151 @@
+<div style="margin: 0 10px;">
+  <div style="float: right;">
+    <input id="send-announcement-button" type="button" value="Send Announcement" class="btn" />
+  </div>
+  <h1>ColoCrossing Announcement</h1>
+  <?php
+    $this->renderFlashMessage();
+
+    $created_at = $this->announcement->getCreateDate();
+
+    $start_at = $this->announcement->getStartDate();
+    $end_at = $this->announcement->getEndDate();
+  ?>
+
+  <table class="form" width="100%" border="0" cellspacing="2" cellpadding="3">
+    <tr>
+      <td width="15%" class="fieldlabel">Subject</td>
+      <td width="35%" class="fieldarea"><?php echo $this->announcement->getSubject(); ?></td>
+      <td width="15%" class="fieldlabel">Created At</td>
+      <td width="35%" class="fieldarea"><?php echo empty($created_at) ? 'N/A' : date('m/d/Y', $created_at);; ?></td>
+    </tr>
+    <tr>
+      <td width="15%" class="fieldlabel">Type</td>
+      <td width="35%" class="fieldarea"><?php echo $this->type->getName(); ?></td>
+      <td width="15%" class="fieldlabel">Severity</td>
+      <td width="35%" class="fieldarea"><?php echo $this->severity->getName(); ?></td>
+    </tr>
+    <tr>
+      <td width="15%" class="fieldlabel">Start At</td>
+      <td width="35%" class="fieldarea"><?php echo empty($start_at) ? 'N/A' : date('m/d/Y h:i a', $start_at);; ?></td>
+      <td width="15%" class="fieldlabel">End At</td>
+      <td width="35%" class="fieldarea"><?php echo empty($end_at) ? 'N/A' : date('m/d/Y h:i a', $end_at);; ?></td>
+    </tr>
+    <tr>
+      <td width="15%" class="fieldlabel" style="vertical-align: top;">Message</td>
+      <td width="35%" class="fieldarea"><?php echo nl2br($this->announcement->getMessage()); ?></td>
+    </tr>
+  </table>
+
+<?php
+  $this->renderTemplate('/announcements/_devices.phtml', array(
+    'base_url' => $this->base_url,
+    'devices' => $this->devices,
+    'services' => $this->services
+  ));
+?>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#contentarea, #content').find('h1').first().remove();
+
+    var sendDialog = $('#send-announcement-dialog');
+    var sendButton = $('#send-announcement-button');
+
+    sendDialog.dialog({
+      autoOpen: false,
+      modal: true,
+      resizable: false,
+      width: 500,
+      buttons: {
+        Send: function() {
+          var form = $(this).find('form');
+
+          form.submit();
+        },
+        Cancel: function() {
+          $(this).dialog('close');
+        }
+      }
+    });
+
+    sendButton.on('click', function(e) {
+      sendDialog.dialog('open');
+
+      e.preventDefault();
+      return false;
+    });
+
+  });
+</script>
+
+<style type="text/css">
+  div#contentarea h2 { margin-bottom: 10px; }
+
+  div.heading { margin-bottom: 0px; margin-top: 5px; padding: 5px 0px; }
+  div.heading h2 { display: inline-block; margin-top: 5px; margin-bottom: 5px !important; }
+  div.heading div.actions { float: right; }
+
+  table.datatable { width: 100%; text-align: center; }
+
+  div.ui-dialog a.ui-dialog-titlebar-close { display: none; }
+</style>
+
+<div id="send-announcement-dialog" title="Send Announcement">
+  <?
+    $url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+      'controller' => 'announcements',
+      'action' => 'send',
+      'id' => $this->announcement->getId()
+    ));
+  ?>
+  <form action="<?php echo $url; ?>" method="POST" style="width: 470px; margin: 0 auto;">
+    <p>Sending the announcement will open tickets with all the customers assigned to the affected devices.</p>
+    <div style="float: left; width: 235px; margin-bottom: 10px;">
+      <label style="float: left; width: 80px;">Department:</label>
+      <select style="float: left; width: 130px;" name="department">
+      <?
+        foreach ($this->ticket_departments as $department) {
+          echo '<option value="' . $department->getId() . '">' . $department->getName() . '</option>';
+        }
+      ?>
+      </select>
+    </div>
+
+    <div style="float: left; width: 235px; margin-bottom: 10px;">
+      <label style="float: left; width: 80px;">Status:</label>
+      <select style="float: left; width: 130px;" name="status">
+      <?
+        foreach ($this->ticket_statuses as $status) {
+          echo '<option value="' . $status->getId() . '">' . $status->getName() . '</option>';
+        }
+      ?>
+      </select>
+    </div>
+
+    <div style="float: left; width: 470px; margin-bottom: 10px;">
+      <label style="float: left; width: 80px;">Priority:</label>
+      <select style="float: left; width: 130px;" name="priority">
+      <?
+        $severity_id = $this->severity->getId();
+
+        foreach ($this->ticket_priorities as $id => $priority) {
+          echo '<option value="' . $id . '" ' . ($severity_id == $id ? 'selected' : null) . '>' . $priority . '</option>';
+        }
+      ?>
+      </select>
+    </div>
+
+    <div style="float: left; width: 470px; margin-bottom: 10px;">
+      <label style="float: left; width: 80px;">Subject:</label>
+      <input style="float: left; width: 360px;" type="text" name="subject" value="<? echo htmlspecialchars($this->announcement->getSubject()); ?>">
+    </div>
+
+    <div style="float: left; width: 470px; margin-bottom: 10px;">
+      <label style="float: left; width: 80px;">Message:</label>
+      <textarea style="float: left; width: 360px; min-width: 360px; max-width: 360px; padding: 2px; height: 200px;" name="message"><? echo htmlspecialchars($this->announcement->getMessage()); ?></textarea>
+    </div>
+  </form>
+</div>
+
