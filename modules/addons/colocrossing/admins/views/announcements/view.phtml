@@ -10,15 +10,13 @@
 
     $start_at = $this->announcement->getStartDate();
     $end_at = $this->announcement->getEndDate();
+
+    if(isset($start_at) && isset($end_at)) {
+      $time_frame = date('m/d/Y h:i a', $start_at) . ' - ' . date('m/d/Y h:i a', $end_at);
+    }
   ?>
 
   <table class="form" width="100%" border="0" cellspacing="2" cellpadding="3">
-    <tr>
-      <td width="15%" class="fieldlabel">Subject</td>
-      <td width="35%" class="fieldarea"><?php echo $this->announcement->getSubject(); ?></td>
-      <td width="15%" class="fieldlabel">Created At</td>
-      <td width="35%" class="fieldarea"><?php echo empty($created_at) ? 'N/A' : date('m/d/Y', $created_at);; ?></td>
-    </tr>
     <tr>
       <td width="15%" class="fieldlabel">Type</td>
       <td width="35%" class="fieldarea"><?php echo $this->type->getName(); ?></td>
@@ -26,14 +24,18 @@
       <td width="35%" class="fieldarea"><?php echo $this->severity->getName(); ?></td>
     </tr>
     <tr>
-      <td width="15%" class="fieldlabel">Start At</td>
-      <td width="35%" class="fieldarea"><?php echo empty($start_at) ? 'N/A' : date('m/d/Y h:i a', $start_at);; ?></td>
-      <td width="15%" class="fieldlabel">End At</td>
-      <td width="35%" class="fieldarea"><?php echo empty($end_at) ? 'N/A' : date('m/d/Y h:i a', $end_at);; ?></td>
+      <td width="15%" class="fieldlabel">Time Frame</td>
+      <td width="35%" class="fieldarea"><?php echo empty($time_frame) ? 'N/A' : $time_frame; ?></td>
+      <td width="15%" class="fieldlabel">Created At</td>
+      <td width="35%" class="fieldarea"><?php echo empty($created_at) ? 'N/A' : date('m/d/Y', $created_at); ?></td>
+    </tr>
+    <tr>
+      <td width="15%" class="fieldlabel" style="vertical-align: top;">Subject</td>
+      <td width="35%" class="fieldarea" style="vertical-align: top;"><?php echo $this->announcement->getSubject(); ?></td>
     </tr>
     <tr>
       <td width="15%" class="fieldlabel" style="vertical-align: top;">Message</td>
-      <td width="35%" class="fieldarea"><?php echo nl2br($this->announcement->getMessage()); ?></td>
+      <td width="35%" class="fieldarea" style="vertical-align: top;"><?php echo nl2br($this->announcement->getMessage()); ?></td>
     </tr>
   </table>
 
@@ -104,7 +106,7 @@
     <p>Sending the announcement will open tickets with all the customers assigned to the affected devices.</p>
     <div style="float: left; width: 235px; margin-bottom: 10px;">
       <label style="float: left; width: 80px;">Department:</label>
-      <select style="float: left; width: 130px;" name="department">
+      <select style="float: left; width: 130px;" name="department_id">
       <?
         foreach ($this->ticket_departments as $department) {
           echo '<option value="' . $department->getId() . '">' . $department->getName() . '</option>';
@@ -115,7 +117,7 @@
 
     <div style="float: left; width: 235px; margin-bottom: 10px;">
       <label style="float: left; width: 80px;">Status:</label>
-      <select style="float: left; width: 130px;" name="status">
+      <select style="float: left; width: 130px;" name="status_id">
       <?
         foreach ($this->ticket_statuses as $status) {
           echo '<option value="' . $status->getId() . '">' . $status->getName() . '</option>';
@@ -126,7 +128,7 @@
 
     <div style="float: left; width: 470px; margin-bottom: 10px;">
       <label style="float: left; width: 80px;">Priority:</label>
-      <select style="float: left; width: 130px;" name="priority">
+      <select style="float: left; width: 130px;" name="priority_id">
       <?
         $severity_id = $this->severity->getId();
 
@@ -144,7 +146,15 @@
 
     <div style="float: left; width: 470px; margin-bottom: 10px;">
       <label style="float: left; width: 80px;">Message:</label>
-      <textarea style="float: left; width: 360px; min-width: 360px; max-width: 360px; padding: 2px; height: 200px;" name="message"><? echo htmlspecialchars($this->announcement->getMessage()); ?></textarea>
+      <textarea style="float: left; width: 360px; min-width: 360px; max-width: 360px; padding: 3px; height: 200px;" name="message"><?
+        $message = $this->announcement->getMessage();
+
+        if(isset($start_at) && isset($end_at)) {
+          $message = 'Time Frame: ' . date('m/d/Y h:i a', $start_at) . ' - ' . date('m/d/Y h:i a', $end_at) . "\n\n" . $message;
+        }
+
+        echo htmlspecialchars($message);
+      ?></textarea>
     </div>
   </form>
 </div>

@@ -10,6 +10,8 @@ if(!defined('WHMCS')) {
  */
 class ColoCrossing_Admins_AnnouncementsController extends ColoCrossing_Admins_Controller {
 
+  private static $TICKET_STATUSES = array('Low', 'Medium', 'High');
+
   public function index(array $params) {
     $this->filters = array(
       'query' => isset($params['query']) ? $params['query'] : '',
@@ -60,6 +62,104 @@ class ColoCrossing_Admins_AnnouncementsController extends ColoCrossing_Admins_Co
 
     $this->ticket_departments = ColoCrossing_Model_SupportDepartment::findAll();
     $this->ticket_statuses = ColoCrossing_Model_SupportStatus::findAll();
-    $this->ticket_priorities = array('Low', 'Medium', 'High');
+    $this->ticket_priorities = self::$TICKET_STATUSES;
+  }
+
+  public function send(array $params) {
+    $announcement = $this->api->announcements->find($params['id']);
+
+    if(empty($announcement)) {
+      $this->setFlashMessage('The announcement was not found.', 'error');
+      $this->redirectTo('announcements', 'index');
+    }
+
+    $user = $this->module->getSystemUsername();
+
+    $department = ColoCrossing_Model_SupportDepartment::find($params['department_id']);
+    $status = ColoCrossing_Model_SupportStatus::find($params['status_id']);
+    $priority = self::$TICKET_STATUSES[$params['priority_id']];
+
+    if(empty($user) || empty($department) || empty($status) || empty($priority)) {
+      $this->setFlashMessage('An error occured while sending announcement.', 'error');
+      $this->redirectTo('announcements', 'view', array(
+        'id' => $announcement->getId()
+      ));
+    }
+
+    $success = true;
+    $clients = $this->getClients($announcement);
+
+    foreach ($clients as $client_id => $entries) {
+      $message = $this->formatMessage($params['message'], $entries);
+
+      $ticket = localAPI('openticket', array(
+        'subject' => $params['subject'],
+        'message' => $message,
+        'clientid' => $client_id,
+        'deptid' => $department->getId(),
+        'admin' => true,
+        'priority' => $priority
+      ), $user);
+
+      if($ticket['result'] == 'success') {
+        localAPI('updateticket', array(
+          'ticketid' => intval($ticket['id']),
+          'status' => $status->getName()
+        ), $user);
+      } else {
+        $success = false;
+      }
+    }
+
+    if($success) {
+      $this->setFlashMessage('Announcement has successfully been sent to affected customers.', 'success');
+      $this->log('Announcement #' . $announcement->getId() . ' was sent to affected customers.');
+    } else {
+      $this->setFlashMessage('An error occured while sending announcement.', 'error');
+    }
+
+    $this->redirectTo('announcements', 'view', array(
+      'id' => $announcement->getId()
+    ));
+  }
+
+  private function getClients($announcement) {
+    $devices = $announcement->getDevices(array(
+      'compact' => true
+    ));
+    $clients = array();
+
+    foreach ($devices as $device) {
+      $service = ColoCrossing_Model_Service::findByDevice($device);
+
+      if(empty($service)) {
+        continue;
+      }
+
+      $client_id = $service->getClientId();
+
+      if(empty($client_id)) {
+        continue;
+      }
+
+      if(empty($clients[$client_id])) {
+        $clients[$client_id] = array();
+      }
+
+      $clients[$client_id][] = array(
+        'device' => $device,
+        'service' => $service
+      );
+    }
+
+    return $clients;
+  }
+
+  private function formatMessage($message, $entries) {
+    $affected_devices = array_map(function($entry) {
+      return $entry['device']->getName() . '(' . $entry['service']->getHostname() . ')';
+    }, $entries);
+
+    return 'Affected Devices: ' .  implode(', ', $affected_devices) . "\n\n" . $message;
   }
 }
