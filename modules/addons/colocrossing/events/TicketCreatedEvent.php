@@ -40,9 +40,9 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	 * @return boolean True if executes succesfully
 	 */
 	public function execute() {
-		$cc_department = $this->ticket->getDepartment();
+		$ticket_department = $this->ticket->getDepartment();
 
-		if(empty($cc_department) && $cc_department->getId() != 11 && $cc_department->getName() != 'Abuse') {
+		if(empty($ticket_department) || !in_array($ticket_department->getId(), array(2, 11))) {
 			return false;
 		}
 
