@@ -62,27 +62,37 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		$priority = $this->getPriority();
 		$status = $this->getStatus();
 
-		$devices = $this->ticket->getDevices();
+		$ticket_devices = $this->ticket->getDevices();
+		$clients = array();
 
-		foreach ($devices as $device) {
+		foreach ($ticket_devices as $device) {
 			$service = ColoCrossing_Model_Service::findByDevice($device);
 
 			if(empty($service)) {
 				continue;
 			}
 
-			$client = $service->getClient();
+			$client_id = $service->getClientId();
 
-			if(empty($service)) {
+			if(empty($client_id)) {
 				continue;
 			}
 
-			$subject = $this->getSubject($device);
+			if(empty($clients[$client_id])) {
+				$clients[$client_id] = array();
+			}
 
+			$clients[$client_id][] = array(
+				'device' => $device,
+				'service' => $service
+			);
+		}
+
+		foreach ($clients as $client_id => $records) {
 			$ticket = $this->executeWHMCSCommand('openticket', array(
-	 			'subject' => $this->formatSubject($subject, $device, $service),
-				'message' => $this->formatMessage($message, $device, $service),
-				'clientid' => $client->getId(),
+	 			'subject' => $this->formatSubject($subject, $records),
+				'message' => $this->formatMessage($message, $records),
+				'clientid' => $client_id,
 				'deptid' => $department->getId(),
 				'admin' => true,
 	 			'priority' => $priority
@@ -98,7 +108,7 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	}
 
 	/**
-	 * Retrieves the Message from the First Response. Must be from Admin or System.
+	 * Retrieves the Message from the First Response. Must be from System.
 	 * @return string|null The Message
 	 */
 	private function getMessage() {
@@ -193,40 +203,67 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 
 	/**
 	 * Formats the Subject for the new Ticket
-	 * @param  string 						$subject The Subject
-	 * @param  ColoCrossing_Object_Device 	$device  The Device
-	 * @param  ColoCrogging_Model_Service 	$service The Service
-	 * @return string         The Formatted Subject
+	 * @param  string 	$subject The Subject
+	 * @param  array 		$records  The Devices/Services
+	 * @return string   The Formatted Subject
 	 */
-	public function formatSubject($subject, $device, $service) {
-		$service_hostname = $service->getHostname();
-
-		if(empty($service_hostname)) {
+	public function formatSubject($subject, $records) {
+		if(count($records) != 1) {
 			return $subject;
 		}
 
-		$device_name = $device->getName();
+		$device = $records[0]['device'];
+		$service = $records[0]['service'];
 
-		return str_replace($device_name, $service_hostname, $subject);
+		$hostname = $service->getHostname();
+
+		if(empty($hostname)) {
+			return $subject;
+		}
+
+		$name = $device->getName();
+
+		return str_replace($name, $hostname, $subject);
 	}
 
 	/**
 	 * Formats the Message for the new Ticket
-	 * @param  string 						$message The Message
-	 * @param  ColoCrossing_Object_Device 	$device  The Device
-	 * @param  ColoCrogging_Model_Service 	$service The Service
-	 * @return string         The Formatted Message
+	 * @param  string 	$message The Message
+	 * @param  array 		$records  The Devices/Services
+	 * @return string   The Formatted Message
 	 */
-	public function formatMessage($message, $device, $service) {
-		$service_hostname = $service->getHostname();
+	public function formatMessage($message, $records) {
+		if(count($records) == 1) {
+			$device = $records[0]['device'];
+			$service = $records[0]['service'];
 
-		if(empty($service_hostname)) {
-			return $message;
+			$name = $device->getName();
+
+			if(strpos($message, $name) !== false) {
+				$hostname = $service->getHostname();
+
+				if(empty($hostname)) {
+					return $message;
+				}
+
+				return str_replace($name, $name . ' (' . $hostname . ')', $message);
+			}
 		}
 
-		$device_name = $device->getName();
+		$affected_devices = array();
 
-		return str_replace($device_name, $device_name . ' (' . $service_hostname . ')', $message);
+		foreach ($records as $record)
+		{
+			$device = $record['device'];
+			$service = $record['service'];
+
+			$name = $device->getName();
+			$hostname = $service->getHostname();
+
+			$affected_devices[] = $name . (empty($hostname) ? '' : ' (' . $hostname . ')');
+		}
+
+		return $message . "\n\nThe following devices are associated with this ticket:\n" . implode("\n", $affected_devices);
 	}
 
 }
