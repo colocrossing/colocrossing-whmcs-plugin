@@ -73,6 +73,7 @@
 				$device_assignment = 'Unassigned';
 
 				$service = isset($this->devices_services[$device_id]) ? $this->devices_services[$device_id] : null;
+				$service_overdue = isset($service) ? $service->isOverdue() : false;
 				$client = isset($service) ? $service->getClient(): null;
 
 				if(isset($service) && isset($client)) {
@@ -101,14 +102,14 @@
 					$rack_name = 'Self';
 				}
 		?>
-			<tr>
+			<tr class="<?php echo $service_overdue ? 'overdue' : null; ?>">
 				<td><a href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?></a></td>
 				<td><?php echo $device->getNickname(); ?></td>
 				<td><?php echo $device_type->getName(); ?></td>
 				<td><?php echo $device->getHostname(); ?></td>
 				<td><?php echo $device->getSubzone(); ?></td>
 				<td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
-				<td><?php echo $device_assignment; ?></td>
+				<td><?php echo $device_assignment . ($service_overdue ? ' - Overdue' : null); ?></td>
 			</tr>
 		<?php
 			endforeach;
@@ -200,4 +201,17 @@
 
 <style type="text/css">
 	div#contentarea h1 { margin-bottom: 10px; }
+
+	tr.overdue {
+		color: #a94442;
+    background-color: #f2dede;
+	}
+
+	tr.overdue td {
+    background-color: #f2dede;
+	}
+
+	tr.overdue a {
+		color: #a94442;
+	}
 </style>

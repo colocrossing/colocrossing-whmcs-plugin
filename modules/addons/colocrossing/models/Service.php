@@ -177,6 +177,44 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
+	 * @return boolean True if Service Has Unpaid Invoices Whose Due Date is Before Today
+	 */
+	public function isOverdue() {
+		$invoices = $this->getOverdueInvoices();
+
+		return count($invoices) > 0;
+	}
+
+	/**
+	 * @return array<integer> The Invoice IDs Associated with this Service that are Overdue
+	 */
+	public function getOverdueInvoices() {
+		$table = '`tblinvoiceitems` AS `t`';
+
+		$columns = implode(',', array('`i`.`id`'));
+
+		$join = 'INNER JOIN `tblinvoices` AS `i` ON `i`.`id` = `t`.`invoiceid`';
+
+		$conditions = array();
+		$conditions[] = '`i`.`status` = "Unpaid"';
+		$conditions[] = '`i`.`duedate` < "' . date('Y-m-d') . '"';
+		$conditions[] = '`t`.`type` = "Hosting"';
+		$conditions[] = '`t`.`relid` = ' . $this->getId();
+
+		$where = implode (' AND ', $conditions);
+
+		$rows = full_query('SELECT DISTINCT ' . $columns .' FROM ' . $table . ' ' . $join . ' WHERE ' . $where);
+
+		$invoices = array();
+
+		while ($values = mysql_fetch_array($rows)) {
+		    $invoices[] = intval($values['id']);
+		}
+
+		return $invoices;
+	}
+
+	/**
 	 * @return ColoCrossing_Model_Product|null The Product this Service was created from
 	 */
 	public function getProduct() {
