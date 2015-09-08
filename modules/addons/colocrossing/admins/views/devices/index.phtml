@@ -24,17 +24,17 @@
 
 	<table width="100%" border="0" cellpadding="3" cellspacing="0">
 		<tr>
-			<td width="50%" align="left"><?php echo $this->num_records . ' Records Found, Page ' . $this->page . ' of ' . $this->num_pages ?></td>
+			<td width="50%" align="left"><?php echo $this->num_records . ' Records Found, Page ' . $this->page_number . ' of ' . $this->num_pages ?></td>
 			<td width="50%" align="right">
-				<label>Jump to Page:</label>
-				<select id='page-select'>
-				<?php
-					for ($page = 1; $page <= $this->num_pages; $page++) {
-						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
-					}
-				?>
+				<label>Show</label>
+				<select id='page-size-select' name="page_size">
+					<option <?php echo $this->page_size == 25 ? 'selected' : null; ?>>25</option>
+					<option <?php echo $this->page_size == 50 ? 'selected' : null; ?>>50</option>
+					<option <?php echo $this->page_size == 100 ? 'selected' : null; ?>>100</option>
+					<option <?php echo $this->page_size == 250 ? 'selected' : null; ?>>250</option>
+					<option <?php echo $this->page_size == 500 ? 'selected' : null; ?>>500</option>
 				</select>
-				<input type="submit" value="Go" class="btn-small">
+				<label>devices</label>
 			</td>
 		</tr>
 	</table>
@@ -72,7 +72,7 @@
 				$device_type = $device->getType();
 				$device_assignment = 'Unassigned';
 
-				$service = isset($this->devices_services[$device_id]) ? $this->devices_services[$device_id] : null;
+				$service = isset($this->services[$device_id]) ? $this->services[$device_id] : null;
 				$service_overdue = isset($service) ? $service->isOverdue() : false;
 				$client = isset($service) ? $service->getClient(): null;
 
@@ -119,7 +119,7 @@
 
 	<p align="center">
 	<?php
-		if($this->page > 1) {
+		if($this->page_number > 1) {
 			echo '<a id="previous-page-button" href="#previous-page">&laquo; Previous Page</a>';
 		} else {
 			echo '<span id="previous-page-button">&laquo; Previous Page</span>';
@@ -127,7 +127,7 @@
 
 		echo '&nbsp;';
 
-		if($this->page < $this->num_pages) {
+		if($this->page_number < $this->num_pages) {
 			echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
 		} else {
 			echo '<span id="next-page-button">Next Page &raquo;</span>';
@@ -140,7 +140,7 @@
 	<input type="hidden" name="action" value="index" />
 	<input type="hidden" name="sort" value="<?php echo $this->sort; ?>" />
 	<input type="hidden" name="order" value="<?php echo $this->order; ?>" />
-	<input type="hidden" name="page" value="<?php echo $this->page; ?>" />
+	<input type="hidden" name="page_number" value="<?php echo $this->page_number; ?>" />
 </form>
 
 <script type="text/javascript">
@@ -149,11 +149,12 @@
 
 		$('#contentarea, #content').find('h1').first().remove();
 
-		var currentPage = parseInt('<?php echo $this->page; ?>'),
+		var currentPage = parseInt('<?php echo $this->page_number; ?>'),
 		form = $('#devices-table-form'),
 		sortInput = form.find('input[name="sort"]'),
 		orderInput = form.find('input[name="order"]'),
-		pageInput = form.find('input[name="page"]');
+		pageNumberInput = form.find('input[name="page_number"]'),
+		pageSizeInput = form.find('input[name="page_size"]')
 
 		form.find('a.sort-column-button').on('click', function(e) {
 			var button = $(this);
@@ -172,7 +173,7 @@
 		});
 
 		form.find('a#previous-page-button').on('click', function(e) {
-			pageInput.val(currentPage - 1);
+			pageNumberInput.val(currentPage - 1);
 			form.submit();
 
 			e.preventDefault();
@@ -180,15 +181,15 @@
 		});
 
 		form.find('a#next-page-button').on('click', function(e) {
-			pageInput.val(currentPage + 1);
+			pageNumberInput.val(currentPage + 1);
 			form.submit();
 
 			e.preventDefault();
 			return false;
 		});
 
-		form.find('select#page-select').on('change', function() {
-			pageInput.val($(this).val());
+		form.find('select#page-size-select').on('change', function(e) {
+			pageNumberInput.val(1);
 			form.submit();
 
 			e.preventDefault();

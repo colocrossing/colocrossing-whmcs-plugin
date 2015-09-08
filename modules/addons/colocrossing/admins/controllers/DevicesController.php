@@ -18,28 +18,33 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 
 		$this->sort = isset($params['sort']) ? $params['sort'] : 'name';
 		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
-		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
 
-		$devices = $this->api->devices->findAll(array(
+		$this->page_number = isset($params['page_number']) && is_numeric($params['page_number']) ? max(intval($params['page_number']), 1) : 1;
+		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? max(intval($params['page_size']), 1) : 25;
+
+		$collection = $this->api->devices->findAll(array(
 			'filters' => $this->filters,
-			'sort' => ($this->order == 'asc' ? '+' : '-') . $this->sort,
-			'page_number' => $this->page,
-			'page_size' => 30,
-			'format' => 'paged'
+			'sort' => ($this->order == 'asc' ? '+' : '-') . $this->sort
 		));
 
-		$this->num_records = $devices->getTotalRecordCount();
-		$this->num_pages = $devices->size();
+		$this->num_records = $collection->size();
+		$this->num_pages = ceil($this->num_records / $this->page_size);
 
-		$this->devices = $devices->current();
-		$this->devices_services = array();
+		$start_index = min(($this->page_number - 1) * $this->page_size, $this->num_records);
+		$end_index = min($start_index + $this->page_size, $this->num_records);
 
-		foreach ($this->devices as $index => $device) {
-			$device_id = $device->getId();
-			$service = ColoCrossing_Model_Service::findByDevice($device_id);
+		$this->devices = array();
+		$this->services = array();
+
+		for ($i = $start_index; $i < $end_index; $i++) {
+			$device = $collection->get($i);
+
+			$this->devices[] = $device;
+
+			$service = ColoCrossing_Model_Service::findByDevice($device);
 
 			if(isset($service)) {
-				$this->devices_services[$device_id] = $service;
+				$this->services[$device->getId()] = $service;
 			}
 		}
 	}
