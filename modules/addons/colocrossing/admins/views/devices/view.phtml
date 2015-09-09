@@ -2,6 +2,12 @@
   <h1>ColoCrossing Device - <?php echo $this->device->getName(); ?></h1>
 	<?php
 		$this->renderFlashMessage();
+
+		if(isset($this->service) && $this->service->isOverdue()) {
+			$this->renderTemplate('/flash-messages/info.phtml', array(
+				'content' => 'The service associated with this device currently overdue.'
+			));
+		}
 	?>
 
 	<table class="form" width="100%" border="0" cellspacing="2" cellpadding="3">
