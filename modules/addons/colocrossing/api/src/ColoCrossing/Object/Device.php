@@ -100,6 +100,27 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	}
 
 	/**
+	 * Updates this Device with the Provided Nickname and Hostname
+	 * @param string    $nickname
+	 * @param string    $hostname
+	 * @return boolean  True if successful, false otherwise.
+	 */
+	public function update($nickname, $hostname)
+	{
+		$client = $this->getClient();
+
+		if($client->devices->update($this, $nickname, $hostname))
+		{
+			$this->setValue('nickname', $nickname);
+			$this->setValue('hostname', $hostname);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Cancels the Service of this Device.
 	 * If this succeeds, this device will no longer be available.
 	 * This action requires your client to have the 'device_cancellation' permission
