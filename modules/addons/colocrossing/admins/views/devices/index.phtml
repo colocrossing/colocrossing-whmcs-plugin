@@ -7,6 +7,7 @@
 		'subzone' => 'Zone',
 		'rack' => 'Rack',
 		'due_date' => 'Due Date',
+		'status' => 'Status',
 		'assignment' => 'Assignment'
 	);
 	$sortable_columns = array('name', 'nickname', 'type', 'hostname');
@@ -77,6 +78,7 @@
 
 				$service_overdue = false;
 				$service_due_date = 'N/A';
+				$service_status = 'N/A';
 
 				$client = isset($service) ? $service->getClient(): null;
 
@@ -88,6 +90,7 @@
 
 					$service_overdue = $service->isOverdue();
 					$service_due_date = $service->getFormattedDueDate();
+					$service_status = $service->getStatus();
 
 					$device_assignment = '<a href="' . $client_service_url . '">' . $client->getFullName() . '</a>';
 				}
@@ -117,6 +120,7 @@
 				<td><?php echo $device->getSubzone(); ?></td>
 				<td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
 				<td><?php echo $service_due_date ?></td>
+				<td><?php echo $service_status ?></td>
 				<td><?php echo $device_assignment; ?></td>
 			</tr>
 		<?php
