@@ -6,6 +6,7 @@
 		'hostname' => 'Hostname',
 		'subzone' => 'Zone',
 		'rack' => 'Rack',
+		'due_date' => 'Due Date',
 		'assignment' => 'Assignment'
 	);
 	$sortable_columns = array('name', 'nickname', 'type', 'hostname');
@@ -73,7 +74,10 @@
 				$device_assignment = 'Unassigned';
 
 				$service = isset($this->services[$device_id]) ? $this->services[$device_id] : null;
-				$service_overdue = isset($service) ? $service->isOverdue() : false;
+
+				$service_overdue = false;
+				$service_due_date = 'N/A';
+
 				$client = isset($service) ? $service->getClient(): null;
 
 				if(isset($service) && isset($client)) {
@@ -81,6 +85,9 @@
 						'id' => $service->getId(),
 						'userid' => $client->getId()
 					));
+
+					$service_overdue = $service->isOverdue();
+					$service_due_date = $service->getFormattedDueDate();
 
 					$device_assignment = '<a href="' . $client_service_url . '">' . $client->getFullName() . '</a>';
 				}
@@ -109,7 +116,8 @@
 				<td><?php echo $device->getHostname(); ?></td>
 				<td><?php echo $device->getSubzone(); ?></td>
 				<td><?php echo isset($rack_name) ? $rack_name : 'Unassigned'; ?></td>
-				<td><?php echo $device_assignment . ($service_overdue ? ' - Overdue' : null); ?></td>
+				<td><?php echo $service_due_date ?></td>
+				<td><?php echo $device_assignment; ?></td>
 			</tr>
 		<?php
 			endforeach;

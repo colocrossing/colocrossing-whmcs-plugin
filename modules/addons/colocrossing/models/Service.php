@@ -56,21 +56,68 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
-	 * @return string The Registration Date of the Service
+	 * @return integer The Registration Date of the Service
 	 */
 	public function getRegistrationDate() {
 		$date = strtotime($this->getValue('regdate'));
 
-		return empty($date) ? time() : $date;
+		return empty($date) ? null : $date;
 	}
 
 	/**
-	 * @return string The Next Due Date of the Service
+	 * @return integer The Next Due Date of the Service
 	 */
 	public function getNextDueDate() {
 		$date = strtotime($this->getValue('nextduedate'));
 
 		return empty($date) ? time() : $date;
+	}
+
+	/**
+	 * @return string The Due Date of the Service In the Following Format: m/d/Y
+	 */
+	public function getFormattedDueDate() {
+		$date = strtotime($this->getValue('nextduedate'));
+
+		return empty($date) ? 'Never' : date('m/d/Y', $date);
+	}
+
+	/**
+	 * @return boolean True if Service Has Unpaid Invoices Whose Due Date is Before Today
+	 */
+	public function isOverdue() {
+		$invoices = $this->getOverdueInvoices();
+
+		return count($invoices) > 0;
+	}
+
+	/**
+	 * @return array<integer> The Invoice IDs Associated with this Service that are Overdue
+	 */
+	public function getOverdueInvoices() {
+		$table = '`tblinvoiceitems` AS `t`';
+
+		$columns = implode(',', array('`i`.`id`'));
+
+		$join = 'INNER JOIN `tblinvoices` AS `i` ON `i`.`id` = `t`.`invoiceid`';
+
+		$conditions = array();
+		$conditions[] = '`i`.`status` = "Unpaid"';
+		$conditions[] = '`i`.`duedate` < "' . date('Y-m-d') . '"';
+		$conditions[] = '`t`.`type` = "Hosting"';
+		$conditions[] = '`t`.`relid` = ' . $this->getId();
+
+		$where = implode (' AND ', $conditions);
+
+		$rows = full_query('SELECT DISTINCT ' . $columns .' FROM ' . $table . ' ' . $join . ' WHERE ' . $where);
+
+		$invoices = array();
+
+		while ($values = mysql_fetch_array($rows)) {
+		    $invoices[] = intval($values['id']);
+		}
+
+		return $invoices;
 	}
 
 	/**
@@ -101,6 +148,8 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$billing_cycle = $this->getBillingCycle();
 
 		switch ($billing_cycle) {
+			case 'Monthly':
+				return '1 month';
 			case 'Quarterly':
 				return '3 months';
 			case 'Semi-Annually':
@@ -174,44 +223,6 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		}
 
 		return $this->getClientId() == $user->getId();
-	}
-
-	/**
-	 * @return boolean True if Service Has Unpaid Invoices Whose Due Date is Before Today
-	 */
-	public function isOverdue() {
-		$invoices = $this->getOverdueInvoices();
-
-		return count($invoices) > 0;
-	}
-
-	/**
-	 * @return array<integer> The Invoice IDs Associated with this Service that are Overdue
-	 */
-	public function getOverdueInvoices() {
-		$table = '`tblinvoiceitems` AS `t`';
-
-		$columns = implode(',', array('`i`.`id`'));
-
-		$join = 'INNER JOIN `tblinvoices` AS `i` ON `i`.`id` = `t`.`invoiceid`';
-
-		$conditions = array();
-		$conditions[] = '`i`.`status` = "Unpaid"';
-		$conditions[] = '`i`.`duedate` < "' . date('Y-m-d') . '"';
-		$conditions[] = '`t`.`type` = "Hosting"';
-		$conditions[] = '`t`.`relid` = ' . $this->getId();
-
-		$where = implode (' AND ', $conditions);
-
-		$rows = full_query('SELECT DISTINCT ' . $columns .' FROM ' . $table . ' ' . $join . ' WHERE ' . $where);
-
-		$invoices = array();
-
-		while ($values = mysql_fetch_array($rows)) {
-		    $invoices[] = intval($values['id']);
-		}
-
-		return $invoices;
 	}
 
 	/**
