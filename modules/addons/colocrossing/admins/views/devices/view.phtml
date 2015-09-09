@@ -1,4 +1,5 @@
 <div style="margin: 0 10px;">
+  <h1>ColoCrossing Device - <?php echo $this->device->getName(); ?></h1>
 	<?php
 		$this->renderFlashMessage();
 	?>
@@ -141,7 +142,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('#contentarea, #content').find('h1').html('ColoCrossing Device - <?php echo $this->device->getName(); ?>');
+		$('#contentarea, #content').find('h1').first().remove();
 
 		var leftHeight = 0, rightHeight = 0;
 		$('#half-sections').find('.half-section').each(function(){
@@ -162,7 +163,7 @@
 	div#contentarea h2 { margin-bottom: 10px; }
 
 	div.heading { margin-bottom: 0px; margin-top: 5px; padding: 5px 0px; }
-	div.heading h2 { display: inline-block; margin-top: 5px; margin-bottom: 5px !important; }
+	div.heading h2 { float: left; margin-top: 5px; margin-bottom: 5px !important; }
 	div.heading div.actions { float: right; }
 
 	table.datatable { width: 100%; text-align: center; }
