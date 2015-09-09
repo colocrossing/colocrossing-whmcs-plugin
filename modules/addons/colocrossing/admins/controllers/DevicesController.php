@@ -97,6 +97,33 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		}
 	}
 
+	public function update(array $params) {
+		$device = $this->api->devices->find($params['id']);
+
+		if(empty($device)) {
+			$this->setFlashMessage('The device was not found.', 'error');
+			$this->redirectTo('devices', 'index');
+		}
+
+		if($device->update($params['nickname'], $params['hostname'])) {
+			$service = ColoCrossing_Model_Service::findByDevice($device);
+
+			if(isset($service)) {
+				$service->setHostname($params['hostname']);
+
+				$service->update();
+			}
+
+			$this->setFlashMessage('The device has successfully been updated.', 'success');
+		} else {
+			$this->setFlashMessage('An error occurred while updating the device.', 'error');
+		}
+
+		$this->redirectTo('devices', 'view', array(
+			'id' => $params['id']
+		));
+	}
+
 	public function unassignedDevicesIndex(array $params) {
 		//Get all Services Assign toDevice
 		$services = ColoCrossing_Model_Service::findAllAssignedToDevices();

@@ -63,8 +63,8 @@ abstract class ColoCrossing_Model {
 	 * @param array   	$values    The Values
 	 */
 	protected function __construct($id = null, array $values) {
-        $this->module = ColoCrossing_Module::getInstance();
-        $this->api = ColoCrossing_API::getInstance();
+		$this->module = ColoCrossing_Module::getInstance();
+		$this->api = ColoCrossing_API::getInstance();
 
 		$this->id = isset($id) ? intval($id) : null;
 		$this->values = $values;
@@ -171,7 +171,7 @@ abstract class ColoCrossing_Model {
 	 * Updates Db Record for this Model
 	 * @return boolean True if the row is successfully updated
 	 */
-	protected function update() {
+	public function update() {
 		$values = $this->getValues();
 		$where = array('id' => $this->getId());
 

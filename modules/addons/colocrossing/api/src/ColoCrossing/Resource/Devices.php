@@ -109,7 +109,7 @@ class ColoCrossing_Resource_Devices extends ColoCrossing_Resource_Abstract
 			'hostname' => $hostname
 		);
 
-		$response = $this->sendRequest($url, 'POST', $data);
+		$response = $this->sendRequest($url, 'PUT', $data);
 
 		if(empty($response))
 		{

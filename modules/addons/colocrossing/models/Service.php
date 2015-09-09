@@ -56,6 +56,13 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	}
 
 	/**
+	 * @param string $hostname
+	 */
+	public function setHostname($hostname) {
+		$this->setValue('domain', $hostname);
+	}
+
+	/**
 	 * @return integer The Registration Date of the Service
 	 */
 	public function getRegistrationDate() {
