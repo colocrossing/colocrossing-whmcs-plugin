@@ -1,7 +1,7 @@
 <?php
 
 if(!defined('WHMCS')) {
-    die('This file cannot be accessed directly');
+	die('This file cannot be accessed directly');
 }
 
 /**
@@ -14,13 +14,33 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 	 * Override Default Constructor to Disable Rendering for this Controller By Default
 	 */
 	public function __construct() {
-        parent::__construct();
+		parent::__construct();
 
-        $this->disableRendering();
-    }
+		$this->disableRendering();
+	}
 
-    public function index(array $params) {
-        $this->enableRendering();
+	public function overdue(array $params) {
+		$this->enableRendering();
+
+		$this->sort = isset($params['sort']) ? $params['sort'] : 'duedate';
+		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
+
+		$this->page_number = isset($params['page_number']) && is_numeric($params['page_number']) ? intval($params['page_number']) : 1;
+		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 50;
+
+		$this->services = ColoCrossing_Model_Service::findAllUnassigned(array(
+			'pagination' => array(
+				'number' => $this->page_number,
+				'size' =>$this->page_size
+			)
+		));
+
+		$this->record_count = ColoCrossing_Model_Service::getTotalUnassigned();
+		$this->page_count = ceil($this->total_record_count / $this->page_size);
+	}
+
+	public function unassigned(array $params) {
+		$this->enableRendering();
 
 		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
 		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 50;
@@ -115,7 +135,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			$path = $this->getViewDirectoryPath() . '/services/api_unavailable.phtml';
 
 			return array(
-			    'ColoCrossing Device' => ColoCrossing_Utilities::parseTemplate($path)
+				'ColoCrossing Device' => ColoCrossing_Utilities::parseTemplate($path)
 			);
 		}
 
@@ -123,11 +143,11 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		if(empty($device)) {
 			$path = $this->getViewDirectoryPath() . '/services/device_select.phtml';
 			$template = ColoCrossing_Utilities::parseTemplate($path, array(
-	    		'base_url' => $this->base_url
+				'base_url' => $this->base_url
 			));
 
 			return array(
-			    'ColoCrossing Device' => $template
+				'ColoCrossing Device' => $template
 			);
 		}
 
