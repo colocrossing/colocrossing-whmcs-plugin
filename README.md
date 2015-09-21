@@ -6,7 +6,7 @@ Installation
 -------------------------------
 * Download or Git clone the contents of this repository
 * Merge the repository directory with the root directory of your WHMCS installation.
-* This should add `event.php` to `<whmcs_root>/event.php` and add an addon module to `<whmcs_root>/modules/addons/colocrossing/` and add a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
+* This should add `event.php` to `<whmcs_root>/event.php` and add `manage.php` to `<whmcs_root>/manage.php` andadd an addon module to `<whmcs_root>/modules/addons/colocrossing/` and add a provisioning module to `<whmcs_root>/modules/servers/colocrossing/`
 * If you are running on a Windows system, you will need to modify the cookie jar location in `<whmcs_root>/modules/addons/colocrossing/API.php`. By default it is set to `/tmp/colocrossing_cookie_jar.txt` for Linux systems. Your Web Server will need permissions to write to the cookie jar file.
 * If your WHMCS installation is not at the root of the domain (i.e. example.com/manage/ is your WHMCS client area), then you will need to edit `WHMCS_BASE_URL` in `<whmcs_root>/modules/addons/colocrossing/Configuration.php`. In the previous example, `WHMCS_BASE_URL` would be set to '/manage/'.
 

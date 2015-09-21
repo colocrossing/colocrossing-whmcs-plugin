@@ -1,3 +1,11 @@
+<?
+	$edit_subnet_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+		'controller' => 'subnets',
+		'action' => 'update',
+		'id' => $subnet->getId()
+	));
+?>
+
 <div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
 	<div class="heading">
 		<h2>Reverse DNS Records</h2>
@@ -15,7 +23,7 @@
 	?>
 	</div>
 
-	<form id="edit-rdns-records-form" action="<?php echo $base_url . '&controller=subnets&action=update&id=' . $subnet->getId(); ?>" method="POST">
+	<form id="edit-rdns-records-form" action="<?php echo $edit_subnet_url; ?>" method="POST">
 		<table class="datatable">
 			<tr>
 				<th>IP Address</th>

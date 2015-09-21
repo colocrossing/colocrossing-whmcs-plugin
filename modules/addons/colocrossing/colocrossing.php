@@ -38,18 +38,52 @@ function colocrossing_output($params) {
 
 function colocrossing_sidebar($params) {
     $module = ColoCrossing_Module::getInstance();
-    $module_url = $module->getBaseAdminUrl();
+
+    $base_url = $module->getBaseAdminUrl();
+
+    $devices_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'devices',
+        'action' => 'index'
+    ));
+    $bandwidth_usages_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'bandwidth-usages',
+        'action' => 'index'
+    ));
+    $assigned_services_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'services',
+        'action' => 'assigned'
+    ));
+    $unassigned_services_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'services',
+        'action' => 'unassigned'
+    ));
+    $subnets_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'subnets',
+        'action' => 'index'
+    ));
+    $null_routes_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'null-routes',
+        'action' => 'index'
+    ));
+    $announcements_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'announcements',
+        'action' => 'index'
+    ));
+    $events_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'events',
+        'action' => 'index'
+    ));
 
     $sidebar  = '<span class="header">ColoCrossing Portal</span>';
     $sidebar .= '<ul class="menu">';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=devices&action=index">Devices</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=bandwidth-usages&action=index">Bandwidth Usages</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=services&action=assigned">Assigned Services</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=services&action=unassigned">Unassigned Services</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=subnets&action=index">Subnets</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=null-routes&action=index">Null Routes</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=announcements&action=index">Announcements</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=events&action=index">Events</a></li>';
+    $sidebar .=     '<li><a href="' . $devices_url . '">Devices</a></li>';
+    $sidebar .=     '<li><a href="' . $bandwidth_usages_url . '">Bandwidth Usages</a></li>';
+    $sidebar .=     '<li><a href="' . $assigned_services_url . '">Assigned Services</a></li>';
+    $sidebar .=     '<li><a href="' . $unassigned_services_url . '">Unassigned Services</a></li>';
+    $sidebar .=     '<li><a href="' . $subnets_url . '">Subnets</a></li>';
+    $sidebar .=     '<li><a href="' . $null_routes_url . '">Null Routes</a></li>';
+    $sidebar .=     '<li><a href="' . $announcements_url . '">Announcements</a></li>';
+    $sidebar .=     '<li><a href="' . $events_url . '">Events</a></li>';
     $sidebar .= '</ul>';
 
     return $sidebar;

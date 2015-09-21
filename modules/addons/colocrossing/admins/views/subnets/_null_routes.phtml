@@ -1,3 +1,16 @@
+<?
+	$add_null_route_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+		'controller' => 'null-routes',
+		'action' => 'create'
+	));
+
+	$delete_null_route_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+		'controller' => 'null-routes',
+		'action' => 'destroy'
+	));
+?>
+
+
 <div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
 	<div class="heading">
 		<h2>Null Routes</h2>
@@ -111,7 +124,7 @@
 
 <div id="add-null-route-dialog" title="Add Null Route">
 	<p>Are you sure you want to null route <span class="ip-address"></span>?</p>
-	<form action="<?php echo $base_url . '&controller=null-routes&action=create'; ?>" method="POST">
+	<form action="<?php echo $add_null_route_url; ?>" method="POST">
 		<div class="field-group">
 			<label>Comment</label>
 			<input type="text" name="comment" />
@@ -144,7 +157,7 @@
 
 <div id="remove-null-route-dialog" title="Remove Null Route">
 	<p>Are you sure you want to remove the null route on <span class="ip-address"></span>?</p>
-	<form action="<?php echo $base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
+	<form action="<?php echo $delete_null_route_url; ?>" method="POST">
 		<input type="hidden" name="id"/>
 		<input type="hidden" name="origin" value="subnets#view"/>
 	</form>

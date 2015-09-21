@@ -21,8 +21,16 @@
 			<td width="35%" class="fieldarea">
 			<?php
 				if(isset($this->device)) {
-					$device_url = $this->base_url . '&controller=devices&action=view&id=' . $this->device->getId();
-					echo '<a href="' . $device_url . '">' . $this->device->getName() . '</a>';
+					$device_id = $this->device->getId();
+					$device_name = $this->device->getName();
+
+					$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+						'controller' => 'devices',
+						'action' => 'view',
+						'id' => $device_id
+					));
+
+					echo '<a href="' . $device_url . '">' . $device_name . '</a>';
 				} else {
 					echo 'Unassigned';
 				}

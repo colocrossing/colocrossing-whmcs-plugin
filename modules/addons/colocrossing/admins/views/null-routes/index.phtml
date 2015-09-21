@@ -1,4 +1,9 @@
 <?php
+	$delete_null_route_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+		'controller' => 'null-routes',
+		'action' => 'destroy'
+	));
+
 	$num_records = $this->null_routes->getTotalRecordCount();
 	$num_pages = $this->null_routes->size();
 
@@ -68,11 +73,17 @@
 			$remove_null_route_button = '<input type="submit" value="Remove" class="remove-null-route-button btn-small" />';
 
 			foreach ($this->null_routes->current() as $index => $null_route):
-				$url = $this->base_url . '&controller=subnets&action=view&id=' . $null_route->getSubnetId();
+				$subnet_id = $null_route->getSubnetId();
+				$subnet_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'subnets',
+					'action' => 'view',
+					'id' => $subnet_id
+				));
+
 				$expiration_date = $null_route->getDateExpire();
 		?>
 			<tr data-id="<?php echo $null_route->getId(); ?>" data-ip-address="<?php echo $null_route->getIpAddress(); ?>">
-				<td><a href="<?php echo $url; ?>"><?php echo $null_route->getIpAddress(); ?></a></td>
+				<td><a href="<?php echo $subnet_url; ?>"><?php echo $null_route->getIpAddress(); ?></a></td>
 				<td><?php echo $null_route->getComment(); ?></td>
 				<td><?php echo date('m/d/Y h:i a', $null_route->getDateAdded()); ?></td>
 				<td><?php echo isset($expiration_date) ? date('m/d/Y h:i a', $expiration_date) : 'Never'; ?></td>
@@ -199,7 +210,7 @@
 
 <div id="remove-null-route-dialog" title="Remove Null Route">
 	<p>Are you sure you want to remove the null route on <span class="ip-address"></span>?</p>
-	<form action="<?php echo $this->base_url . '&controller=null-routes&action=destroy'; ?>" method="POST">
+	<form action="<?php echo $delete_null_route_url; ?>" method="POST">
 		<input type="hidden" name="id"/>
 	</form>
 </div>

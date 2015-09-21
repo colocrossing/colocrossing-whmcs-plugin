@@ -1,3 +1,10 @@
+<?
+	$control_device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+		'controller' => 'devices',
+		'action' => 'update-power-ports'
+	));
+?>
+
 <div class="<?php echo isset($container_class) ? $container_class : 'full-section'; ?>">
 	<div class="heading">
 		<h2>Power Ports</h2>
@@ -8,7 +15,7 @@
 		</div>
 		<div class="clear"></div>
 	</div>
-	<form id="control-power-ports-form" action="<?php echo $base_url . '&controller=devices&action=update-power-ports'; ?>" method="POST">
+	<form id="control-power-ports-form" action="<?php echo $control_device_url; ?>" method="POST">
 		<table class="datatable">
 			<tr>
 				<th style="width: 60px;">Control</th>
@@ -43,7 +50,12 @@
 					$device = $pdu_devices[$device_id];
 
 					if(isset($device)) {
-						$device_url = $base_url . '&controller=devices&action=view&id=' . $device_id;
+						$device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+							'controller' => 'devices',
+							'action' => 'view',
+							'id' => $device_id
+						));
+
 						$device_display = '<a href="' . $device_url . '">' . $device->getName() . '</a>';
 					} else {
 						$control_status = 'disabled';

@@ -1,3 +1,10 @@
+<?
+	$control_device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+		'controller' => 'devices',
+		'action' => 'update-power-ports'
+	));
+?>
+
 <div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : 'full-section'; ?>>
 	<div class="heading">
 		<h2>Power Ports</h2>
@@ -8,7 +15,7 @@
 		</div>
 		<div class="clear"></div>
 	</div>
-	<form id="control-power-ports-form" action="<?php echo $base_url . '&controller=devices&action=update-power-ports'; ?>" method="POST">
+	<form id="control-power-ports-form" action="<?php echo $control_device_url; ?>" method="POST">
 		<table class="datatable">
 			<tr>
 				<th style="width: 60px;">Control</th>
@@ -31,10 +38,16 @@
 			foreach ($power_distribution_units as $i => $pdu):
 				$pdu_id = $pdu->getId();
 				$pdu_owner = $pdu->getOwner();
-				$pdu_url = $base_url . '&controller=devices&action=view&id=' . $pdu_id;
+
 				$pdu_display = $pdu->getName();
 
 				if (isset($pdu_owner)) {
+					$pdu_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+						'controller' => 'devices',
+						'action' => 'view',
+						'id' => $pdu_id
+					));
+
 					$pdu_display = '<a href="' . $pdu_url . '">' . $pdu_display . '</a>';
 				}
 

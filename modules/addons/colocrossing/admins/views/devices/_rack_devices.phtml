@@ -18,8 +18,14 @@
 		endif;
 
 		foreach ($devices as $i => $device):
+			$id = $device->getId();
+			$url = ColoCrossing_Utilities::buildUrl($base_url, array(
+				'controller' => 'devices',
+				'action' => 'view',
+				'id' => $id
+			));
+
 			$type = $device->getType();
-			$url = $base_url . '&controller=devices&action=view&id=' . $device->getId();
 	?>
 		<tr>
 			<td><a href="<?php echo $url; ?>"><?php echo $device->getName(); ?></a></td>

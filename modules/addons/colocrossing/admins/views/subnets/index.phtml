@@ -62,12 +62,26 @@
 			endif;
 
 			foreach ($this->subnets->current() as $index => $subnet):
-				$url = $this->base_url . '&controller=subnets&action=view&id=' . $subnet->getId();
+				$id = $subnet->getId();
+				$url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'subnets',
+					'action' => 'view',
+					'id' => $id
+				));
 
 				$device_display = 'Unassigned';
+
 				if($subnet->isAssigned()) {
-					$device_url = $this->base_url . '&controller=devices&action=view&id=' . $subnet->getDeviceId();
-					$device_display = '<a href="' . $device_url . '">' . $subnet->getDeviceName() . '</a>';
+					$device_id = $subnet->getDeviceId();
+					$device_name = $subnet->getDeviceName();
+
+					$device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+						'controller' => 'devices',
+						'action' => 'view',
+						'id' => $device_id
+					));
+
+					$device_display = '<a href="' . $device_url . '">' . $device_name . '</a>';
 				}
 		?>
 			<tr>

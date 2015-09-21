@@ -26,7 +26,12 @@
 						endif;
 
 						foreach ($subnets as $index => $subnet):
-							$url = $base_url . '&controller=subnets&action=view&id=' . $subnet->getId();
+                            $id = $subnet->getId();
+                            $url = ColoCrossing_Utilities::buildUrl($base_url, array(
+                                'controller' => 'subnets',
+                                'action' => 'view',
+                                 'id' => $id
+                            ));
 					?>
 						<tr>
 							<td><a href="<?php echo $url; ?>"><?php echo $subnet->getCIDRIpAddress(); ?></a></td>
