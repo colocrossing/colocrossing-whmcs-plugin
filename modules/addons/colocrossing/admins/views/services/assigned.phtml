@@ -1,0 +1,213 @@
+<?php
+  $columns = array(
+    'product' => 'Product/Service',
+    'client' => 'Client',
+    'status' => 'Status',
+    'due_date' => 'Due Date',
+    'hostname' => 'Hostname',
+    'device' => 'Device'
+  );
+  $sortable_columns = array('product', 'client', 'status', 'due_date', 'hostname');
+?>
+
+<form id="services-table-form" method="get">
+  <h1>Assigned ColoCrossing Services</h1>
+
+<?php
+  $this->renderFlashMessage();
+?>
+
+  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+    <tr>
+      <td width="50%" align="left"><?php echo $this->record_count . ' Records Found, Page ' . $this->page_number . ' of ' . $this->page_count ?></td>
+      <td width="50%" align="right">
+        <input type="hidden" name="page_number" value="<?php echo $this->page_number; ?>" />
+        <label>Show</label>
+        <select id='page-size-select' name="page_size">
+          <option <?php echo $this->page_size == 25 ? 'selected' : null; ?>>25</option>
+          <option <?php echo $this->page_size == 50 ? 'selected' : null; ?>>50</option>
+          <option <?php echo $this->page_size == 100 ? 'selected' : null; ?>>100</option>
+          <option <?php echo $this->page_size == 250 ? 'selected' : null; ?>>250</option>
+          <option <?php echo $this->page_size == 500 ? 'selected' : null; ?>>500</option>
+        </select>
+        <label>services</label>
+      </td>
+    </tr>
+  </table>
+
+  <div class="tablebg">
+    <table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3" style="text-align: center;">
+      <tr>
+      <?php
+        foreach ($columns as $id => $name) {
+          if(in_array($id, $sortable_columns)) {
+            $image = $this->sort == $id ? '<img src="images/' . $this->order . '.gif" class="absmiddle">' : '';
+            echo '<th><a class="sort-column-button" href="#sort" data-sort="' . $id . '">' . $name . '</a> ' . $image . '</th>';
+          } else {
+            echo '<th>' . $name . '</th>';
+          }
+        }
+      ?>
+      </tr>
+    <?php
+      if(count($this->services) == 0):
+    ?>
+      <tr>
+        <td colspan="6">No services found.</td>
+      </tr>
+    <?php
+      endif;
+
+      foreach ($this->services as $index => $service):
+        $service_id = $service->getId();
+        $service_url = ColoCrossing_Utilities::buildUrl('clientsservices.php', array(
+          'id' => $service_id
+        ));
+
+        $product = $service->getProduct();
+        $product_name = 'Unassigned';
+
+        if(isset($product)) {
+          $group = $product->getGroup();
+
+          if(isset($group)) {
+            $product_name = '<a href="' . $service_url . '">' . $group->getName() . ' - ' . $product->getName(). '</a>';
+          }
+        }
+
+        $client = $service->getClient();
+        $client_name = 'Unassigned';
+
+        if(isset($client)) {
+          $client_url = ColoCrossing_Utilities::buildUrl('clientssummary.php', array(
+            'userid' => $client->getId()
+          ));
+
+          $client_name = '<a href="' . $client_url . '">' . $client->getFullName() . '</a>';
+        }
+
+        $device_id = $service->getDeviceId();
+        $device_name = 'Unassigned';
+
+        if(isset($this->devices[$device_id])) {
+          $device_url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+            'controller' => 'devices',
+            'action' => 'view',
+            'id' => $device_id
+          ));
+
+          $device_name = '<a href="' . $device_url . '">' . $this->devices[$device_id]->getName() . '</a>';
+        }
+    ?>
+      <tr class="<?php echo isset($service) && $service->isOverdue() ? 'overdue' : null; ?>">
+        <td><?php echo $product_name; ?></td>
+        <td><?php echo $client_name; ?></td>
+        <td><?php echo $service->getStatus(); ?></td>
+        <td><?php echo $service->getFormattedDueDate(); ?></td>
+        <td><?php echo $service->getHostname(); ?></td>
+        <td><?php echo $device_name; ?></td>
+      </tr>
+    <?php
+      endforeach;
+    ?>
+    </table>
+  </div>
+
+  <p align="center">
+  <?php
+    if($this->page_number > 1) {
+      echo '<a id="previous-page-button" href="#previous-page">&laquo; Previous Page</a>';
+    } else {
+      echo '<span id="previous-page-button">&laquo; Previous Page</span>';
+    }
+
+    echo '&nbsp;';
+
+    if($this->page_number < $this->page_count) {
+      echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
+    } else {
+      echo '<span id="next-page-button">Next Page &raquo;</span>';
+    }
+  ?>
+  </p>
+
+  <input type="hidden" name="module" value="colocrossing" />
+  <input type="hidden" name="controller" value="services" />
+  <input type="hidden" name="action" value="assigned" />
+  <input type="hidden" name="sort" value="<?php echo $this->sort; ?>" />
+  <input type="hidden" name="order" value="<?php echo $this->order; ?>" />
+</form>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+    $('#contentarea, #content').find('h1').first().remove();
+
+    var currentPage = parseInt('<?php echo $this->page_number; ?>'),
+    form = $('#services-table-form'),
+    sortInput = form.find('input[name="sort"]'),
+    orderInput = form.find('input[name="order"]'),
+    pageNumberInput = form.find('input[name="page_number"]'),
+    pageSizeInput = form.find('input[name="page_size"]')
+
+    form.find('a.sort-column-button').on('click', function(e) {
+      var button = $(this);
+
+      if(button.data('sort') == sortInput.val()) {
+        orderInput.val(orderInput.val() == 'asc' ? 'desc' : 'asc');
+      } else {
+        sortInput.val(button.data('sort'));
+        orderInput.val('asc');
+      }
+
+      form.submit();
+
+      e.preventDefault();
+      return false;
+    });
+
+    form.find('a#previous-page-button').on('click', function(e) {
+      pageNumberInput.val(currentPage - 1);
+      form.submit();
+
+      e.preventDefault();
+      return false;
+    });
+
+    form.find('a#next-page-button').on('click', function(e) {
+      pageNumberInput.val(currentPage + 1);
+      form.submit();
+
+      e.preventDefault();
+      return false;
+    });
+
+    form.find('select#page-size-select').on('change', function(e) {
+      pageNumberInput.val(1);
+      form.submit();
+
+      e.preventDefault();
+      return false;
+    });
+
+  });
+
+</script>
+
+<style type="text/css">
+  div#contentarea h1 { margin-bottom: 10px; }
+
+  tr.overdue {
+    color: #a94442;
+    background-color: #f2dede;
+  }
+
+  tr.overdue td {
+    background-color: #f2dede;
+  }
+
+  tr.overdue a {
+    color: #a94442;
+  }
+</style>

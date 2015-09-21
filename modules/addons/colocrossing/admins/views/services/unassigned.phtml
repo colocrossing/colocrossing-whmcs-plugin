@@ -17,13 +17,13 @@
 
 	<table width="100%" border="0" cellpadding="3" cellspacing="0">
 		<tr>
-			<td width="50%" align="left"><?php echo $this->total_record_count . ' Records Found, Page ' . $this->page . ' of ' . $this->page_count ?></td>
+			<td width="50%" align="left"><?php echo $this->record_count . ' Records Found, Page ' . $this->page_number . ' of ' . $this->page_count ?></td>
 			<td width="50%" align="right">
 				<label>Jump to Page:</label>
 				<select id='page-select'>
 				<?php
 					for ($page = 1; $page <= $this->page_count; $page++) {
-						echo '<option value="' . $page . '" ' . ($this->page == $page ? 'selected' : null) . '>' . $page . '</option>';
+						echo '<option value="' . $page . '" ' . ($this->page_number == $page ? 'selected' : null) . '>' . $page . '</option>';
 					}
 				?>
 				</select>
@@ -142,8 +142,8 @@
 
 	<p align="center">
 	<?php
-		if($this->page > 1) {
-			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page - 1));
+		if($this->page_number > 1) {
+			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page_number - 1));
 			echo '<a href="' . $page_url . '">&laquo; Previous Page</a>';
 		} else {
 			echo '<span id="previous-page-button">&laquo; Previous Page</span>';
@@ -151,8 +151,8 @@
 
 		echo '&nbsp;';
 
-		if($this->page < $this->page_count) {
-			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page + 1));
+		if($this->page_number < $this->page_count) {
+			$page_url = ColoCrossing_Utilities::buildUrl($current_url, array('page' => $this->page_number + 1));
 			echo '<a href="' . $page_url . '">Next Page &raquo;</a>';
 		} else {
 			echo '<span id="next-page-button">Next Page &raquo;</span>';

@@ -19,31 +19,44 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 		$this->disableRendering();
 	}
 
-	public function overdue(array $params) {
+	public function assigned(array $params) {
 		$this->enableRendering();
 
-		$this->sort = isset($params['sort']) ? $params['sort'] : 'duedate';
+		$this->sort = isset($params['sort']) ? $params['sort'] : 'due_date';
 		$this->order = isset($params['order']) && strtolower($params['order']) == 'desc' ? 'desc' : 'asc';
 
 		$this->page_number = isset($params['page_number']) && is_numeric($params['page_number']) ? intval($params['page_number']) : 1;
-		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 50;
+		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 25;
 
-		$this->services = ColoCrossing_Model_Service::findAllUnassigned(array(
+		$this->services = ColoCrossing_Model_Service::findAllAssigned(array(
+			'sort' => $this->sort,
+			'order' => $this->order,
 			'pagination' => array(
 				'number' => $this->page_number,
 				'size' =>$this->page_size
 			)
 		));
 
-		$this->record_count = ColoCrossing_Model_Service::getTotalUnassigned();
-		$this->page_count = ceil($this->total_record_count / $this->page_size);
+		$this->record_count = ColoCrossing_Model_Service::getTotalAssigned();
+		$this->page_count = ceil($this->record_count / $this->page_size);
+
+		$device_ids = array_map(function($service) {
+			return $service->getDeviceId();
+		}, $this->services);
+
+		$this->devices = $this->api->devices->findByIds($device_ids, array(
+			'filters' => array(
+				'compact' => true
+			),
+			'format' => 'map'
+		));
 	}
 
 	public function unassigned(array $params) {
 		$this->enableRendering();
 
-		$this->page = isset($params['page']) && is_numeric($params['page']) ? intval($params['page']) : 1;
-		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 50;
+		$this->page_number = isset($params['page_number']) && is_numeric($params['page_number']) ? intval($params['page_number']) : 1;
+		$this->page_size = isset($params['page_size']) && is_numeric($params['page_size']) ? intval($params['page_size']) : 25;
 
 		$this->services = ColoCrossing_Model_Service::findAllUnassigned(array(
 			'pagination' => array(
@@ -52,12 +65,14 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			)
 		));
 
-		$this->total_record_count = ColoCrossing_Model_Service::getTotalUnassigned();
-		$this->page_count = ceil($this->total_record_count / $this->page_size);
+		$this->record_count = ColoCrossing_Model_Service::getTotalUnassigned();
+		$this->page_count = ceil($this->record_count / $this->page_size);
 
 		//Group Devices by Hostname
 		$devices = $this->api->devices->findAll(array(
-			'filters' => array('compact' => true)
+			'filters' => array(
+				'compact' => true
+			)
 		));
 		$devices_services = ColoCrossing_Model_Service::getAssignedDevices();
 
@@ -88,7 +103,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 
 			if(isset($devices_services[$device_id])) {
 				$this->setFlashMessage('A device can be assigned to only one service at a time.', 'error');
-				return $this->redirectTo('services', 'index');
+				return $this->redirectTo('services', 'unassigned');
 			}
 
 			$devices_services[$device_id] = intval($service_id);
@@ -122,7 +137,7 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 			$this->setFlashMessage('An error occurred while assigning devices to services.', 'error');
 		}
 
-		$this->redirectTo('services', 'index');
+		$this->redirectTo('services', 'unassigned');
 	}
 
 	public function edit(array $params) {

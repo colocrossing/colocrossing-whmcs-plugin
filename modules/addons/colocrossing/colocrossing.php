@@ -44,7 +44,7 @@ function colocrossing_sidebar($params) {
     $sidebar .= '<ul class="menu">';
     $sidebar .=     '<li><a href="' . $module_url . '&controller=devices&action=index">Devices</a></li>';
     $sidebar .=     '<li><a href="' . $module_url . '&controller=bandwidth-usages&action=index">Bandwidth Usages</a></li>';
-    $sidebar .=     '<li><a href="' . $module_url . '&controller=services&action=overdue">Overdue Devices</a></li>';
+    $sidebar .=     '<li><a href="' . $module_url . '&controller=services&action=assigned">Assigned Services</a></li>';
     $sidebar .=     '<li><a href="' . $module_url . '&controller=services&action=unassigned">Unassigned Services</a></li>';
     $sidebar .=     '<li><a href="' . $module_url . '&controller=subnets&action=index">Subnets</a></li>';
     $sidebar .=     '<li><a href="' . $module_url . '&controller=null-routes&action=index">Null Routes</a></li>';

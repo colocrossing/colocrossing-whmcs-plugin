@@ -16,6 +16,15 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	protected static $COLUMNS = array('id', 'userid', 'packageid', 'domain', 'domainstatus', 'nextduedate',
 										'billingcycle', 'regdate', 'dedicatedip', 'assignedips');
 
+	protected static $SORTS = array(
+		'id' => 'id',
+		'client' => 'userid',
+		'product' => 'packageid',
+		'hostname' => 'domain',
+		'status' => 'domainstatus',
+		'due_date' => 'nextduedate'
+	);
+
 	/**
 	 * The Table Name
 	 * @var string
@@ -26,7 +35,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * The Device Join Table Name
 	 * @var string
 	 */
-	protected static $DEVICES_JOIN_TABLE = 'mod_colocrossing_devices_services';
+	protected static $DEVICES_TABLE = 'mod_colocrossing_devices_services';
 
 	/**
 	 * The Products Table Name
@@ -93,38 +102,13 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return boolean True if Service Has Unpaid Invoices Whose Due Date is Before Today
 	 */
 	public function isOverdue() {
-		$invoices = $this->getOverdueInvoices();
+		$date = strtotime($this->getValue('nextduedate'));
 
-		return count($invoices) > 0;
-	}
-
-	/**
-	 * @return array<integer> The Invoice IDs Associated with this Service that are Overdue
-	 */
-	public function getOverdueInvoices() {
-		$table = '`tblinvoiceitems` AS `t`';
-
-		$columns = implode(',', array('`i`.`id`'));
-
-		$join = 'INNER JOIN `tblinvoices` AS `i` ON `i`.`id` = `t`.`invoiceid`';
-
-		$conditions = array();
-		$conditions[] = '`i`.`status` = "Unpaid"';
-		$conditions[] = '`i`.`duedate` < "' . date('Y-m-d') . '"';
-		$conditions[] = '`t`.`type` = "Hosting"';
-		$conditions[] = '`t`.`relid` = ' . $this->getId();
-
-		$where = implode (' AND ', $conditions);
-
-		$rows = full_query('SELECT DISTINCT ' . $columns .' FROM ' . $table . ' ' . $join . ' WHERE ' . $where);
-
-		$invoices = array();
-
-		while ($values = mysql_fetch_array($rows)) {
-		    $invoices[] = intval($values['id']);
+		if(empty($date)) {
+			return false;
 		}
 
-		return $invoices;
+		return $date < strtotime(date('Y-m-d'));
 	}
 
 	/**
@@ -257,7 +241,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 
 		if(empty($device_id)) {
 			$id = $this->getId();
-			$result = select_query(static::$DEVICES_JOIN_TABLE, 'device_id', array('service_id' => $id));
+			$result = select_query(static::$DEVICES_TABLE, 'device_id', array('service_id' => $id));
 			$data = mysql_fetch_array($result);
 
 			if(empty($data)) {
@@ -301,13 +285,13 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @return boolean True if the service is successfully assigned to a device.
 	 */
 	public function assignToDevice($device_id) {
-		full_query('DELETE FROM `' . self::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
+		full_query('DELETE FROM `' . self::$DEVICES_TABLE . '` WHERE `service_id` = '. $this->getId());
 
 		if(empty($device_id) || $device_id <= 0) {
 			return false;
 		}
 
-		insert_query(self::$DEVICES_JOIN_TABLE, array(
+		insert_query(self::$DEVICES_TABLE, array(
 			'service_id' => $this->getId(),
 			'device_id' => $device_id
 		));
@@ -320,7 +304,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 */
 	public function unassignFromDevice() {
 		$this->clearDeviceData();
-		full_query('DELETE FROM `' . self::$DEVICES_JOIN_TABLE . '` WHERE `service_id` = '. $this->getId());
+		full_query('DELETE FROM `' . self::$DEVICES_TABLE . '` WHERE `service_id` = '. $this->getId());
 	}
 
 	/**
@@ -330,7 +314,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @static
 	 */
 	public static function findAllAssignedToDevices(array $options = array()) {
-		$options['join'] = '`' . self::$DEVICES_JOIN_TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
+		$options['join'] = '`' . self::$DEVICES_TABLE . '` ON `' . self::$DEVICES_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 		$options['filters'] = isset($options['filters']) && is_array($options['filters']) ? $options['filters'] : array();
 		$options['filters']['device_id'] = array('sqltype' => 'NEQ', 'value' => '0');
 
@@ -353,7 +337,12 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$columns = implode(',', $columns);
 
 		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
-		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_JOIN_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+
+		$sort_column = isset($options['sort']) && isset(self::$SORTS[$options['sort']]) ? self::$SORTS[$options['sort']] : 'id';
+		$sort_direction = isset($options['order']) && strtolower($options['order']) == 'desc' ? 'DESC' : 'ASC';
+
+		$order = ' ORDER BY `s`.`' . $sort_column . '` ' . $sort_direction . ' ';
 
 		$conditions = array();
 		$conditions[] = '`p`.`servertype` = "colocrossing"';
@@ -364,13 +353,13 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 
 		$limit = '';
 		if(isset($options['pagination']) && is_array($options['pagination'])) {
-			$pagination = array_merge(array('number' => 1, 'size' => 30), $options['pagination']);
-			$size = min(max($pagination['size'], 1), 100);
+			$pagination = array_merge(array('number' => 1, 'size' => 25), $options['pagination']);
+			$size = min(max($pagination['size'], 1), 500);
 			$offset = (max($pagination['number'], 1) - 1) * $size;
 			$limit = ' LIMIT ' . $offset . ', ' . $size;
 		}
 
-		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where . $limit;
+		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where . $order . $limit;
 		$rows = full_query($query);
 
 		$services = array();
@@ -392,12 +381,87 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 		$columns = 'COUNT(*) as `total_count`';
 
 		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
-		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_JOIN_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+		$devices_join = ' LEFT OUTER JOIN `' . self::$DEVICES_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
 
 		$conditions = array();
 		$conditions[] = '`p`.`servertype` = "colocrossing"';
 		$conditions[] = '`d`.`device_id` IS NULL OR `d`.`device_id` <= 0';
 		$conditions[] = '`s`.`domainstatus` = "Pending" OR `s`.`domainstatus` = "Active"';
+
+		$where = ' WHERE  (' . implode (') AND (', $conditions) . ') ';
+
+		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where;
+		$result = full_query($query);
+
+		$data = mysql_fetch_array($result);
+
+		return isset($data) && isset($data['total_count']) ? intval($data['total_count']) : 0;
+	}
+
+	/**
+	 * Retrieves a collection of Services that are Assigned
+	 * @param  array|null $options Optional options to modify the results. I.e. filters, sort, order, pagination
+	 * @return array<ColoCrossing_Model_Service> The Services
+	 * @static
+	 */
+	public static function findAllAssigned(array $options = array()) {
+		$table = '`' . static::$TABLE . '`';
+
+		$columns = array();
+		foreach (static::$COLUMNS as $i => $column) {
+			$columns[] = '`s`.`' . $column . '`';
+		}
+		$columns = implode(',', $columns);
+
+		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
+		$devices_join = ' INNER JOIN `' . self::$DEVICES_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+
+		$conditions = array();
+		$conditions[] = '`p`.`servertype` = "colocrossing"';
+		$conditions[] = '`d`.`device_id` > 0';
+
+		$where = ' WHERE  (' . implode (') AND (', $conditions) . ') ';
+
+		$sort_column = isset($options['sort']) && isset(self::$SORTS[$options['sort']]) ? self::$SORTS[$options['sort']] : 'id';
+		$sort_direction = isset($options['order']) && strtolower($options['order']) == 'desc' ? 'DESC' : 'ASC';
+
+		$order = ' ORDER BY `s`.`' . $sort_column . '` ' . $sort_direction . ' ';
+
+		$limit = '';
+		if(isset($options['pagination']) && is_array($options['pagination'])) {
+			$pagination = array_merge(array('number' => 1, 'size' => 25), $options['pagination']);
+			$size = min(max($pagination['size'], 1), 500);
+			$offset = (max($pagination['number'], 1) - 1) * $size;
+			$limit = ' LIMIT ' . $offset . ', ' . $size;
+		}
+
+		$query = 'SELECT ' . $columns .' FROM ' . $table . ' AS `s` ' . $products_join . $devices_join . $where . $order . $limit;
+		$rows = full_query($query);
+
+		$services = array();
+
+		while ($values = mysql_fetch_array($rows)) {
+		    $services[] = self::createInstanceFromRow($values);
+		}
+
+		return $services;
+	}
+
+	/**
+	 * Gets the Count of Services that are Assigned
+	 * @return integer The Num of Assigned Services
+	 */
+	public static function getTotalAssigned() {
+		$table = '`' . static::$TABLE . '`';
+
+		$columns = 'COUNT(*) as `total_count`';
+
+		$products_join = ' INNER JOIN `' . self::$PRODUCTS_TABLE . '` AS `p` ON `p`.`id` = `s`.`packageid` ';
+		$devices_join = ' INNER JOIN `' . self::$DEVICES_TABLE . '` AS `d` ON `d`.`service_id` = `s`.`id` ';
+
+		$conditions = array();
+		$conditions[] = '`p`.`servertype` = "colocrossing"';
+		$conditions[] = '`d`.`device_id` > 0';
 
 		$where = ' WHERE  (' . implode (') AND (', $conditions) . ') ';
 
@@ -420,7 +484,7 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 
 		$columns = implode(',', self::$COLUMNS);
 		$where = array('device_id' => $device_id);
-		$join = '`' . self::$DEVICES_JOIN_TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
+		$join = '`' . self::$DEVICES_TABLE . '` ON `' . self::$DEVICES_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 
 		$rows = select_query(self::$TABLE, $columns, $where, null, null, 1, $join);
 
@@ -439,9 +503,9 @@ class ColoCrossing_Model_Service extends ColoCrossing_Model {
 	 * @static
 	 */
 	public static function getAssignedDevices() {
-		$table = self::$DEVICES_JOIN_TABLE;
+		$table = self::$DEVICES_TABLE;
 		$columns = 'device_id,service_id';
-		$join = '`' . self::$TABLE . '` ON `' . self::$DEVICES_JOIN_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
+		$join = '`' . self::$TABLE . '` ON `' . self::$DEVICES_TABLE . '`.`service_id` = `' . self::$TABLE . '`.`id`';
 
 		$rows = select_query($table, $columns, null, null, null, null, $join);
 
