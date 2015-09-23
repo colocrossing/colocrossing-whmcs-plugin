@@ -14,7 +14,7 @@ Configuration
 -------------------------------
 * Login to the [ColoCrossing Portal](https://portal.colocrossing.com/api).
 * Go to the API section by clicking on the link at the footer of the page.
-* Go to the API Keys tab and generate an API Key with the IP address of your WHMCS server.
+* Go to the API Keys tab and generate an API Key with the primary external IP address of your server. If you are uncertain of what IP address to use, try executing `curl ident.me` from your server:
 * Go to the API Webhooks tab and create a webhook for the `Ticket Created` event. Randomly generate a token for the secret. The URL should point to `https://your-whmcs-installation/event.php`.
 * Login to the WHMCS administrator panel.
 * In WHMCS, setup a support ticket department to handle abuse complaints along with a system user acount to be used by the module.
