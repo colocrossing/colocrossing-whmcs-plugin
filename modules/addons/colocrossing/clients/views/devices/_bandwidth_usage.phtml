@@ -1,6 +1,6 @@
 <div data-toggle="tab" id="bandwidth-usage" class="cc-tab-content">
     <div class="row">
-        <div class="col30">
+        <div class="col30 col-md-3">
             <div class="internalpadding">
                 <div class="styled_title"><h2>Bandwidth Usage</h2></div>
                 <p>You have the following bandwidth usage graphs assigned to this device.</p>
@@ -16,7 +16,7 @@
                 </div>
             </div>
         </div>
-        <div class="col70">
+        <div class="col70 col-md-9">
             <div id="bandwidth-graphs" style="text-align: center;"></div>
         </div>
     </div>
@@ -61,7 +61,7 @@
             loading = true;
             durationSelect.prop('disabled', true);
 
-            container.html('<img src="/images/loading.gif"/>');
+            container.html('<img src="/modules/addons/colocrossing/assets/loading.gif"/>');
 
             for (var i = 0, length = graphs.length; i < length; i++) {
                 images.push(link + '&' + $.param({

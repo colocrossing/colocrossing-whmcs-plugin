@@ -145,7 +145,7 @@
 	        $(activeTab).show();
 	    } else {
 	        $("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
-	        $(".cc-tab-content:first").show(); //Show first tab content   
+	        $(".cc-tab-content:first").show(); //Show first tab content
 	    }
 
 		//On Click Event
@@ -162,5 +162,14 @@
 	            return true; // If link allow redirect
 	        }
 		});
+
+		$('.link').on('click', function(event) {
+			event.stopPropagation();
+		});
     });
 </script>
+
+<style type="text/css">
+    .header-lined { display: none; }
+    .page-header { margin-top: 0px; }
+</style>
