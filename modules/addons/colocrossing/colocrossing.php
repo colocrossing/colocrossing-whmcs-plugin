@@ -9,7 +9,6 @@ if (!defined('WHMCS')){
     die('This file cannot be accessed directly');
 }
 
-require 'Configuration.php';
 require 'Module.php';
 
 function colocrossing_config() {

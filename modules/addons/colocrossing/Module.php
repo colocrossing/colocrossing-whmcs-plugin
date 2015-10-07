@@ -4,6 +4,7 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require 'Configuration.php';
 require 'Router.php';
 require 'Controller.php';
 require 'Utilities.php';

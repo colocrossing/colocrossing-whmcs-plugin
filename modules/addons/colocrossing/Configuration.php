@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Import the WHMCS Configuration File to Determine if Admin Path is Custom
+ */
+require implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), '..', '..', '..', 'configuration.php'));
+
+/**
  * The Url to the Base of WHMCS
  * If WHMCS is not installed to the Root of the Web Server, you must set this to '/whmcs-dir/'
  */

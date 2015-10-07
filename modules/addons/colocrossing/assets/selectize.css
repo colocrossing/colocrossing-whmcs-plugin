@@ -244,6 +244,8 @@
   cursor: default;
 }
 .selectize-dropdown .active {
+  border: none !important;
+  padding: 2px 5px !important;
   background-color: #f5fafd;
   color: #495c68;
 }
