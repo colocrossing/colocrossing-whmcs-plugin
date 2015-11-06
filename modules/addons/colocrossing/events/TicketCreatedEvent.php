@@ -24,7 +24,7 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	protected function __construct($id, $name, array $data) {
 		parent::__construct($id, $name, $data);
 
-		if(empty($this->data['ticket']) || empty($this->data['ticket']['id']) || $this->data['ticket']['id'] <= 0) {
+		if(empty($this->data['ticket']) || empty($this->data['ticket']['id']) || intval($this->data['ticket']['id']) < 0) {
 			throw new Exception('Ticket not provided');
 		}
 
@@ -53,9 +53,9 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		}
 
 		$subject = $this->getSubject();
-		$message = $this->getMessage();
+		$messages = $this->getMessages();
 
-		if(empty($subject) || empty($message)) {
+		if(empty($subject) || empty($messages)) {
 			return false;
 		}
 
@@ -91,7 +91,7 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 		foreach ($clients as $client_id => $records) {
 			$ticket = $this->executeWHMCSCommand('openticket', array(
 	 			'subject' => $this->formatSubject($subject, $records),
-				'message' => $this->formatMessage($message, $records),
+				'message' => $this->formatMessage(array_shift($messages), $records),
 				'clientid' => $client_id,
 				'deptid' => $department->getId(),
 				'admin' => true,
@@ -102,40 +102,60 @@ class ColoCrossing_TicketCreatedEvent extends ColoCrossing_Event {
 	 			'ticketid' => intval($ticket['id']),
 	 			'status' => $status
 	 		));
+
+            foreach ($messages as $message) {
+                $this->executeWHMCSCommand('addticketreply', array(
+                    'ticketid' => intval($ticket['id']),
+                    'adminusername' => 'System',
+                    'message' => $message
+                ));
+            }
 		}
 
  		return true;
 	}
 
 	/**
-	 * Retrieves the Message from the First Response. Must be from System.
-	 * @return string|null The Message
+	 * Retrieves the Admin/System Messages from the Ticket
+	 * @return array<string> The Messages
 	 */
-	private function getMessage() {
+	private function getMessages() {
 		$responses = $this->ticket->getResponses();
 
 		if(empty($responses)) {
-			return null;
+			return array();
 		}
 
-		$response = $responses->get(0);
-		$user = $response->getUser();
+        $messages = array();
 
-		if(empty($user) || $user->getType() != 'system') {
-			return null;
-		}
+        foreach ($responses as $response)
+        {
+            $user = $response->getUser();
 
-		$message = $response->getMessage();
+            if(empty($user) || !in_array($user->getType(), array('system', 'admin'))) {
+                continue;
+            }
 
-		$lines = preg_split("/\r\n|\n|\r/", $message);
+            $message = $response->getMessage();
 
-		if(count($lines) > 2 && substr($lines[0], -1) == ',' && empty($lines[1])) {
-			$lines = array_slice($lines, 2);
+            $lines = preg_split("/\r\n|\n|\r/", $message);
 
-			return implode("\n", $lines);
-		}
+            if(count($lines) > 2 && substr($lines[0], -1) == ',' && empty($lines[1])) {
+                $lines = array_slice($lines, 2);
 
-		return $message;
+                $message = implode("\n", $lines);
+            }
+
+            list($body, $signature) = explode($user->getName(), $message);
+
+            if(!empty($body)) {
+                $message = $body . "\n" . $user->getName();
+            }
+
+            $messages[] = $message;
+        }
+
+		return $messages;
 	}
 
 	/**

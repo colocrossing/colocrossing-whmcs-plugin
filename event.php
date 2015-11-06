@@ -63,7 +63,7 @@ require_once 'includes/adminfunctions.php';
 try {
 	$event = ColoCrossing_Event::create($data);
 } catch (Exception $e) {
-	http_response_code(422);
+	http_response_code(500);
 	exit($e->getMessage());
 }
 
