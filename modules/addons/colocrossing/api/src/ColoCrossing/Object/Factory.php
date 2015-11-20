@@ -34,12 +34,12 @@ class ColoCrossing_Object_Factory
 				case 'power_port':
 					require_once(dirname(__FILE__) . '/Device/PowerPort.php');
 					return new ColoCrossing_Object_Device_PowerPort($client, $values);
-				case 'type':
-					require_once(dirname(__FILE__) . '/Device/Type.php');
-					return new ColoCrossing_Object_Device_Type($client, $values);
 				case 'bandwidth_usage':
 					require_once(dirname(__FILE__) . '/Device/BandwidthUsage.php');
 					return new ColoCrossing_Object_Device_BandwidthUsage($client, $values);
+                case 'type':
+                    require_once(dirname(__FILE__) . '/Type.php');
+                    return new ColoCrossing_Object_Type($client, $values);
 				case 'user':
 					require_once(dirname(__FILE__) . '/User.php');
 					return new ColoCrossing_Object_User($client, $values);
@@ -68,6 +68,9 @@ class ColoCrossing_Object_Factory
 			case 'null_route':
 				require_once(dirname(__FILE__) . '/NullRoute.php');
 				return new ColoCrossing_Object_NullRoute($client, $resource, $values);
+            case 'sales_device':
+                require_once(dirname(__FILE__) . '/SalesDevice.php');
+                return new ColoCrossing_Object_SalesDevice($client, $resource, $values);
 			case 'subnet':
 				require_once(dirname(__FILE__) . '/Subnet.php');
 				return new ColoCrossing_Object_Subnet($client, $resource, $values);
@@ -110,8 +113,8 @@ class ColoCrossing_Object_Factory
 				switch ($child_type)
 				{
 					case 'asset':
-						require_once(dirname(__FILE__) . '/Device/Asset.php');
-						return new ColoCrossing_Object_Device_Asset($client, $child_resource, $values);
+						require_once(dirname(__FILE__) . '/Asset.php');
+						return new ColoCrossing_Object_Asset($client, $child_resource, $values);
 					case 'note':
 						require_once(dirname(__FILE__) . '/Device/Note.php');
 						return new ColoCrossing_Object_Device_Note($client, $child_resource, $values);
@@ -156,6 +159,14 @@ class ColoCrossing_Object_Factory
 						return new ColoCrossing_Object_DdosZone_Attack($client, $child_resource, $values);
 				}
 				break;
+            case 'sales_device':
+                switch ($child_type)
+                {
+                    case 'asset':
+                        require_once(dirname(__FILE__) . '/Asset.php');
+                        return new ColoCrossing_Object_Asset($client, $child_resource, $values);
+                }
+                break;
 		}
 
 		return new ColoCrossing_Object($client, $values);

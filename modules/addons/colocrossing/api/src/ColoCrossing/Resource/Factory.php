@@ -21,6 +21,7 @@ class ColoCrossing_Resource_Factory
 		'devices' => '/Devices.php',
 		'networks' => '/Networks.php',
 		'null_routes' => '/NullRoutes.php',
+        'sales_devices' => '/SalesDevices.php',
 		'subnets' => '/Subnets.php',
 		'support_tickets' => '/SupportTickets.php',
 		'support_responses' => '/SupportResponses.php',
@@ -56,6 +57,8 @@ class ColoCrossing_Resource_Factory
 				return new ColoCrossing_Resource_Networks($client);
 			case 'null_routes':
 				return new ColoCrossing_Resource_NullRoutes($client);
+            case 'sales_devices':
+                return new ColoCrossing_Resource_SalesDevices($client);
 			case 'subnets':
 				return new ColoCrossing_Resource_Subnets($client);
 			case 'support_tickets':

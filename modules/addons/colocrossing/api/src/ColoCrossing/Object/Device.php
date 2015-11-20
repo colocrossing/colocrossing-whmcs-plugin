@@ -21,7 +21,7 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	/**
 	 * Retrieves the Device Type object that describes the capabilities
 	 * of this device. Such as its power, network, and rack capabilities.
-	 * @return ColoCrossing_Object_Device_Type  The Device Type
+	 * @return ColoCrossing_Object_Type  The Device Type
 	 */
 	public function getType()
 	{
@@ -62,7 +62,7 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	/**
 	 * Retrieves the list of Device Asset objects.
 	 * @param  array 	$options 		The Options of the page and sorting.
-	 * @return ColoCrossing_Collection<ColoCrossing_Object_Device_Asset>	The Device Assets
+	 * @return ColoCrossing_Collection<ColoCrossing_Object_Asset>	The Device Assets
 	 */
 	public function getAssets(array $options = null)
 	{
@@ -72,7 +72,7 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	/**
 	 * Retrieves the Device Asset object matching the provided Id.
 	 * @param  int 		$id 							The Id.
-	 * @return ColoCrossing_Object_Device_Asset|null	The Device Asset
+	 * @return ColoCrossing_Object_Asset|null	The Device Asset
 	 */
 	public function getAsset($id)
 	{

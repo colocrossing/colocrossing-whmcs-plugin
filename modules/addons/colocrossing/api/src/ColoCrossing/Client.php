@@ -10,7 +10,7 @@ class ColoCrossing_Client
 	/**
 	 * The Version of this Library
 	 */
-	const VERSION = '1.1.3';
+	const VERSION = '1.1.4';
 
 	/**
 	 * The Default Options
@@ -199,6 +199,8 @@ class ColoCrossing_Client
 	 */
 	public function getResource($name)
 	{
+        $name = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
+
 		$available_resources = ColoCrossing_Resource_Factory::getAvailableResources();
 
 		if (empty($available_resources[$name]))

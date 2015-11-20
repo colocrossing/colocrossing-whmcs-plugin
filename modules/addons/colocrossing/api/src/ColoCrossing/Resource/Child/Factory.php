@@ -36,7 +36,10 @@ class ColoCrossing_Resource_Child_Factory
 		),
 		'ddos_zones' => array(
 			'attacks' => '/DdosZones/Attacks.php'
-		)
+		),
+        'sales_devices' => array(
+            'assets' => '/SalesDevices/Assets.php'
+        )
 	);
 
 	/**
@@ -98,6 +101,13 @@ class ColoCrossing_Resource_Child_Factory
 						return new ColoCrossing_Resource_Child_DdosZones_Attacks($client);
 				}
 				break;
+            case 'sales_devices':
+                switch ($child_type)
+                {
+                    case 'assets':
+                        return new ColoCrossing_Resource_Child_Devices_Assets($client);
+                }
+                break;
 		}
 
 		throw new ColoCrossing_Error('ColoCrossing API Child Resource not found.');

@@ -18,7 +18,7 @@ class ColoCrossing_Object_Device_PowerDistributionUnit extends ColoCrossing_Reso
 	/**
 	 * Retrieves the Device Type object that describes the capabilities
 	 * of this device. Such as its power, network, and rack capabilities.
-	 * @return ColoCrossing_Object_Device_Type  The Device Type
+	 * @return ColoCrossing_Object_Type  The Device Type
 	 */
 	public function getType()
 	{
