@@ -1,0 +1,65 @@
+<div class="page-header">
+	<div class="styled_title"><h1><?php echo $this->device->getName(); ?></h1></div>
+</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+<div id="cc-tabs">
+	<ul class="nav nav-tabs tabs" data-tabs="tabs" style="float: none;">
+		<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>
+		<li id="assetsnav"><a href="#assets" data-toggle="tab">Assets</a></li>
+	</ul>
+</div>
+
+<?php
+	$this->renderTemplate('/sales-devices/_overview.phtml', array(
+		'device' => $this->device,
+		'type' => $this->type
+	));
+
+	$this->renderTemplate('/sales-devices/_assets.phtml', array(
+		'assets' => $this->assets,
+	));
+?>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".cc-tab-content").hide(); //Hide all content
+		if ($(location).attr('hash').substr(1)!="") {
+			var activeTab = $(location).attr('hash');
+			$("ul").find('li').removeClass('open');
+			$("ul.tabs li").removeClass("active"); //Remove any "active" class
+			$(activeTab+"nav").addClass("active");
+			$(activeTab).show();
+		} else {
+			$("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
+			$(".cc-tab-content:first").show(); //Show first tab content
+		}
+
+		//On Click Event
+		$("#cc-tabs ul.tabs li").click(function() {
+			$("ul").find('li').removeClass('open');
+			$("ul.tabs li").removeClass("active"); //Remove any "active" class
+			$(this).addClass("active"); //Add "active" class to selected tab
+			var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+			if (activeTab.substr(0,1)=="#" && activeTab.substr(1)!="") { //Determine if a tab or link
+				$(".cc-tab-content").hide(); //Hide all tab content
+				$(activeTab).fadeIn(); //Fade in the active content
+				return false;
+			} else {
+				return true; // If link allow redirect
+			}
+		});
+
+		$('.link').on('click', function(event) {
+			event.stopPropagation();
+		});
+	});
+</script>
+
+<style type="text/css">
+	.header-lined { display: none; }
+	.page-header { margin-top: 0px; }
+</style>

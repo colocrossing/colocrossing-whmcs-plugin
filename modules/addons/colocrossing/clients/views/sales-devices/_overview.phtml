@@ -1,0 +1,27 @@
+<div data-toggle="tab" id="overview" class="cc-tab-content">
+    <div class="row">
+        <div class="col30 col-md-3">
+            <div class="internalpadding">
+                <div class="styled_title"><h2>Information</h2></div>
+                <p>Here is an overview of the device.</p>
+            </div>
+        </div>
+        <div class="col70 col-md-9">
+            <div class="internalpadding">
+                <div class="col2half col-md-6">
+                    <h4>Name:</h4>
+                    <span><?php echo $device->getName(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half col-md-6">
+                    <h4>Type:</h4>
+                    <span><?php echo $type->getName(); ?>&nbsp;</span>
+                </div>
+                <div class="col2half col-md-6">
+                    <h4>Zone:</h4>
+                    <span><?php echo $device->getSubzone(); ?>&nbsp;</span>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>

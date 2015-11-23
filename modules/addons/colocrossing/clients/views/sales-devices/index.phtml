@@ -1,0 +1,171 @@
+<div class="page-header">
+	<div class="styled_title"><h1>Available Servers</h1></div>
+</div>
+
+<?php
+	$this->renderFlashMessage();
+?>
+
+<form id="devices-table-form" method="get">
+	<table width="100%" border="0" cellpadding="3" cellspacing="0">
+	    <tr>
+	        <td width="50%" align="left"><?php echo $this->num_records . ' Records Found, Page ' . $this->page_number . ' of ' . $this->num_pages ?></td>
+	        <td width="50%" align="right">
+		        <label style="display: inline-block;">Show</label>
+		        <select id='page-size-select' name="page_size" style="display: inline-block;">
+		            <option <?php echo $this->page_size == 25 ? 'selected' : null; ?>>25</option>
+		            <option <?php echo $this->page_size == 50 ? 'selected' : null; ?>>50</option>
+		            <option <?php echo $this->page_size == 100 ? 'selected' : null; ?>>100</option>
+		            <option <?php echo $this->page_size == 250 ? 'selected' : null; ?>>250</option>
+		        </select>
+		        <label style="display: inline-block;">devices</label>
+	        </td>
+	    </tr>
+	</table>
+
+	<table class="table table-striped table-framed table-centered">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Zone</th>
+			<?php
+				$num_columns = 3;
+
+				if(isset($this->sales_department)) {
+					echo '<th></th>';
+
+					$num_columns++;
+				}
+			?>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+	        $devices = $this->devices->current();
+
+	        if(count($devices) == 0):
+		?>
+			<tr>
+				<td style="text-align: center;" colspan="<?php echo $num_columns; ?>">No servers currently available.</td>
+			</tr>
+		<?php
+			endif;
+
+			foreach ($devices as $device):
+				$id = $device->getId();
+				$url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'sales-devices',
+					'action' => 'view',
+					'id' => $id
+				));
+		?>
+			<tr>
+				<td><a href="<?php echo $url; ?>"><?php echo $device->getName(); ?></a></td>
+				<td><?php echo $device->getDescription(); ?></td>
+				<td><?php echo $device->getSubzone(); ?></td>
+			<?php
+				if(isset($this->sales_department)) {
+					$ticket_url = ColoCrossing_Utilities::buildUrl('/submitticket.php', array(
+						'step' => 2,
+						'deptid' => $this->sales_department->getId(),
+						'subject' => 'Server Quote - ' . $device->getName(),
+						'urgency' => 'Low'
+					));
+
+					echo '<td><a class="btn btn-default btn-sm" href="' . $ticket_url . '">Contact Sales</a></td>';
+				}
+			?>
+			</tr>
+		<?php
+			endforeach;
+		?>
+
+		</tbody>
+	</table>
+
+    <p align="center">
+    <?php
+        if($this->page_number > 1) {
+            echo '<a id="previous-page-button" href="#previous-page">&laquo; Previous Page</a>';
+        } else {
+            echo '<span id="previous-page-button">&laquo; Previous Page</span>';
+        }
+
+        echo '&nbsp;';
+
+        if($this->page_number < $this->num_pages) {
+            echo '<a id="next-page-button" href="#next-page">Next Page &raquo;</a>';
+        } else {
+            echo '<span id="next-page-button">Next Page &raquo;</span>';
+        }
+    ?>
+    </p>
+
+    <input type="hidden" name="controller" value="sales-devices" />
+    <input type="hidden" name="action" value="index" />
+    <input type="hidden" name="sort" value="<?php echo $this->sort; ?>" />
+    <input type="hidden" name="order" value="<?php echo $this->order; ?>" />
+    <input type="hidden" name="page_number" value="<?php echo $this->page_number; ?>" />
+</form>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.link').on('click', function(event) {
+			event.stopPropagation();
+		});
+
+        var currentPage = parseInt('<?php echo $this->page_number; ?>'),
+        form = $('#devices-table-form'),
+        sortInput = form.find('input[name="sort"]'),
+        orderInput = form.find('input[name="order"]'),
+        pageNumberInput = form.find('input[name="page_number"]'),
+        pageSizeInput = form.find('input[name="page_size"]')
+
+        form.find('a.sort-column-button').on('click', function(e) {
+            var button = $(this);
+
+            if(button.data('sort') == sortInput.val()) {
+                orderInput.val(orderInput.val() == 'asc' ? 'desc' : 'asc');
+            } else {
+                sortInput.val(button.data('sort'));
+                orderInput.val('asc');
+            }
+
+            form.submit();
+
+            e.preventDefault();
+            return false;
+        });
+
+        form.find('a#previous-page-button').on('click', function(e) {
+            pageNumberInput.val(currentPage - 1);
+            form.submit();
+
+            e.preventDefault();
+            return false;
+        });
+
+        form.find('a#next-page-button').on('click', function(e) {
+            pageNumberInput.val(currentPage + 1);
+            form.submit();
+
+            e.preventDefault();
+            return false;
+        });
+
+        form.find('select#page-size-select').on('change', function(e) {
+            pageNumberInput.val(1);
+            form.submit();
+
+            e.preventDefault();
+            return false;
+        });
+
+	});
+</script>
+
+<style type="text/css">
+	.header-lined { display: none; }
+	.page-header { margin-top: 0px; }
+</style>

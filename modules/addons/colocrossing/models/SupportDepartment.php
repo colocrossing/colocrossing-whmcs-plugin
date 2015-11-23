@@ -41,4 +41,21 @@ class ColoCrossing_Model_SupportDepartment extends ColoCrossing_Model {
 		return $names;
 	}
 
+	/**
+	 * Finds the Model from the DB with the provided Name
+	 * @param  string $name The Name
+	 * @return ColoCrossing_Model_SupportDepartment|null The Department, Null if it is not found.
+	 * @static
+	 */
+	public static function findByName($name) {
+		$rows = select_query(static::$TABLE, implode(',', static::$COLUMNS), array('name' => $name));
+
+		if(mysql_num_rows($rows) == 0) {
+			return null;
+		}
+
+		$values = mysql_fetch_array($rows);
+
+		return self::createInstanceFromRow($values);
+	}
 }

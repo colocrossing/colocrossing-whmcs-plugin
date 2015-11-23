@@ -133,6 +133,12 @@ class ColoCrossing_Module {
         		'Type' => 'text',
         		'Size' => '50'
         	),
+        	'sales_ticket_department' => array (
+        		'FriendlyName' => 'Sales Ticket Department',
+        		'Type' => 'dropdown',
+        		'Options' => implode(',', $support_department_names),
+        		'Description' => 'The department that sales tickets will be assigned to.'
+        	),
         	'abuse_ticket_department' => array (
         		'FriendlyName' => 'Abuse Ticket Department',
         		'Type' => 'dropdown',

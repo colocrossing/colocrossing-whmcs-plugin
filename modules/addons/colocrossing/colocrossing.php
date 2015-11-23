@@ -83,7 +83,7 @@ function colocrossing_sidebar($params) {
     $sidebar .=     '<li><a href="' . $bandwidth_usages_url . '">Bandwidth Usages</a></li>';
     $sidebar .=     '<li><a href="' . $assigned_services_url . '">Assigned Services</a></li>';
     $sidebar .=     '<li><a href="' . $unassigned_services_url . '">Unassigned Services</a></li>';
-    $sidebar .=     '<li><a href="' . $sales_devices_url . '">Available Devices</a></li>';
+    $sidebar .=     '<li><a href="' . $sales_devices_url . '">Available Servers</a></li>';
     $sidebar .=     '<li><a href="' . $subnets_url . '">Subnets</a></li>';
     $sidebar .=     '<li><a href="' . $null_routes_url . '">Null Routes</a></li>';
     $sidebar .=     '<li><a href="' . $announcements_url . '">Announcements</a></li>';

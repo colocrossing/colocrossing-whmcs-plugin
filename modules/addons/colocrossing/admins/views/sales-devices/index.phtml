@@ -8,7 +8,7 @@
 ?>
 
 <form id="devices-table-form" method="get">
-    <h1>ColoCrossing Available Devices</h1>
+    <h1>Available ColoCrossing Servers</h1>
 
 <?php
     $this->renderFlashMessage();
@@ -45,15 +45,17 @@
             ?>
             </tr>
         <?php
-            if(count($this->devices) == 0):
+            $devices = $this->devices->current();
+
+            if(count($devices) == 0):
         ?>
             <tr>
-                <td colspan="3">No devices found.</td>
+                <td colspan="3">No servers currently available.</td>
             </tr>
         <?php
 			endif;
 
-			foreach ($this->devices->current() as $device):
+			foreach ($devices as $device):
 				$id = $device->getId();
 				$url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
 					'controller' => 'sales-devices',

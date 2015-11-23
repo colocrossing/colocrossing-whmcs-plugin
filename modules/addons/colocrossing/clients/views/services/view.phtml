@@ -23,8 +23,14 @@
 </div>
 
 <div id="colocrossing-module">
-	<h4>Device:</h4>
-	<a href="<?php echo $device_url; ?>"><?php echo $this->device->getName(); ?></a>
+	<div class="row" style="padding-bottom: 0px;">
+	    <div class="col-sm-5 text-right">
+	        <strong>Device</strong>
+	    </div>
+	    <div class="col-sm-7 text-left">
+	        <a href="<?php echo $device_url; ?>"><?php echo $this->device->getName(); ?></a>
+	    </div>
+	</div>
 </div>
 
 <?php
