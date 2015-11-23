@@ -1,11 +1,10 @@
 <?php
     $columns = array(
         'name' => 'Name',
-        'type' => 'Type',
         'description' => 'Description',
         'subzone' => 'Zone'
     );
-    $sortable_columns = array('name', 'type', 'description');
+    $sortable_columns = array('name', 'description');
 ?>
 
 <form id="devices-table-form" method="get">
@@ -49,12 +48,28 @@
             if(count($this->devices) == 0):
         ?>
             <tr>
-                <td colspan="4">No devices found.</td>
+                <td colspan="3">No devices found.</td>
             </tr>
         <?php
-            endif;
-        ?>
-        </table>
+			endif;
+
+			foreach ($this->devices->current() as $device):
+				$id = $device->getId();
+				$url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'sales-devices',
+					'action' => 'view',
+					'id' => $id
+				));
+		?>
+			<tr>
+				<td><a href="<?php echo $url; ?>"><?php echo $device->getName(); ?></a></td>
+				<td><?php echo $device->getDescription(); ?></td>
+				<td><?php echo $device->getSubzone(); ?></td>
+			</tr>
+		<?php
+			endforeach;
+		?>
+		</table>
     </div>
 
     <p align="center">

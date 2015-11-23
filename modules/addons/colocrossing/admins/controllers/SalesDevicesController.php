@@ -24,6 +24,9 @@ class ColoCrossing_Admins_SalesDevicesController extends ColoCrossing_Admins_Con
             'page_size' => $this->page_size,
             'format' => 'paged'
         ));
+
+        $this->num_records = $this->devices->getTotalRecordCount();
+		$this->num_pages = $this->devices->size();
     }
 
     public function view(array $params) {
@@ -35,6 +38,7 @@ class ColoCrossing_Admins_SalesDevicesController extends ColoCrossing_Admins_Con
         }
 
         $this->assets = $this->device->getAssets();
+		$this->type = $this->device->getType();
     }
 
 }

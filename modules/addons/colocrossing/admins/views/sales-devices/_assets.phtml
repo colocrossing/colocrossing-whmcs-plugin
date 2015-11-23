@@ -1,0 +1,31 @@
+<div class="full-section">
+	<h2>Assets</h2>
+
+	<table class="datatable">
+		<tr>
+			<th>Name</th>
+			<th>Group</th>
+			<th>Quantity</th>
+		</tr>
+	<?php
+		if(count($assets) == 0):
+	?>
+		<tr>
+			<td colspan="3">No assets found.</td>
+		</tr>
+	<?php
+		endif;
+
+		foreach ($assets as $asset):
+			$groups_names = $asset->getGroupsNames();
+	?>
+		<tr>
+			<td><?php echo $asset->getName(); ?></td>
+			<td><?php echo implode(', ', $groups_names); ?></td>
+			<td><?php echo $asset->getQuantity(); ?></td>
+		</tr>
+	<?php
+		endforeach;
+	?>
+	</table>
+</div>
