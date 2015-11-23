@@ -1,0 +1,24 @@
+root = true
+
+[*]
+
+# Use 4 Space Tab Indentation
+indent_style = tab
+indent_size = 4
+
+# Use Line Feed Character for EOL
+end_of_line = lf
+
+# Use UTF Character Set
+charset = utf-8
+
+# Trim Whitespace
+trim_trailing_whitespace = true
+
+# Ensure Last Line is Blank
+insert_final_newline = true
+
+[*.md]
+
+# Leave Whitespace For Markdown
+trim_trailing_whitespace = false

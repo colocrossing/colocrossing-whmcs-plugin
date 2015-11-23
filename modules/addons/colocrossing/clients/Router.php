@@ -26,6 +26,7 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
 	protected static $ROUTES = array(
 		'devices' => array('view', 'bandwidth-graph', 'update-power-ports', 'update-network-ports'),
 		'subnets' => array('view', 'update'),
+        'sales-devices' => array('index', 'view'),
 		'null-routes' => array('create', 'destroy'),
 		'services' => array('view', 'view-device', 'control-device-power', 'control-device-network'),
 		'error' => array('general', 'missing', 'unauthorized')
@@ -60,6 +61,9 @@ class ColoCrossing_Clients_Router extends ColoCrossing_Router {
         	case 'devices':
         		require_once('controllers/DevicesController.php');
         		return new ColoCrossing_Clients_DevicesController();
+            case 'sales-devices':
+                require_once('controllers/SalesDevicesController.php');
+                return new ColoCrossing_Clients_SalesDevicesController();
         	case 'subnets':
         		require_once('controllers/SubnetsController.php');
         		return new ColoCrossing_Clients_SubnetsController();
