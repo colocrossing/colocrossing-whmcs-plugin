@@ -48,10 +48,16 @@ class ColoCrossing_Client
 	private $options = array();
 
 	/**
-	 * The Permission for the Client associated with the API Key.
+	 * The Permission for the User associated with the API Key.
 	 * @var array
 	 */
 	private $permissions;
+
+	/**
+	 * The User associated with the API Key.
+	 * @var ColoCrossing_Object_User
+	 */
+	private $user;
 
 	/**
 	 * The executor of HTTP Requests
@@ -156,6 +162,25 @@ class ColoCrossing_Client
 		$permissions = $this->getPermissions();
 
 		return isset($permissions[$type]) && !!$permissions[$type];
+	}
+
+	/**
+	 * Retrieve the User Associated with the API Key
+	 * @return ColoCrossing_Object_User The User
+	 */
+	public function getUser()
+	{
+		if(isset($this->user))
+		{
+			return $this->user;
+		}
+
+		$request = new ColoCrossing_Http_Request('/', 'GET');
+		$executor = $this->getHttpExecutor();
+		$response = $executor->executeRequest($request);
+		$content = $response->getContent();
+
+		return $this->user = ColoCrossing_Object_Factory::createObject($this, null, $content['user'], 'user');
 	}
 
 	/**
