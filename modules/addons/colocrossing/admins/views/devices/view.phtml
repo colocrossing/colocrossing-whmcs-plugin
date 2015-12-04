@@ -1,8 +1,14 @@
 <div style="margin: 0 10px;">
-  <div style="float: right;">
-    <input id="edit-device-button" type="button" value="Edit Device" class="btn" />
-  </div>
-  <h1>ColoCrossing Device - <?php echo $this->device->getName(); ?></h1>
+<?php
+	if($this->user->getType() === 'client'):
+?>
+	<div style="float: right;">
+		<input id="edit-device-button" type="button" value="Edit Device" class="btn" />
+	</div>
+<?php
+	endif;
+?>
+	<h1>ColoCrossing Device - <?php echo $this->device->getName(); ?></h1>
 	<?php
 		$this->renderFlashMessage();
 
@@ -166,32 +172,32 @@
 			}
 		});
 
-	    var editDialog = $('#edit-device-dialog');
-	    var editButton = $('#edit-device-button');
+			var editDialog = $('#edit-device-dialog');
+			var editButton = $('#edit-device-button');
 
-	    editDialog.dialog({
-	      autoOpen: false,
-	      modal: true,
-	      resizable: false,
-	      width: 400,
-	      buttons: {
-	        Save: function() {
-	          var form = $(this).find('form');
+			editDialog.dialog({
+				autoOpen: false,
+				modal: true,
+				resizable: false,
+				width: 400,
+				buttons: {
+					Save: function() {
+						var form = $(this).find('form');
 
-	          form.submit();
-	        },
-	        Cancel: function() {
-	          $(this).dialog('close');
-	        }
-	      }
-	    });
+						form.submit();
+					},
+					Cancel: function() {
+						$(this).dialog('close');
+					}
+				}
+			});
 
-	    editButton.on('click', function(e) {
-	      editDialog.dialog('open');
+			editButton.on('click', function(e) {
+				editDialog.dialog('open');
 
-	      e.preventDefault();
-	      return false;
-	    });
+				e.preventDefault();
+				return false;
+			});
 	});
 </script>
 
@@ -214,25 +220,25 @@
 </style>
 
 <div id="edit-device-dialog" title="Edit Device">
-  <?php
-    $url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
-      'controller' => 'devices',
-      'action' => 'update',
-      'id' => $this->device->getId()
-    ));
+	<?php
+		$url = ColoCrossing_Utilities::buildUrl($this->base_url, array(
+			'controller' => 'devices',
+			'action' => 'update',
+			'id' => $this->device->getId()
+		));
 
-    $nickname = $this->device->getNickname();
-    $hostname = isset($this->service) ? $this->service->getHostname() : $this->device->getHostname();
-  ?>
-  <form action="<?php echo $url; ?>" method="POST" style="width: 370px; margin: 0 auto;">
-    <div style="float: left; width: 370px; margin-top: 10px; margin-bottom: 10px;">
-      <label style="float: left; width: 80px;">Nickname:</label>
-      <input style="float: left; width: 260px;" type="text" name="nickname" value="<? echo htmlspecialchars($nickname); ?>">
-    </div>
+		$nickname = $this->device->getNickname();
+		$hostname = isset($this->service) ? $this->service->getHostname() : $this->device->getHostname();
+	?>
+	<form action="<?php echo $url; ?>" method="POST" style="width: 370px; margin: 0 auto;">
+		<div style="float: left; width: 370px; margin-top: 10px; margin-bottom: 10px;">
+			<label style="float: left; width: 80px;">Nickname:</label>
+			<input style="float: left; width: 260px;" type="text" name="nickname" value="<? echo htmlspecialchars($nickname); ?>">
+		</div>
 
-    <div style="float: left; width: 370px;  margin-top: 10px; margin-bottom: 10px;">
-      <label style="float: left; width: 80px;">Hostname:</label>
-      <input style="float: left; width: 260px;" type="text" name="hostname" value="<? echo htmlspecialchars($hostname); ?>">
-    </div>
-  </form>
+		<div style="float: left; width: 370px;  margin-top: 10px; margin-bottom: 10px;">
+			<label style="float: left; width: 80px;">Hostname:</label>
+			<input style="float: left; width: 260px;" type="text" name="hostname" value="<? echo htmlspecialchars($hostname); ?>">
+		</div>
+	</form>
 </div>

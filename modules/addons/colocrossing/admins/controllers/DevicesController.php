@@ -57,6 +57,8 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 			$this->redirectTo('devices', 'index');
 		}
 
+		$this->user = $this->api->getUser();
+
 		$this->service = ColoCrossing_Model_Service::findByDevice($this->device->getId());
 
 		if(isset($this->service)) {
