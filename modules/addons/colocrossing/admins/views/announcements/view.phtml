@@ -42,6 +42,7 @@
 <?php
 	$this->renderTemplate('/announcements/_devices.phtml', array(
 		'base_url' => $this->base_url,
+		'announcement' => $this->announcement,
 		'devices' => $this->devices,
 		'services' => $this->services
 	));
