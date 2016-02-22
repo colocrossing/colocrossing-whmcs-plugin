@@ -117,19 +117,19 @@ class ColoCrossing_Module {
 	    return array(
         	'api_key' => array(
         		'FriendlyName' => 'API Key',
-        		'Description' => 'The token provided to you when creating the key in the ColoCrossing Portal.',
+        		'Description' => 'The token provided to you when creating the key.',
         		'Type' => 'text',
         		'Size' => '50'
         	),
         	'api_hook_secret' => array(
         		'FriendlyName' => 'API Webhook Secret',
-        		'Description' => 'The secret used when creating the webhook in the ColoCrossing Portal.',
+        		'Description' => 'The secret used when creating the webhook. (Only relevant for direct customers of ColoCrossing)',
         		'Type' => 'text',
         		'Size' => '50'
         	),
         	'system_username' => array(
         		'FriendlyName' => 'System Username',
-        		'Description' => 'The user that will be used to perform automated tasks such as creating tickets.',
+        		'Description' => 'Used for system generated tickets. (Only relevant for direct customers of ColoCrossing)',
         		'Type' => 'text',
         		'Size' => '50'
         	),

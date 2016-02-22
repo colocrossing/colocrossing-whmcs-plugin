@@ -15,12 +15,13 @@ Configuration
 * Login to the [ColoCrossing Portal](https://portal.colocrossing.com/api).
 * Go to the API section by clicking on the link at the footer of the page.
 * Go to the API Keys tab and generate an API Key with the primary external IP address of your server. If you are uncertain of what IP address to use, try executing `curl ident.me` from your server:
-* Go to the API Webhooks tab and create a webhook for the `Ticket Created` event. Randomly generate a token for the secret. The URL should point to `https://your-whmcs-installation/event.php`.
+* If you are a direct custtomer of ColoCrossing, go to the API Webhooks tab and create a webhook for the `Ticket Created` event. Randomly generate a token for the secret. The URL should point to `https://your-whmcs-installation/event.php`.
 * Login to the WHMCS administrator panel.
 * In WHMCS, setup a support ticket department to handle abuse complaints along with a system user acount to be used by the module.
 * Go to Setup > Addon Modules
 * Activate the ColoCrossing Portal module.
-* Configure the module by entering the API Key and API Webhook you generated above and by setting the access controls, abuse department, and system account accordingly.
+* Configure the module by entering the API Key you generate above.
+* If you are a direct customer of ColoCrossing, enter the secret token for the API Webhook you generated above and set the access controls, sales department, abuse department,  abuse status, and system username accordingly.
 * Go to Setup > Products/Services > Products/Services
 * Select a product you would like to enable ColoCrossing integrations for.
 * Edit the module settings of the product by setting the Module Name to Colocrossing.
