@@ -53,7 +53,7 @@
 		'device' => $this->device,
 		'type' => $this->type,
 		'service' => $this->service,
-		'service_url' => ColoCrossing_Utilities::buildUrl('/clientarea.php', array(
+		'service_url' => ColoCrossing_Utilities::buildUrl(WHMCS_BASE_URL . 'clientarea.php', array(
 			'action' => 'productdetails',
 			'id' => $this->service->getId()
 		)),
