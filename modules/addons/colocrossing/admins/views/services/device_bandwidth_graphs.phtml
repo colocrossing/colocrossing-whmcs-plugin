@@ -1,98 +1,104 @@
-<div id="bandwidth-graphs-container">
-	<div id="bandwidth-graph-range">
-	    <label>Date Range: </label>
-	    <select>
-	    <?php
-	        foreach ($bandwidth_graph_durations as $value => $display) {
-	            echo '<option value="' . $value . '">' . $display . '</option>';
-	        }
-	    ?>
-	    </select>
-	</div>
-
-	<div id="bandwidth-graphs"></div>
+<div id="bandwidth-graph-range" style="display: block;">
+    <label>Date Range: </label>
+	<select placeholder="Select a date range...    ">
+		<option></option>
+    <?php
+        foreach ($bandwidth_graph_durations as $value => $display) {
+            echo '<option value="' . $value . '">' . $display . '</option>';
+        }
+    ?>
+    </select>
 </div>
 
-<img id="bandwidth-graphs-loading" src="/modules/addons/colocrossing/assets/loading.gif" style="display: block;" />
+<div id="bandwidth-graphs-images" style="display: none;"></div>
+<div  id="bandwidth-graphs-spinner" style="display: none;">
+	<img src="<?php echo WHMCS_BASE_URL; ?>modules/addons/colocrossing/assets/loading.gif" alt="Loading..." title="Loading..." />
+</div>
+
+
+
+<link type="text/css" href="<?php echo WHMCS_BASE_URL; ?>modules/addons/colocrossing/assets/selectize.css" rel="stylesheet" />
+<script type="text/javascript" src="<?php echo WHMCS_BASE_URL; ?>modules/addons/colocrossing/assets/selectize.js"></script>
 
 <script type="text/javascript">
 
     function loadImages(images, callback) {
-        var length = images.length,
-        count = length,
-        check = function () {
-            if (--count === 0) {
-                callback(images);
-            }
-        };
+        var elements = [];
+        count = images.length;
 
-        for (var i = 0; i < length; i++) {
+        for (var i = 0, length = images.length; i < length; i++) {
             var image = new Image();
 
-            image.onload = check;
-            image.onerror = check;
+            image.onload = function () {
+	            if (--count === 0) {
+	                callback(elements);
+	            }
+	        };
+            image.onerror = function () {
+	            if (--count === 0) {
+	                callback(elements);
+	            }
+	        };
 
             image.src = images[i];
 
-            images[i] = image;
+            elements.push(image);
         }
     }
 
     $(document).ready(function() {
         var link = '<?php echo $bandwidth_graph_url; ?>',
-        graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>'),
-        container = $('#bandwidth-graphs-container'),
-        graphsContainer = $('#bandwidth-graphs'),
-        rangeSelect = $('#bandwidth-graph-range select'),
-        loadingBar = $('#bandwidth-graphs-loading'),
-        isLoading = false,
-        setLoading = function(loading) {
-        	isLoading = loading;
-        	container.toggle(!loading);
-        	loadingBar.toggle(loading);
-        },
-        loadGraphs = function() {
-            if(isLoading) {
-                return false;
-            }
+        graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>');
 
-            setLoading(true);
+        $('#bandwidth-graph-range select').selectize({
+        	onChange: function(value) {
+        		if(!value) {
+        			this.enable();
 
-            var images = [];
-            for (var i = 0, length = graphs.length; i < length; i++) {
-                images.push(link + '&' + $.param({
-                    switch_id: graphs[i].switch_id,
-                    port_id: graphs[i].port_id,
-                    range: rangeSelect.val(),
-                }));
-            }
+        			$('#bandwidth-graphs-images').hide();
+        			$('#bandwidth-graphs-spinner').hide();
 
-            loadImages(images, function(images) {
-                graphsContainer.html('');
+        			return;
+        		}
 
-                for (var i = 0, length = images.length; i < length; i++) {
-                    graphsContainer.append(images[i]);
-                }
+		        var images = [];
 
-                setLoading(false);
-            });
-        };
+		        for (var i = 0, length = graphs.length; i < length; i++) {
+		            images.push(link + '&' + $.param({
+		                switch_id: graphs[i].switch_id,
+		                port_id: graphs[i].port_id,
+		                range: value,
+		            }));
+		        }
 
-        setTimeout(loadGraphs, 50);
+		        this.disable();
 
-        rangeSelect.on('change', loadGraphs);
+		        $('#bandwidth-graphs-images').hide();
+        		$('#bandwidth-graphs-spinner').show();
+
+	            loadImages(images, function(images) {
+	                $('#bandwidth-graphs-images').html('');
+
+	                for (var i = 0, length = images.length; i < length; i++) {
+	                    $('#bandwidth-graphs-images').append(images[i]);
+	                }
+
+		        	$('#bandwidth-graphs-images').show();
+        			$('#bandwidth-graphs-spinner').hide();
+
+        			this.enable();
+	            }.bind(this));
+        	}
+        });
     });
 </script>
 
 <style type="text/css">
-	div#bandwidth-graphs-container { display: none; }
-
 	div#bandwidth-graph-range { margin: 8px auto 0px auto; width: 300px; }
-	div#bandwidth-graph-range label { width: 100px; display: inline-block; }
-	div#bandwidth-graph-range select { width: 195px; }
 
-	div#bandwidth-graphs { text-align: center; }
-	div#bandwidth-graphs img { display: inline-block; margin: 10px 10px; }
+	div#bandwidth-graphs-images { text-align: center; }
+	div#bandwidth-graphs-images img { display: inline-block; margin: 10px; }
 
-	img#bandwidth-graphs-loading { display: none; margin: 10px auto; }
+	div#bandwidth-graphs-spinner { text-align: center; }
+	div#bandwidth-graphs-spinner img { margin: 10px; }
 </style>
