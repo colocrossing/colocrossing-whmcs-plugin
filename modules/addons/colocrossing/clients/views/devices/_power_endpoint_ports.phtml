@@ -48,9 +48,11 @@
 
                     ?>
                             <tr>
-                                <td style="width: 60px; text-align: center;">
-                                    <input type="checkbox" class="select-port-toggle" name="<?php echo $control_name; ?>"
-                                            value="<?php echo $device_id; ?>" <?php echo $control_status; ?> style="display: inline;" />
+                                <td>
+                                    <label style="display: block;">
+                                        <input type="checkbox" class="select-port-toggle" name="<?php echo $control_name; ?>"
+                                            value="<?php echo $device_id; ?>" <?php echo $control_status; ?> />
+                                    </label>
                                 </td>
                                 <td><?php echo $pdu_display; ?></td>
                                 <td><?php echo $port_id; ?></td>
