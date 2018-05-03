@@ -39,6 +39,16 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	}
 
 	/**
+	 * Retrieves the IPMI Configuration object of this device.
+	 * Will include information about Null Route if it exists.
+	 * @return ColoCrossing_Object_Device_Ipmi_Configuration The Ipmi Configuration.
+	 */
+	public function getIpmiConfiguration()
+	{
+		return $this->getObject('ipmi_config', null, 'ipmi_config')
+	}
+
+	/**
 	 * Retrieves list of User objects that are assigned as subusers to this device.
 	 * @return array<ColoCrossing_Object_User>	The Subusers of the Device.
 	 */

@@ -37,6 +37,9 @@ class ColoCrossing_Object_Factory
 				case 'bandwidth_usage':
 					require_once(dirname(__FILE__) . '/Device/BandwidthUsage.php');
 					return new ColoCrossing_Object_Device_BandwidthUsage($client, $values);
+				case 'ipmi_config':
+					require_once(dirname(__FILE__) . '/Device/IpmiConfiguration.php');
+					return new ColoCrossing_Object_Device_IpmiConfiguration($client, $values);
                 case 'type':
                     require_once(dirname(__FILE__) . '/Type.php');
                     return new ColoCrossing_Object_Type($client, $values);
