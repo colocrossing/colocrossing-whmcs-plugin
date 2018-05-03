@@ -45,7 +45,7 @@ class ColoCrossing_Object_Device extends ColoCrossing_Resource_Object
 	 */
 	public function getIpmiConfiguration()
 	{
-		return $this->getObject('ipmi_config', null, 'ipmi_config')
+		return $this->getObject('ipmi_config', null, 'ipmi_config');
 	}
 
 	/**
