@@ -49,7 +49,7 @@
 	<form id="control-ipmi-form" action="<?php echo $control_device_url; ?>" method="POST">
 
 		<input type="hidden" name="ipmi_action" />
-		<input type="hidden" name="device_id" value="<?php echo $device_id; ?>" />
+		<input type="hidden" name="device_id" value="<?php echo $device->getId(); ?>" />
 	</form>
 </div>
 
