@@ -154,10 +154,9 @@
 				'base_url' => $this->base_url,
 				'ipmi_config' => $ipmi_config,
 				'ipmi_null_route' => $ipmi_null_route,
-				'container_class' => 'half-section',
+				'container_class' => 'half-section half-section-left',
 			));
 		} 
-
 
 		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) { 	// Server, KVM, PDU, or Cross Connect
 			$this->renderTemplate('/devices/_bandwidth_graphs.phtml', array(

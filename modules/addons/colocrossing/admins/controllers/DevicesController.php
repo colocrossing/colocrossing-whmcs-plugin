@@ -306,4 +306,45 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		return 'controlled';
 	}
 
+	public function updateIpmi(array $params)
+	{
+		$device = $this->api->devices->find($params['device_id']);
+		switch($params['ipmi_action'])
+		{
+			case 'lift':
+				$result = $device->getIpmiConfiguration()->liftNullRoute();
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully lifted for 4 hours.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to lift the null route.', 'error');
+				}
+				break;
+			case 'replace':
+				$result = $device->getIpmiConfiguration()->replaceNullRoute();
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully replaced.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to replace the null route.', 'error');
+				}
+				break;
+			case 'renew':
+				$result = $device->getIpmiConfiguration()->renewNullRouteLift();
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully lifted for 4 more hours.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to renew the null route lift.', 'error');
+				}
+				break;
+			default:
+				$this->setFlashMessage('Unrecognized ipmi action: '.$params['ipmi_action'], 'error');
+		}
+
+		$this->redirectTo('devices', 'view', array(
+			'id' => $params['device_id']
+		));
+	}
+
 }
