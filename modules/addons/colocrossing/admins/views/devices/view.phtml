@@ -147,12 +147,14 @@
 
 		$ipmi_config = $this->device->getIpmiConfiguration();
 		$ipmi_null_route = $ipmi_config->getNullRoute();
-		if(isset($ipmi_null_route))
+		$status = $ipmi_config->getNullRouteStatus();
+		if(isset($ipmi_null_route) && $status != 4)
 		{
 			$this->renderTemplate('/devices/_ipmi_controls.phtml', array(
 				'base_url' => $this->base_url,
 				'ipmi_config' => $ipmi_config,
-				'ipmi_null_route' => $ipmi_null_route
+				'ipmi_null_route' => $ipmi_null_route,
+				'container_class' => 'half-section',
 			));
 		} 
 

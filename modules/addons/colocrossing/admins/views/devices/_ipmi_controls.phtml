@@ -3,15 +3,43 @@
 		'controller' => 'devices',
 		'action' => 'ipmi'
 	));
+
+	$status = $ipmi_config->getNullRouteStatus()['id'];
+	switch($status)
+	{
+		case 2:
+			$lift_expires = $ipmi_config->getNullRouteLiftExpiration();
+			$ipmi_message = 'IPMI Null Route has been lifted, and will be automatically replaced at '.date('m/d/Y g:i A', $lift_expires);
+			break;
+		case 1:	
+		case 3:
+			$ipmi_message = 'IPMI is currently Null Routed.';
+			break;
+		default:
+			break;
+	}
+
 ?>
 
 <div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : 'full-section'; ?>>
 	<div class="heading">
 		<h2>IPMI Controls</h2>
+		<div>
+			<strong><? echo $ipmi_message; ?></strong>
+		</div>
 		<div class="actions">
-			<input type="button" class="control-ipmi-button button" data-status="lift" value="Lift Null Route" />
-			<input type="button" class="control-ipmi-button button" data-status="renew" value="Renew Lift" />
-			<input type="button" class="control-ipmi-button button" data-status="replace" value="Replace Null Route" />
+			<?
+				if($status == 1 || $status == 3) {
+			?>
+					<input type="button" class="control-ipmi-button button" data-status="lift" value="Lift Null Route" />
+			<?
+				} else if($status == 2) {
+			?>
+					<input type="button" class="control-ipmi-button button" data-status="renew" value="Renew Lift" />
+					<input type="button" class="control-ipmi-button button" data-status="replace" value="Replace Null Route" />
+			<?
+				} //end if
+			?>
 		</div>
 		<div class="clear"></div>
 	</div>
