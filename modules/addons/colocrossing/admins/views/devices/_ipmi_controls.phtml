@@ -24,10 +24,6 @@
 <div <?php echo isset($container_class) ? 'class="' . $container_class . '"' : 'full-section'; ?>>
 	<div class="heading">
 		<h2>IPMI Controls</h2>
-		<div class="clear"></div>
-		<div>
-			<strong><? echo $ipmi_message; ?></strong>
-		</div>
 		<div class="actions">
 			<?
 				if($status == 1 || $status == 3) {
@@ -44,6 +40,12 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	<div class="clear"></div>
+	<div>
+		<strong><? echo $ipmi_message; ?></strong>
+	</div>
+	
 	<form id="control-ipmi-form" action="<?php echo $control_device_url; ?>" method="POST">
 
 		<input type="hidden" name="ipmi_action" />
