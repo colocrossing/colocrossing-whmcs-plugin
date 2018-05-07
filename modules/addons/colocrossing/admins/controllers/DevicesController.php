@@ -309,11 +309,10 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 	public function updateIpmi(array $params)
 	{
 		$device = $this->api->devices->find($params['device_id']);
+		$config = $device->getIpmiConfiguration();
 		switch($params['ipmi_action'])
 		{
 			case 'lift':
-				$config = $device->getIpmiConfiguration();
-
 				if(in_array($config->getNullRouteStatus(), array(2, 4)))
 				{
 					return false;
@@ -328,7 +327,12 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 				}
 				break;
 			case 'replace':
-				$result = $device->getIpmiConfiguration()->replaceNullRoute();
+				if($config->getNullRouteStatus() != 2)
+				{
+					return false;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'replace');
 
 				if($result) {
 					$this->setFlashMessage('Null Route was successfully replaced.');
@@ -337,7 +341,12 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 				}
 				break;
 			case 'renew':
-				$result = $device->getIpmiConfiguration()->renewNullRouteLift();
+				if($config->getNullRouteStatus() != 2)
+				{
+					return false;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'renew');
 
 				if($result) {
 					$this->setFlashMessage('Null Route was successfully lifted for 4 more hours.');
