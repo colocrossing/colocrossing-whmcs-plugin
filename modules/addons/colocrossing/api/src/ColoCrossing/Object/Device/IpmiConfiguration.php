@@ -58,6 +58,8 @@ class ColoCrossing_Object_Device_IpmiConfiguration extends ColoCrossing_Object
 			return false;
 		}
 
+		file_put_contents('/tmp/url.txt', 'hi');
+
 		$client = $this->getClient();
 		return $client->devices->ipmi_null_route->setNullRouteStatus($this, $this->getDeviceId(), 'lift');
 	}
@@ -79,7 +81,7 @@ class ColoCrossing_Object_Device_IpmiConfiguration extends ColoCrossing_Object
 		{
 			return false;
 		}
-		
+
 		$client = $this->getClient();
 		return $client->devices->ipmi_null_route->setNullRouteStatus($this, $this->getDeviceId(), 'renew');
 	}
