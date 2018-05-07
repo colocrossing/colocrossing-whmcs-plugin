@@ -312,7 +312,14 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 		switch($params['ipmi_action'])
 		{
 			case 'lift':
-				$result = $device->getIpmiConfiguration()->liftNullRoute();
+				$config = $device->getIpmiConfiguration();
+
+				if(in_array($config->getNullRouteStatus(), array(2, 4)))
+				{
+					return false;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'lift');
 
 				if($result) {
 					$this->setFlashMessage('Null Route was successfully lifted for 4 hours.');
