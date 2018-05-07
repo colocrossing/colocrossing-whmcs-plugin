@@ -20,8 +20,8 @@ class ColoCrossing_Resource_Child_Devices_IpmiNullRoute extends ColoCrossing_Res
 	}
 
 	/**
-	 * Set the status of the provided port on the provided pdu that
-	 * is connected to the provided device.
+	 * Set the status of the IPMI Null Route for the provided device.
+	 *
 	 * @param  int|ColoCrossing_Object_Device_IpmiConfiguration         	$config 	The IPMI Configuration Object
 	 * @param  int|ColoCrossing_Object_Device 								$device 	The Device or Id
 	 * @param  string 														$action    	The action 'lift', 'replace', 'renew'
@@ -29,9 +29,9 @@ class ColoCrossing_Resource_Child_Devices_IpmiNullRoute extends ColoCrossing_Res
 	 */
 	public function setNullRouteStatus($config, $device, $action)
 	{
-		$status = strtolower($status);
+		$action = strtolower($action);
 
-		if ($status != 'lift' && $status != 'replace' && $status != 'renew')
+		if ($action != 'lift' && $action != 'replace' && $action != 'renew')
 		{
 			return false;
 		}
