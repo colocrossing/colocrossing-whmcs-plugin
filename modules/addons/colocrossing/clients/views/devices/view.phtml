@@ -42,8 +42,16 @@
 
 		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
 			echo '<li id="bandwidth-usagenav"><a href="#bandwidth-usage" data-toggle="tab">Bandwidth Usage</a></li>';
-
 		}
+
+		$ipmi_config = $this->device->getIpmiConfiguration();
+		$ipmi_null_route = $ipmi_config->getNullRoute();
+		$ipmi_null_status = $ipmi_config->getNullRouteStatus()['id'];
+		if(isset($ipmi_null_route) && $ipmi_null_status != 4)
+		{
+			echo '<li id="ipmi-controlssnav"><a href="#ipmi-controls" data-toggle="tab">IPMI Controls</a></li>';
+		}
+
     ?>
     </ul>
 </div>
@@ -130,6 +138,17 @@
 			)),
 			'bandwidth_graphs' => $this->bandwidth_graphs,
 			'bandwidth_graph_durations' => $this->bandwidth_graph_durations
+		));
+	}
+
+	if(isset($ipmi_null_route) && $ipmi_null_status != 4)
+	{
+		$this->renderTemplate('/devices/_ipmi_conrols.phtml', array(
+			'base_url' => $this->base_url,
+			'ipmi_config' => $ipmi_config,
+			'ipmi_null_route' => $ipmi_null_route,
+			'current_user' => $this->current_user,
+			'device' => $this->device,
 		));
 	}
 ?>

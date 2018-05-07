@@ -50,37 +50,5 @@ class ColoCrossing_Object_Device_IpmiConfiguration extends ColoCrossing_Object
 
 		return null;
 	}
-
-	public function liftNullRoute()
-	{
-		if(in_array($this->getNullRouteStatus(), array(2, 4)))
-		{
-			return false;
-		}
-
-		$client = $this->getClient();
-		return $client->devices->ipmi_null_route->setNullRouteStatus($this, $this->getDeviceId(), 'lift');
-	}
-
-	public function replaceNullRoute()
-	{
-		if($this->getNullRouteStatus() != 2)
-		{
-			return false;
-		}
-
-		$client = $this->getClient();
-		return $client->devices->ipmi_null_route->setNullRouteStatus($this, $this->getDeviceId(), 'replace');
-	}
-
-	public function renewNullRouteLift()
-	{
-		if($this->getNullRouteStatus() != 2)
-		{
-			return false;
-		}
-
-		$client = $this->getClient();
-		return $client->devices->ipmi_null_route->setNullRouteStatus($this, $this->getDeviceId(), 'renew');
-	}
+	
 }
