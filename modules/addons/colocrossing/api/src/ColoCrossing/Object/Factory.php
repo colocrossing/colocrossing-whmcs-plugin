@@ -130,6 +130,9 @@ class ColoCrossing_Object_Factory
 					case 'switch':
 						require_once(dirname(__FILE__) . '/Device/Switch.php');
 						return new ColoCrossing_Object_Device_Switch($client, $child_resource, $values);
+					case 'ipmi_config':
+						require_once(dirname(__FILE__) . '/Device/IpmiConfiguration.php');
+						return new ColoCrossing_Object_Device_IpmiConfiguration($client, $child_resource, $values);
 				}
 				break;
 			case 'network':
