@@ -231,14 +231,14 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 	public function updateIpmi(array $params)
 	{
 		$device = $this->api->devices->find($params['device_id']);
-		if(!isCurrentUserAssignedToDevice($device))
-		{
-			$this->setFlashMessage('You do not have permissions to accesss this device.', 'error');
+		// if(!isCurrentUserAssignedToDevice($device))
+		// {
+		// 	$this->setFlashMessage('You do not have permissions to accesss this device.', 'error');
 
-			$this->redirectTo('devices', 'view', array(
-				'id' => $params['device_id']
-			));
-		}
+		// 	$this->redirectTo('devices', 'view', array(
+		// 		'id' => $params['device_id']
+		// 	));
+		// }
 
 		$config = $device->getIpmiConfiguration();
 		$status = $config->getNullRouteStatus()['id'];
