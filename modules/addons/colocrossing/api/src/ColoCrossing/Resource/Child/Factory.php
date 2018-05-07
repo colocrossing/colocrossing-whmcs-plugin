@@ -23,7 +23,8 @@ class ColoCrossing_Resource_Child_Factory
 			'notes' => '/Devices/Notes.php',
 			'subnets' => '/Devices/Subnets.php',
 			'pdus' => '/Devices/PowerDistributionUnits.php',
-			'switches' => '/Devices/Switches.php'
+			'switches' => '/Devices/Switches.php',
+			'ipmi_null_route' => 'Devices/IpmiNullRoute.php',
 		),
 		'networks' => array(
 			'subnets' => '/Networks/Subnets.php',
@@ -74,6 +75,8 @@ class ColoCrossing_Resource_Child_Factory
 						return new ColoCrossing_Resource_Child_Devices_PowerDistributionUnits($client);
 					case 'switches':
 						return new ColoCrossing_Resource_Child_Devices_Switches($client);
+					case 'ipmi_null_route':
+						return new ColoCrossing_Resource_Child_Devices_IpmiNullRoute($client);
 				}
 				break;
 			case 'networks':
