@@ -56,9 +56,11 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		var form = $('#control-ipmi-form'),
-		button = $('.ipmi_button'),
+		liftButton = $('.lift_button'),
 		liftDialog = $('#lift_dialog'),
+		replaceButton = $('.replace_button'),
 		replaceDialog = $('#replace_dialog'),
+		renewButton = $('.renew_button'),
 		renewDialog = $('#renew_dialog');
 
 		liftDialog.dialog({
@@ -76,6 +78,15 @@
 			}
 		});
 
+		liftButton.on('click', function(e) {
+			var button = $(this);
+			form.find('input[name="ipmi_action"]').val(button.data('status'));
+
+			liftDialog.dialog('open');
+			e.preventDefault();
+			return false;
+		});
+
 		replaceDialog.dialog({
 			autoOpen: false,
 			width: 310,
@@ -89,6 +100,15 @@
 					replaceDialog.dialog('close');
 				}
 			}
+		});
+
+		replaceButton.on('click', function(e) {
+			var button = $(this);
+			form.find('input[name="ipmi_action"]').val(button.data('status'));
+
+			replaceDialog.dialog('open');
+			e.preventDefault();
+			return false;
 		});
 
 		renewDialog.dialog({
@@ -106,22 +126,15 @@
 			}
 		});
 
-		button.on('click',function(e) {
+		renewButton.on('click', function(e) {
 			var button = $(this);
-			var status = button.data('status');
-			form.find('input[name="ipmi_action"]').val(status);
+			form.find('input[name="ipmi_action"]').val(button.data('status'));
 
-			if(status == 'lift') {
-				liftDialog.dialog('open');
-			} else if(status == 'replace') {
-				replaceDialog.dialog('open');
-			} else if(status == 'renew') {
-				renewDialog.dialog('open');
-			}
-
+			renewDialog.dialog('open');
 			e.preventDefault();
 			return false;
 		});
+
 	});
 </script>
 
