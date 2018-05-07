@@ -31,16 +31,16 @@
         </div>
         <div class="col70 col-md-9">
             <strong><? echo $ipmi_message; ?></strong>
-            <div style="float: right;">
+            <div style="margin-left: 25px;">
                 <?
                     if($status == 1 || $status == 3) {
                 ?>
-                        <input type="button" class="ipmi_button lift_button" data-status="lift" value="Lift Null Route" />
+                        <input type="button" class="btn lift_button" data-status="lift" value="Lift Null Route" />
                 <?
                     } else if($status == 2) {
                 ?>
-                        <input type="button" class="ipmi_button renew_button" data-status="renew" value="Renew Lift" />
-                        <input type="button" class="ipmi_button replace_button" data-status="replace" value="Replace Null Route" />
+                        <input type="button" class="btn renew_button" data-status="renew" value="Renew Lift" />
+                        <input type="button" class="btn replace_button" data-status="replace" value="Replace Null Route" />
                 <?
                     } //end if
                 ?>
@@ -60,106 +60,47 @@
     $(document).ready(function() {
         var form = $('#control-ipmi-form'),
         liftButton = $('.lift_button'),
-        liftDialog = $('#lift_dialog'),
         replaceButton = $('.replace_button'),
-        replaceDialog = $('#replace_dialog'),
-        renewButton = $('.renew_button'),
-        renewDialog = $('#renew_dialog');
+        renewButton = $('.renew_button');
 
-        liftDialog.dialog({
-            autoOpen: false,
-            width: 310,
-            modal: true,
-            resizable: false,
-            buttons: {
-                Confirm: function() {
-                    $('button').prop('disabled', true);
-                    form.submit();
-                },
-                Cancel: function() {
-                    liftDialog.dialog('close');
-                }
-            }
-        });
+
 
         liftButton.on('click', function(e) {
             var button = $(this);
             form.find('input[name="ipmi_action"]').val(button.data('status'));
 
-            liftDialog.dialog('open');
+            if(confirm('Are you sure you want to lift this null route? It will be automatically replaced in 4 hours. The lift may be renewed for a new 4 hour period at any time from this page.')) {
+                form.submit();
+            }
+
             e.preventDefault();
             return false;
-        });
-
-        replaceDialog.dialog({
-            autoOpen: false,
-            width: 310,
-            modal: true,
-            resizable: false,
-            buttons: {
-                Confirm: function() {
-                    $('button').prop('disabled', true);
-                    form.submit();
-                },
-                Cancel: function() {
-                    replaceDialog.dialog('close');
-                }
-            }
         });
 
         replaceButton.on('click', function(e) {
             var button = $(this);
             form.find('input[name="ipmi_action"]').val(button.data('status'));
 
-            replaceDialog.dialog('open');
+            if(confirm('Are you sure you want to replace this null route? This will take a few seconds.')) {
+                form.submit();
+            }
+
             e.preventDefault();
             return false;
         });
 
-        renewDialog.dialog({
-            autoOpen: false,
-            width: 310,
-            modal: true,
-            resizable: false,
-            buttons: {
-                Confirm: function() {
-                    $('button').prop('disabled', true);
-                    form.submit();
-                },
-                Cancel: function() {
-                    renewDialog.dialog('close');
-                }
-            }
-        });
 
         renewButton.on('click', function(e) {
             var button = $(this);
             form.find('input[name="ipmi_action"]').val(button.data('status'));
 
-            renewDialog.dialog('open');
+            if(confirm('Are you sure you want to renew this lift? The null route will be automatically replaced 4 hours from now.')) {
+                form.submit();
+            }
+
             e.preventDefault();
             return false;
         });
 
     });
 </script>
-
-<div id="lift_dialog" title="Lift Null Route">
-    <p>Are you sure you want to lift this null route?</p>
-    <br>
-    <p>It will be automatically replaced in 4 hours. The lift may be renewed for a new 4 hour period at any time from this page.</p>
-    <br>
-    <p>This will take a few seconds.</p>
-</div>
-
-<div id="replace_dialog" title="Relace Null Route">
-    <p>Are you sure you want to replace this null route?</p>
-    <br>
-    <p>This will take a few seconds.</p>
-</div>
-
-<div id="renew_dialog" title="Renew Null Route Lift">
-    <p>Are you sure you want to renew this lift?</p>
-    <br>
-    <p>The null route will be automatically replaced 4 hours from now.</p>
-</div>
