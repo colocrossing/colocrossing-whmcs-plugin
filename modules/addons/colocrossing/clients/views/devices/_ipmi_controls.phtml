@@ -1,9 +1,4 @@
 <?php
-    $control_device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
-        'controller' => 'devices',
-        'action' => 'update-ipmi'
-    ));
-
     $status = $ipmi_config->getNullRouteStatus()['id'];
     switch($status)
     {
@@ -49,7 +44,7 @@
         </div>
     </div>
 
-    <form id="control-ipmi-form" action="<?php echo $control_device_url; ?>" method="POST">
+    <form id="control-ipmi-form" action="<?php echo $control_url; ?>" method="POST">
 
         <input type="hidden" name="ipmi_action" />
         <input type="hidden" name="device_id" value="<?php echo $device->getId(); ?>" />
