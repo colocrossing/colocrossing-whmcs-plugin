@@ -38,14 +38,9 @@ class ColoCrossing_Resource_Child_Devices_IpmiNullRoute extends ColoCrossing_Res
 
 		$device_id = is_numeric($device) ? $device : $device->getId();
 
-		file_put_contents('/tmp/url.txt', 'hello');
-
 		$url = $this->createObjectUrl($action, $device_id);
 
-		file_put_contents('/tmp/url.txt', $url);
-
 		$data = array();
-
 		$response = $this->sendRequest($url, 'PUT', $data);
 
 		if (empty($response))
