@@ -310,10 +310,11 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 	{
 		$device = $this->api->devices->find($params['device_id']);
 		$config = $device->getIpmiConfiguration();
+		$status = $config->getNullRouteStatus()['id'];
 		switch($params['ipmi_action'])
 		{
 			case 'lift':
-				if(in_array($config->getNullRouteStatus(), array(2, 4)))
+				if(in_array($status, array(2, 4)))
 				{
 					$this->setFlashMessage('Unable to lift a null route that is not active.', 'error');
 					break;
@@ -329,7 +330,7 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 				break;
 
 			case 'replace':
-				if($config->getNullRouteStatus() != 2)
+				if($status != 2)
 				{
 					$this->setFlashMessage('Unable to replace a null route that is not lifted.', 'error');
 					break;
@@ -345,7 +346,7 @@ class ColoCrossing_Admins_DevicesController extends ColoCrossing_Admins_Controll
 				break;
 
 			case 'renew':
-				if($config->getNullRouteStatus() != 2)
+				if($status != 2)
 				{
 					$this->setFlashMessage('Unable to renew a null route lift that is not lifted.', 'error');
 					break;
