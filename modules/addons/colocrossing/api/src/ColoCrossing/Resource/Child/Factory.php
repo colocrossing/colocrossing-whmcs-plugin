@@ -24,7 +24,7 @@ class ColoCrossing_Resource_Child_Factory
 			'subnets' => '/Devices/Subnets.php',
 			'pdus' => '/Devices/PowerDistributionUnits.php',
 			'switches' => '/Devices/Switches.php',
-			'ipmi_null_route' => 'Devices/IpmiNullRoute.php',
+			'ipmi_null_route' => '/Devices/IpmiNullRoute.php',
 		),
 		'networks' => array(
 			'subnets' => '/Networks/Subnets.php',
