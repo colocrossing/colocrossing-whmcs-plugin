@@ -1,15 +1,165 @@
+<?php
+    $control_device_url = ColoCrossing_Utilities::buildUrl($base_url, array(
+        'controller' => 'devices',
+        'action' => 'update-ipmi'
+    ));
+
+    $status = $ipmi_config->getNullRouteStatus()['id'];
+    switch($status)
+    {
+        case 2:
+            $lift_expires = $ipmi_config->getNullRouteLiftExpiration();
+            $ipmi_message = 'IPMI Null Route has been lifted, and will be automatically replaced at '.date('m/d/Y g:i A', $lift_expires);
+            break;
+        case 1: 
+        case 3:
+            $ipmi_message = 'IPMI is currently Null Routed.';
+            break;
+        default:
+            break;
+    }
+
+?>
+
+
 <div data-toggle="tab" id="ipmi-controls" class="cc-tab-content">
     <div class="row">
         <div class="col30 col-md-3">
             <div class="internalpadding">
                 <div class="styled_title"><h2>IPMI Controls</h2></div>
-                <p>Message for status</p>
-                <div style="margin-top: 15px;">
-                    <input type="button" class="control-power-ports-button btn" data-status="on" value="Lift Null Route" />
-                    <input type="button" class="control-power-ports-button btn" data-status="off" value="Renew Lift" />
-                    <input type="button" class="control-power-ports-button btn" data-status="restart" value="Replace Null Route" />
-                </div>
+            </div>
+        </div>
+        <div class="col70 col-md-9">
+            <strong><? echo $ipmi_message; ?></strong>
+            <div style="float: right;">
+                <?
+                    if($status == 1 || $status == 3) {
+                ?>
+                        <input type="button" class="ipmi_button lift_button" data-status="lift" value="Lift Null Route" />
+                <?
+                    } else if($status == 2) {
+                ?>
+                        <input type="button" class="ipmi_button renew_button" data-status="renew" value="Renew Lift" />
+                        <input type="button" class="ipmi_button replace_button" data-status="replace" value="Replace Null Route" />
+                <?
+                    } //end if
+                ?>
+            </div>
             </div>
         </div>
     </div>
+
+    <form id="control-ipmi-form" action="<?php echo $control_device_url; ?>" method="POST">
+
+        <input type="hidden" name="ipmi_action" />
+        <input type="hidden" name="device_id" value="<?php echo $device->getId(); ?>" />
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var form = $('#control-ipmi-form'),
+        liftButton = $('.lift_button'),
+        liftDialog = $('#lift_dialog'),
+        replaceButton = $('.replace_button'),
+        replaceDialog = $('#replace_dialog'),
+        renewButton = $('.renew_button'),
+        renewDialog = $('#renew_dialog');
+
+        liftDialog.dialog({
+            autoOpen: false,
+            width: 310,
+            modal: true,
+            resizable: false,
+            buttons: {
+                Confirm: function() {
+                    $('button').prop('disabled', true);
+                    form.submit();
+                },
+                Cancel: function() {
+                    liftDialog.dialog('close');
+                }
+            }
+        });
+
+        liftButton.on('click', function(e) {
+            var button = $(this);
+            form.find('input[name="ipmi_action"]').val(button.data('status'));
+
+            liftDialog.dialog('open');
+            e.preventDefault();
+            return false;
+        });
+
+        replaceDialog.dialog({
+            autoOpen: false,
+            width: 310,
+            modal: true,
+            resizable: false,
+            buttons: {
+                Confirm: function() {
+                    $('button').prop('disabled', true);
+                    form.submit();
+                },
+                Cancel: function() {
+                    replaceDialog.dialog('close');
+                }
+            }
+        });
+
+        replaceButton.on('click', function(e) {
+            var button = $(this);
+            form.find('input[name="ipmi_action"]').val(button.data('status'));
+
+            replaceDialog.dialog('open');
+            e.preventDefault();
+            return false;
+        });
+
+        renewDialog.dialog({
+            autoOpen: false,
+            width: 310,
+            modal: true,
+            resizable: false,
+            buttons: {
+                Confirm: function() {
+                    $('button').prop('disabled', true);
+                    form.submit();
+                },
+                Cancel: function() {
+                    renewDialog.dialog('close');
+                }
+            }
+        });
+
+        renewButton.on('click', function(e) {
+            var button = $(this);
+            form.find('input[name="ipmi_action"]').val(button.data('status'));
+
+            renewDialog.dialog('open');
+            e.preventDefault();
+            return false;
+        });
+
+    });
+</script>
+
+<div id="lift_dialog" title="Lift Null Route">
+    <p>Are you sure you want to lift this null route?</p>
+    <br>
+    <p>It will be automatically replaced in 4 hours. The lift may be renewed for a new 4 hour period at any time from this page.</p>
+    <br>
+    <p>This will take a few seconds.</p>
+</div>
+
+<div id="replace_dialog" title="Relace Null Route">
+    <p>Are you sure you want to replace this null route?</p>
+    <br>
+    <p>This will take a few seconds.</p>
+</div>
+
+<div id="renew_dialog" title="Renew Null Route Lift">
+    <p>Are you sure you want to renew this lift?</p>
+    <br>
+    <p>The null route will be automatically replaced 4 hours from now.</p>
 </div>

@@ -228,4 +228,77 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 		return isset($this->current_user) && $this->current_user->hasPermissionForDevice($device);
 	}
 
+	public function updateIpmi(array $params)
+	{
+		$device = $this->api->devices->find($params['device_id']);
+		if(!isCurrentUserAssignedToDevice($device))
+		{
+			$this->setFlashMessage('You do not have permissions to accesss this device.', 'error');
+
+			$this->redirectTo('devices', 'view', array(
+				'id' => $params['device_id']
+			));
+		}
+
+		$config = $device->getIpmiConfiguration();
+		$status = $config->getNullRouteStatus()['id'];
+		switch($params['ipmi_action'])
+		{
+			case 'lift':
+				if(in_array($status, array(2, 4)))
+				{
+					$this->setFlashMessage('Unable to lift a null route that is not active.', 'error');
+					break;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'lift');
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully lifted for 4 hours.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to lift the null route.', 'error');
+				}
+				break;
+
+			case 'replace':
+				if($status != 2)
+				{
+					$this->setFlashMessage('Unable to replace a null route that is not lifted.', 'error');
+					break;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'replace');
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully replaced.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to replace the null route.', 'error');
+				}
+				break;
+
+			case 'renew':
+				if($status != 2)
+				{
+					$this->setFlashMessage('Unable to renew a null route lift that is not lifted.', 'error');
+					break;
+				}
+
+				$result =  $this->api->devices->ipmi_null_route->setNullRouteStatus($config, $params['device_id'], 'renew');
+
+				if($result) {
+					$this->setFlashMessage('Null Route was successfully lifted for 4 more hours.');
+				} else {
+					$this->setFlashMessage('An error occurred while attempting to renew the null route lift.', 'error');
+				}
+				break;
+			default:
+				$this->setFlashMessage('Unrecognized ipmi action: '.$params['ipmi_action'], 'error');
+				break;
+		}
+
+		$this->redirectTo('devices', 'view', array(
+			'id' => $params['device_id']
+		));
+	}
+
 }
