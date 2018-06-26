@@ -265,7 +265,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 * @param  int $parent_id 	The Parent Id, Only Used For Child Resources
 	 * @return string 			The Url
 	 */
-	protected function createCollectionUrl($parent_id)
+	protected function createCollectionUrl($parent_id = null)
 	{
 		return $this->url;
 	}
