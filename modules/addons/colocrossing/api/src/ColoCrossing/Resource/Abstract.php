@@ -179,7 +179,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 * @param  int 			$parent_id 	The Parent Id, 	Only Used For Child Resources
 	 * @return ColoCrossing_Object		The ColoCrossing_Object
 	 */
-	public function find($id, $parent_id)
+	public function find($id, $parent_id = null)
 	{
 		$url = $this->createObjectUrl($id, $parent_id);
 
@@ -276,7 +276,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 * @param  int $parent_id 	The Parent Id, Only Used For Child Resources
 	 * @return string   		The Url
 	 */
-	protected function createObjectUrl($id, $parent_id)
+	protected function createObjectUrl($id, $parent_id = null)
 	{
 		return $this->url . '/' . urlencode($id);
 	}
