@@ -153,7 +153,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 	 * @param  int 				$parent_id 	The Parent Id, 	Only Used For Child Resources
 	 * @return ColoCrossing_Collection<ColoCrossing_Object>	A List of ColoCrossing_Object
 	 */
-	public function findAll(array $options = null, $parent_id)
+	public function findAll(array $options = null, $parent_id = null)
 	{
 		$options = $this->createCollectionOptions($options);
 		$url = $this->createCollectionUrl($parent_id);
