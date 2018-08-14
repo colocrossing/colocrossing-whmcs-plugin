@@ -205,7 +205,7 @@ class ColoCrossing_Object_Subnet extends ColoCrossing_Resource_Object
 	public function getIpAddresses()
 	{
 		$start_ip = $this->getIpAddress();
-		$ip_parts = explode('\.', $start_ip);
+		$ip_parts = explode('.', $start_ip);
 		$last_ip_part = intval(array_pop($ip_parts));
 		$ip_prefix = implode('.', $ip_parts);
 
