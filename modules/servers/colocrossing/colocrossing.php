@@ -31,6 +31,10 @@ function colocrossing_AdminServicesTabFieldsSave($params) {
 function colocrossing_SuspendAccount($params) {
 	$module = ColoCrossing_Module::getInstance();
 
+	if(strlen($params['suspendreason']) > 200) {
+		return 'The reason for suspension must be 200 characters or less.';
+	}
+
     return $module->dispatchRequestTo('admin', 'services', 'suspend', array(
         'id' => $params['serviceid'],
         'comment' => $params['suspendreason']
