@@ -148,7 +148,7 @@ class ColoCrossing_Resource_Child_Devices_Switches extends ColoCrossing_Resource
 			return false;
 		}
 
-		if (isset($comment) && strlen($comment) > 20)
+		if (isset($comment) && strlen($comment) > 200)
 		{
 			return false;
 		}
