@@ -3,6 +3,9 @@
 if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
+
+require_once dirname(__DIR__, 2) . '/models/Event.php';
+
 /**
  * ColoCrossing Events Controller for WHMCS Admin Module.
  * Handles Responding to all Requests Related to Events

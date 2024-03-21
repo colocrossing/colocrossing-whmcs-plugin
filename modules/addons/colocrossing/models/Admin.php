@@ -4,6 +4,8 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require_once 'Event.php';
+
 /**
  * A WHMCS Admin User
  */
@@ -33,5 +35,13 @@ class ColoCrossing_Model_Admin extends ColoCrossing_Model_User {
 	public function hasPermissionForDevice($device) {
 		return !empty($device);
 	}
+
+	/**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    public static function log($description = ''){
+        ColoCrossing_Model_Event::log('admin', $description);
+    }
 
 }

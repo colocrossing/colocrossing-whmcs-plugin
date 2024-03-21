@@ -4,6 +4,10 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require 'Product.php';
+require 'ProductGroup.php';
+require_once 'User.php';
+
 /**
  * A WHMCS Client Service
  */

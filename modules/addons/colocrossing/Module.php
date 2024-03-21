@@ -9,8 +9,9 @@ require 'Router.php';
 require 'Controller.php';
 require 'Utilities.php';
 require 'Model.php';
-require 'API.php';
-require 'Event.php';
+require 'models/SupportDepartment.php';
+require 'models/Service.php';
+require 'models/SupportStatus.php';
 
 /**
  * ColoCrossing Module for WHMCS Module

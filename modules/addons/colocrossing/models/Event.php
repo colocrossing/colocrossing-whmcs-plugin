@@ -4,6 +4,8 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require_once 'User.php';
+
 /**
  * Represents a Table which holds event that occurred within the ColoCrossing Module
  */

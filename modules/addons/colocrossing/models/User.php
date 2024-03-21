@@ -4,6 +4,9 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require_once 'Admin.php';
+require_once 'Client.php';
+
 /**
  * Parent Class for a WHMCS User. Can be either a Admin or Client.
  */
@@ -63,6 +66,12 @@ abstract class ColoCrossing_Model_User extends ColoCrossing_Model {
 	 * @return boolean  True if the User has Access
 	 */
 	public abstract function hasPermissionForDevice($device);
+
+	/**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    protected abstract static function log($description = '');
 
 	/**
 	 * Retrieves the User of the specified type and id

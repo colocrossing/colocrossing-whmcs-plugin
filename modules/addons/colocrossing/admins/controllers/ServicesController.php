@@ -219,8 +219,8 @@ class ColoCrossing_Admins_ServicesController extends ColoCrossing_Admins_Control
 				'id' => $service_id
 			));
 			$bandwidth_graph_durations = array(
-				"current" => 'Current Billing Period',
-				"previous" => 'Previous Billing Period',
+				"1 hour" => 'Last hour',
+				"4 hours" => 'Last 4 Hours',
 				"12 hours" => "Last 12 Hours",
 				"1 day" => "Last Day",
 				"1 week" => "Last Week",

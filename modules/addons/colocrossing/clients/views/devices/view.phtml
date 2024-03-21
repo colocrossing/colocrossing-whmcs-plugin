@@ -14,184 +14,175 @@
 	$this->renderFlashMessage();
 ?>
 
-<div id="cc-tabs">
-    <ul class="nav nav-tabs tabs" data-tabs="tabs" style="float: none;">
-    <?php
-    	echo '<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
-    	echo '<li id="assetsnav"><a href="#assets" data-toggle="tab">Assets</a></li>';
+<div id="device_tabs">
+    <ul class="nav nav-tabs tabs">
+    	<?php
+        echo '<li><a href="#device_info">Information</a></li>';
+        echo '<li><a href="#device_assets">Assets</a></li>';
 
-    	if($this->type->isNetworked() || $this->type->isVirtual()) {
-			echo '<li id="subnetsnav"><a href="#subnets" data-toggle="tab">Subnets</a></li>';
-		}
+        if($this->type->isNetworked() || $this->type->isVirtual()) {
+        	echo '<li><a href="#device_subnets">Subnets</a></li>';
+        }
 
-		if($this->type->isPowerEndpoint()) {
-			echo '<li id="power-portsnav"><a href="#power-ports" data-toggle="tab">Power Ports</a></li>';
+        if($this->type->isPowerEndpoint()) {
+			echo '<li><a href="#device_power">Power Ports</a></li>';
 		} else if($this->type->isPowerDistribution()) {
-			echo '<li id="power-portsnav"><a href="#power-ports" data-toggle="tab">Power Ports</a></li>';
+			echo '<li><a href="#device_power">Power Ports</a></li>';
 		}
 
 		if($this->type->isNetworkEndpoint()) {
-			echo '<li id="network-portsnav"><a href="#network-ports" data-toggle="tab">Network Ports</a></li>';
+			echo '<li><a href="#device_network">Network Ports</a></li>';
 		} else if($this->type->isNetworkDistribution()) {
-			echo '<li id="network-portsnav"><a href="#network-ports" data-toggle="tab">Network Ports</a></li>';
+			echo '<li><a href="#device_network">Network Ports</a></li>';
 		}
 
 		if($this->type->isRack()) {
-			echo '<li id="racked-devicesnav"><a href="#racked-devices" data-toggle="tab">Racked Devices</a></li>';
+			echo '<li><a href="#racked_device">Racked Devices</a></li>';
 		}
-
-		if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
-			echo '<li id="bandwidth-usagenav"><a href="#bandwidth-usage" data-toggle="tab">Bandwidth Usage</a></li>';
+        
+        if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
+			echo '<li><a href="#device_bandwidth">Bandwidth Usage</a></li>';
 		}
-
-		$ipmi_config = $this->device->getIpmiConfiguration();
+        
+        $ipmi_config = $this->device->getIpmiConfiguration();
 		$ipmi_null_route = $ipmi_config->getNullRoute();
 		$ipmi_null_status = $ipmi_config->getNullRouteStatus()['id'];
 		if(isset($ipmi_null_route) && $ipmi_null_status != 4)
 		{
-			echo '<li id="ipmi-controlssnav"><a href="#ipmi-controls" data-toggle="tab">IPMI Controls</a></li>';
+			echo '<li><a href="#device_ipmi">IPMI Controls</a></li>';
 		}
-
-    ?>
+		?>
     </ul>
+
+    <div class="main_content">
+    
+        <div id="device_info">
+        <?php
+            $this->renderTemplate('/devices/_overview.phtml', array(
+    		'device' => $this->device,
+    		'type' => $this->type,
+    		'service' => $this->service,
+    		'service_url' => ColoCrossing_Utilities::buildUrl(WHMCS_BASE_URL . 'clientarea.php', array(
+    			'action' => 'productdetails',
+    			'id' => $this->service->getId()
+    		)),
+    		'product' => $this->product,
+    		'product_group' => $this->product_group
+    	));
+        ?>
+        </div>
+        <div id="device_assets">
+        <?php
+        	$this->renderTemplate('/devices/_assets.phtml', array(
+        		'assets' => $this->assets,
+        	));
+        ?>
+        </div>
+        <div id="device_subnets">
+        <?php
+        	if($this->type->isNetworked() || $this->type->isVirtual()) {
+        		$this->renderTemplate('/devices/_subnets.phtml', array(
+        			'base_url' => $this->base_url,
+        			'subnets' => $this->subnets
+        		));
+        	}
+        ?>
+        </div>
+        <div id="device_power">
+        <?php
+        	if($this->type->isPowerEndpoint()) {
+        		$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
+        			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'update-power-ports'
+        			)),
+        			'device' => $this->device,
+        			'power_distribution_units' => $this->power_distribution_units
+        		));
+        	} else if($this->type->isPowerDistribution()) {
+        		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
+        			'base_url' => $this->base_url,
+        			'current_user' => $this->current_user,
+        			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'update-power-ports'
+        			)),
+        			'pdu' => $this->device
+        		));
+        	}
+        ?>
+        </div>
+        <div id="device_network">
+        <?php
+        	if($this->type->isNetworkEndpoint()) {
+        		$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
+        			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'update-network-ports'
+        			)),
+        			'device' => $this->device,
+        			'switches' => $this->switches
+        		));
+        	} else if($this->type->isNetworkDistribution()) {
+        		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
+        			'base_url' => $this->base_url,
+        			'current_user' => $this->current_user,
+        			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'update-network-ports'
+        			)),
+        			'switch' => $this->device
+        		));
+        	}
+        ?>
+        </div>
+	    <div id="racked_device">
+        <?php
+        	if($this->type->isRack()) {
+				$this->renderTemplate('/devices/_racked_devices.phtml', array(
+					'base_url' => $this->base_url,
+					'current_user' => $this->current_user,
+					'devices' => $this->devices
+				));
+			}
+        ?>
+        </div>
+        <div id="device_bandwidth">
+        <?php
+        	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
+        		$this->renderTemplate('/devices/_bandwidth_usage.phtml', array(
+        			'bandwidth_graph_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'bandwidth-graph'
+        			)),
+        			'bandwidth_graphs' => $this->bandwidth_graphs,
+        			'bandwidth_graph_durations' => $this->bandwidth_graph_durations
+        		));
+        	}
+        ?>
+        </div>
+        <div id="device_ipmi">
+        <?php
+        	if(isset($ipmi_null_route) && $ipmi_null_status != 4)
+        	{
+        		$this->renderTemplate('/devices/_ipmi_controls.phtml', array(
+        			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+        				'controller' => 'devices',
+        				'action' => 'update-ipmi'
+        			)),
+        			'ipmi_config' => $ipmi_config,
+        			'ipmi_null_route' => $ipmi_null_route,
+        			'current_user' => $this->current_user,
+        			'device' => $this->device,
+        		));
+        	}
+        ?>
+        </div>
+    </div>
 </div>
-
-<?php
-	$this->renderTemplate('/devices/_overview.phtml', array(
-		'device' => $this->device,
-		'type' => $this->type,
-		'service' => $this->service,
-		'service_url' => ColoCrossing_Utilities::buildUrl(WHMCS_BASE_URL . 'clientarea.php', array(
-			'action' => 'productdetails',
-			'id' => $this->service->getId()
-		)),
-		'product' => $this->product,
-		'product_group' => $this->product_group
-	));
-
-	$this->renderTemplate('/devices/_assets.phtml', array(
-		'assets' => $this->assets,
-	));
-
-	if($this->type->isNetworked() || $this->type->isVirtual()) {
-		$this->renderTemplate('/devices/_subnets.phtml', array(
-			'base_url' => $this->base_url,
-			'subnets' => $this->subnets
-		));
-	}
-
-	if($this->type->isPowerEndpoint()) {
-		$this->renderTemplate('/devices/_power_endpoint_ports.phtml', array(
-			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'update-power-ports'
-			)),
-			'device' => $this->device,
-			'power_distribution_units' => $this->power_distribution_units
-		));
-	} else if($this->type->isPowerDistribution()) {
-		$this->renderTemplate('/devices/_power_distribution_ports.phtml', array(
-			'base_url' => $this->base_url,
-			'current_user' => $this->current_user,
-			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'update-power-ports'
-			)),
-			'pdu' => $this->device
-		));
-	}
-
-	if($this->type->isNetworkEndpoint()) {
-		$this->renderTemplate('/devices/_network_endpoint_ports.phtml', array(
-			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'update-network-ports'
-			)),
-			'device' => $this->device,
-			'switches' => $this->switches
-		));
-	} else if($this->type->isNetworkDistribution()) {
-		$this->renderTemplate('/devices/_network_distribution_ports.phtml', array(
-			'base_url' => $this->base_url,
-			'current_user' => $this->current_user,
-			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'update-network-ports'
-			)),
-			'switch' => $this->device
-		));
-	}
-
-	if($this->type->isRack()) {
-		$this->renderTemplate('/devices/_racked_devices.phtml', array(
-			'base_url' => $this->base_url,
-			'current_user' => $this->current_user,
-			'devices' => $this->devices
-		));
-	}
-
-	if($this->type->isNetworkEndpoint() && count($this->bandwidth_graphs)) {
-		$this->renderTemplate('/devices/_bandwidth_usage.phtml', array(
-			'bandwidth_graph_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'bandwidth-graph'
-			)),
-			'bandwidth_graphs' => $this->bandwidth_graphs,
-			'bandwidth_graph_durations' => $this->bandwidth_graph_durations
-		));
-	}
-
-	if(isset($ipmi_null_route) && $ipmi_null_status != 4)
-	{
-		$this->renderTemplate('/devices/_ipmi_controls.phtml', array(
-			'control_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'devices',
-				'action' => 'update-ipmi'
-			)),
-			'ipmi_config' => $ipmi_config,
-			'ipmi_null_route' => $ipmi_null_route,
-			'current_user' => $this->current_user,
-			'device' => $this->device,
-		));
-	}
-?>
 
 <script type="text/javascript">
     $(document).ready(function() {
-    	$(".cc-tab-content").hide(); //Hide all content
-	    if ($(location).attr('hash').substr(1)!="") {
-	        var activeTab = $(location).attr('hash');
-	        $("ul").find('li').removeClass('open');
-	        $("ul.tabs li").removeClass("active"); //Remove any "active" class
-	        $(activeTab+"nav").addClass("active");
-	        $(activeTab).show();
-	    } else {
-	        $("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
-	        $(".cc-tab-content:first").show(); //Show first tab content
-	    }
-
-		//On Click Event
-		$("#cc-tabs ul.tabs li").click(function() {
-	        $("ul").find('li').removeClass('open');
-			$("ul.tabs li").removeClass("active"); //Remove any "active" class
-			$(this).addClass("active"); //Add "active" class to selected tab
-			var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
-	        if (activeTab.substr(0,1)=="#" && activeTab.substr(1)!="") { //Determine if a tab or link
-	            $(".cc-tab-content").hide(); //Hide all tab content
-	    		$(activeTab).fadeIn(); //Fade in the active content
-	            return false;
-	        } else {
-	            return true; // If link allow redirect
-	        }
-		});
-
-		$('.link').on('click', function(event) {
-			event.stopPropagation();
-		});
+        $('#device_tabs').tabs({cookie: {name: 'api-tabs', expires: 7 }});
     });
 </script>
-
-<style type="text/css">
-    .header-lined { display: none; }
-    .page-header { margin-top: 0px; }
-</style>

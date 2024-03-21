@@ -4,6 +4,8 @@ if(!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+require_once 'Event.php';
+
 /**
  * A WHMCS Client
  */
@@ -36,5 +38,13 @@ class ColoCrossing_Model_Client extends ColoCrossing_Model_User {
 
 		return isset($service) && $service->isActive();
 	}
+
+	/**
+     * Logs Message to Events
+     * @param  string $description
+     */
+    public static function log($description = ''){
+        ColoCrossing_Model_Event::log('admin', $description);
+    }
 
 }

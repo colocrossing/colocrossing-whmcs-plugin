@@ -29,7 +29,7 @@ class ColoCrossing_Clients_Controller extends ColoCrossing_Controller {
      * @param  string $description
      */
     protected function log($description = ''){
-        ColoCrossing_Model_Event::log('client', $description);
+        ColoCrossing_Model_Client::log($description);
     }
 
     /**

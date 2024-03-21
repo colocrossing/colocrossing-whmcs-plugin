@@ -17,25 +17,25 @@
 ?>
 
 
-<div data-toggle="tab" id="ipmi-controls" class="cc-tab-content">
+<div id="ipmi-controls">
     <div class="row">
         <div class="col30 col-md-3">
             <div class="internalpadding">
                 <div class="styled_title"><h2>IPMI Controls</h2></div>
             </div>
         </div>
-        <div class="col70 col-md-9" style="margin-top: 40px; margin-left: 50px;">
+        <div class="col70 col-md-9">
             <strong><? echo $ipmi_message; ?></strong>
-            <div style="margin-left: 25px; margin-top: 10px;">
+            <div>
                 <?
                     if($status == 1 || $status == 3) {
                 ?>
-                        <input type="button" class="btn lift_button" data-status="lift" value="Lift Null Route" />
+                        <input type="button" class="ui-button btn lift_button" data-status="lift" value="Lift Null Route" />
                 <?
                     } else if($status == 2) {
                 ?>
-                        <input type="button" class="btn renew_button" data-status="renew" value="Renew Lift" />
-                        <input type="button" class="btn replace_button" data-status="replace" value="Replace Null Route" />
+                        <input type="button" class="ui-button btn renew_button" data-status="renew" value="Renew Lift" />
+                        <input type="button" class="ui-button btn replace_button" data-status="replace" value="Replace Null Route" />
                 <?
                     } //end if
                 ?>

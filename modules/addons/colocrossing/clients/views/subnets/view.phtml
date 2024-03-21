@@ -6,99 +6,74 @@
 	$this->renderFlashMessage();
 ?>
 
-<div id="cc-tabs">
-    <ul class="nav nav-tabs tabs" data-tabs="tabs" style="float: none;">
-    <?php
-    	echo '<li id="overviewnav" class="active"><a href="#overview" data-toggle="tab">Information</a></li>';
-
-		if($this->subnet->isReverseDnsEnabled()) {
-			echo '<li id="rdns-recordsnav"><a href="#rdns-records" data-toggle="tab">Reverse DNS Records</a></li>';
-		}
-
-		if($this->subnet->isNullRoutesEnabled()) {
-			echo '<li id="null-routesnav"><a href="#null-routes" data-toggle="tab">Null Routes</a></li>';
-		}
-    ?>
-    </ul>
-</div>
-
-<?php
-	$this->renderTemplate('/subnets/_overview.phtml', array(
-		'subnet' => $this->subnet,
-		'device' => $this->device,
-		'device_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-			'controller' => 'devices',
-			'action' => 'view',
-			'id' => $this->device->getId()
-		)),
-		'ip_addresses' => $this->ip_addresses
-	));
+<div id="subnet_tabs">
+    <ul class="nav nav-tabs tabs">
+	<?php
+	echo '<li><a href="#subnet_overview">Information</a></li>';
 
 	if($this->subnet->isReverseDnsEnabled()) {
-		$this->renderTemplate('/subnets/_rdns_records.phtml', array(
-			'update_rdns_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'subnets',
-				'action' => 'update',
-				'id' => $this->subnet->getId()
-			)),
-			'rdns_records' => $this->rdns_records,
-			'pending_service_request' => $this->subnet->isPendingServiceRequest()
-		));
+		echo '<li><a href="#rdns_records">Reverse DNS Records</a></li>';
 	}
 
 	if($this->subnet->isNullRoutesEnabled()) {
-		$this->renderTemplate('/subnets/_null_routes.phtml', array(
-			'add_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'null-routes',
-				'action' => 'create',
-				'subnet_id' => $this->subnet->getId()
-			)),
-			'remove_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
-				'controller' => 'null-routes',
-				'action' => 'destroy'
-			)),
-			'null_routes' => $this->null_routes,
-			'ip_addresses' => $this->ip_addresses
-		));
+		echo '<li><a href="#null_routes">Null Routes</a></li>';
 	}
-?>
+    ?>
+	</ul>
+    <div class="main_content">
+        <div id="subnet_overview">
+        <?php
+            $this->renderTemplate('/subnets/_overview.phtml', array(
+				'subnet' => $this->subnet,
+				'device' => $this->device,
+				'device_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+					'controller' => 'devices',
+					'action' => 'view',
+					'id' => $this->device->getId()
+				)),
+				'ip_addresses' => $this->ip_addresses
+			));
+        ?>
+        </div>
+        <div id="rdns_records">
+        <?php
+        	if($this->subnet->isReverseDnsEnabled()) {
+				$this->renderTemplate('/subnets/_rdns_records.phtml', array(
+					'update_rdns_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+						'controller' => 'subnets',
+						'action' => 'update',
+						'id' => $this->subnet->getId()
+					)),
+					'rdns_records' => $this->rdns_records,
+					'pending_service_request' => $this->subnet->isPendingServiceRequest()
+				));
+			}
+        ?>
+        </div>
+        <div id="null_routes">
+        <?php
+        	if($this->subnet->isNullRoutesEnabled()) {
+				$this->renderTemplate('/subnets/_null_routes.phtml', array(
+					'add_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+						'controller' => 'null-routes',
+						'action' => 'create',
+						'subnet_id' => $this->subnet->getId()
+					)),
+					'remove_null_route_url' => ColoCrossing_Utilities::buildUrl($this->base_url, array(
+						'controller' => 'null-routes',
+						'action' => 'destroy'
+					)),
+					'null_routes' => $this->null_routes,
+					'ip_addresses' => $this->ip_addresses
+				));
+			}
+        ?>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     $(document).ready(function() {
-    	$(".cc-tab-content").hide(); //Hide all content
-	    if ($(location).attr('hash').substr(1)!="") {
-	        var activeTab = $(location).attr('hash');
-	        $("ul").find('li').removeClass('open');
-	        $("ul.tabs li").removeClass("active"); //Remove any "active" class
-	        $(activeTab+"nav").addClass("active");
-	        $(activeTab).show();
-	    } else {
-	        $("#cc-tabs ul.tabs li:first").addClass("active").show(); //Activate first tab
-	        $(".cc-tab-content:first").show(); //Show first tab content
-	    }
-
-		//On Click Event
-		$("#cc-tabs ul.tabs li").click(function() {
-	        $("ul").find('li').removeClass('open');
-			$("ul.tabs li").removeClass("active"); //Remove any "active" class
-			$(this).addClass("active"); //Add "active" class to selected tab
-			var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
-	        if (activeTab.substr(0,1)=="#" && activeTab.substr(1)!="") { //Determine if a tab or link
-	            $(".cc-tab-content").hide(); //Hide all tab content
-	    		$(activeTab).fadeIn(); //Fade in the active content
-	            return false;
-	        } else {
-	            return true; // If link allow redirect
-	        }
-		});
-
-		$('.link').on('click', function(event) {
-			event.stopPropagation();
-		});
+        $('#subnet_tabs').tabs({cookie: {name: 'subnet-tabs', expires: 7 }});
     });
 </script>
-
-<style type="text/css">
-    .header-lined { display: none; }
-    .page-header { margin-top: 0px; }
-</style>

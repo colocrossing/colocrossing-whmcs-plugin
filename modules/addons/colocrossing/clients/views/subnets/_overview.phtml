@@ -1,63 +1,62 @@
-<div data-toggle="tab" id="overview" class="cc-tab-content">
-    <div class="row">
-        <div class="col30 col-md-3">
-            <div class="internalpadding">
-                <div class="styled_title"><h2>Information</h2></div>
-                <p>Here is an overview of your subnet.</p>
-                <input id="view-device-button" type="button" value="&laquo; Back to Device" class="btn" style="margin-top: 15px;" />
-            </div>
+<div class="row">
+    <div class="col30 col-md-3">
+        <div class="internalpadding">
+            <div class="styled_title"><h2>Information</h2></div>
+            <p>Here is an overview of your subnet.</p>
+            <input id="view-device-button" type="button" value="&laquo; Back to Device" class="ui-button btn" style="margin-top: 15px;" />
         </div>
-        <div class="col70 col-md-9">
-            <div class="internalpadding">
-            	<div class="col2half col-md-6">
-                    <h4>Subnet CIDR:</h4>
-                    <span><?php echo $subnet->getCIDRIpAddress(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>SWIP:</h4>
-                    <span><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Device:</h4>
-                    <a class="link" href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?>&nbsp;</a>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Zone:</h4>
-                    <span><?php echo $subnet->getSubzone(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>First Usable IP:</h4>
-                    <span><?php echo $subnet->getFirstUsableIpAddress(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Mask:</h4>
-                    <span><?php echo $subnet->getMask(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Last Usable IP:</h4>
-                    <span><?php echo $subnet->getLastUsableIpAddress(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Gateway:</h4>
-                    <span><?php echo $subnet->getGateway(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Usable Addresses:</h4>
-                    <span><?php echo $subnet->getNumberOfUsableIpAddresses(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Broadcast:</h4>
-                    <span><?php echo $subnet->getBroadcast(); ?>&nbsp;</span>
-                </div>
-                <div class="col2half col-md-6">
-                    <h4>Total Addresses:</h4>
-                    <span><?php echo $subnet->getNumberOfIpAddresses(); ?>&nbsp;</span>
-                </div>
-                <div class="clear"></div>
-            </div>
+    </div>
+    <div class="col70 col-md-9">
+        <div class="internalpadding">
+        	<p>
+                <strong>Subnet CIDR:</strong>
+                <span><?php echo $subnet->getCIDRIpAddress(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>SWIP:</strong>
+                <span><?php echo $subnet->isSwip() ? 'Yes' : 'No'; ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Device:</strong>
+                <a class="link" href="<?php echo $device_url; ?>"><?php echo $device->getName(); ?>&nbsp;</a>
+            </p>
+            <p>
+                <strong>Zone:</strong>
+                <span><?php echo $subnet->getSubzone(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>First Usable IP:</strong>
+                <span><?php echo $subnet->getFirstUsableIpAddress(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Mask:</strong>
+                <span><?php echo $subnet->getMask(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Last Usable IP:</strong>
+                <span><?php echo $subnet->getLastUsableIpAddress(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Gateway:</strong>
+                <span><?php echo $subnet->getGateway(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Usable Addresses:</strong>
+                <span><?php echo $subnet->getNumberOfUsableIpAddresses(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Broadcast:</strong>
+                <span><?php echo $subnet->getBroadcast(); ?>&nbsp;</span>
+            </p>
+            <p>
+                <strong>Total Addresses:</strong>
+                <span><?php echo $subnet->getNumberOfIpAddresses(); ?>&nbsp;</span>
+            </p>
+            <div class="clear"></div>
         </div>
     </div>
 </div>
+
 
 <script type="text/javascript">
     $(document).ready(function() {

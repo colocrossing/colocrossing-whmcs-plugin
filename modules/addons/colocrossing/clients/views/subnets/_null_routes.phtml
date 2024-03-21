@@ -1,84 +1,82 @@
-<div data-toggle="tab" id="null-routes" class="cc-tab-content">
-    <div class="row">
-        <div class="col30 col-md-3">
-            <div class="internalpadding">
-                <div class="styled_title"><h2>Null Routes</h2></div>
-                <p>You have the following null routes on this subnet.</p>
-                <div class="form-inline" style="margin-top: 15px;">
-                    <label style="width: auto; margin-right: 10px;">Duration: </label>
-                    <select id="null-route-duration-select">
-                        <option value="2 hours">2 Hours</option>
-                        <option value="4 hours" selected>4 Hours</option>
-                        <option value="8 hours">8 Hours</option>
-                        <option value="12 hours">12 Hours</option>
-                        <option value="18 hours">18 Hours</option>
-                        <option value="1 day">1 Day</option>
-                        <option value="2 days">2 Days</option>
-                        <option value="3 days">3 Days</option>
-                        <option value="5 days">5 Days</option>
-                        <option value="1 week">1 Week</option>
-                        <option value="2 weeks">2 Weeks</option>
-                        <option value="4 weeks">4 Weeks</option>
-                    </select>
-                </div>
+<div class="row">
+    <div class="col30 col-md-3">
+        <div class="internalpadding">
+            <div class="styled_title"><h2>Null Routes</h2></div>
+            <p>You have the following null routes on this subnet.</p>
+            <div class="form-inline" style="margin-top: 15px;">
+                <label style="width: auto; margin-right: 10px;">Duration: </label>
+                <select id="null-route-duration-select">
+                    <option value="2 hours">2 Hours</option>
+                    <option value="4 hours" selected>4 Hours</option>
+                    <option value="8 hours">8 Hours</option>
+                    <option value="12 hours">12 Hours</option>
+                    <option value="18 hours">18 Hours</option>
+                    <option value="1 day">1 Day</option>
+                    <option value="2 days">2 Days</option>
+                    <option value="3 days">3 Days</option>
+                    <option value="5 days">5 Days</option>
+                    <option value="1 week">1 Week</option>
+                    <option value="2 weeks">2 Weeks</option>
+                    <option value="4 weeks">4 Weeks</option>
+                </select>
             </div>
         </div>
-        <div class="col70 col-md-9">
-            <div class="internalpadding">
-                <table class="table table-striped table-framed table-centered">
-                    <thead>
-                        <tr>
-                            <th>IP Address</th>
-                            <th>Created On</th>
-                            <th>Expires On</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                        if(count($ip_addresses) == 0):
-                    ?>
-                        <tr>
-                            <td class="textcenter" colspan="5">No IP addresses found.</td>
-                        </tr>
-                    <?php
-                        endif;
+    </div>
+    <div class="col70 col-md-9">
+        <div class="internalpadding">
+            <table class="table table-striped table-framed table-centered">
+                <thead>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Created On</th>
+                        <th>Expires On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    if(count($ip_addresses) == 0):
+                ?>
+                    <tr>
+                        <td class="textcenter" colspan="5">No IP addresses found.</td>
+                    </tr>
+                <?php
+                    endif;
 
-                        $add_button = '<input type="button" value="Add Null Route" class="add-null-route-button btn btn-small" />';
-                        $remove_button = '<input type="button" value="Remove Null Route" class="remove-null-route-button btn btn-small btn-danger" />';
+                    $add_button = '<input type="button" value="Add Null Route" class="add-null-route-button ui-button btn btn-small" />';
+                    $remove_button = '<input type="button" value="Remove Null Route" class="remove-null-route-button ui-button btn btn-small btn-danger" />';
 
-                        foreach ($ip_addresses as $index => $ip_address):
-                            if(isset($null_routes[$ip_address])) {
-                                $null_route = $null_routes[$ip_address];
+                    foreach ($ip_addresses as $index => $ip_address):
+                        if(isset($null_routes[$ip_address])) {
+                            $null_route = $null_routes[$ip_address];
 
-                                $create_date = $null_route->getDateAdded();
-                                $expire_date = $null_route->getDateExpire();
+                            $create_date = $null_route->getDateAdded();
+                            $expire_date = $null_route->getDateExpire();
 
-                                $null_id = $null_route->getId();
-                                $created_on = isset($create_date) ? date('m/d/Y h:i a', $create_date) : 'Unknown';
-                                $expires_on = isset($expire_date) ? date('m/d/Y h:i a', $expire_date) : 'Never';
-                                $action = $null_route->isRemovable() ? $remove_button : '';
-                            } else {
-                                $null_id = 0;
-                                $created_on = 'N/A';
-                                $expires_on = 'N/A';
-                                $action = $add_button;
-                            }
+                            $null_id = $null_route->getId();
+                            $created_on = isset($create_date) ? date('m/d/Y h:i a', $create_date) : 'Unknown';
+                            $expires_on = isset($expire_date) ? date('m/d/Y h:i a', $expire_date) : 'Never';
+                            $action = $null_route->isRemovable() ? $remove_button : '';
+                        } else {
+                            $null_id = 0;
+                            $created_on = 'N/A';
+                            $expires_on = 'N/A';
+                            $action = $add_button;
+                        }
 
-                            $disabled = empty($null_route) || $null_route->isRemovable() ? '' : 'disabled';
-                    ?>
-                        <tr data-ip-address="<?php echo $ip_address; ?>" data-null-route-id="<?php echo $null_id; ?>">
-                            <td><?php echo $ip_address; ?></td>
-                            <td><?php echo $created_on; ?></td>
-                            <td><?php echo $expires_on; ?></td>
-                            <td style="padding: 5px;"><?php echo $action; ?></td>
-                        </tr>
-                    <?php
-                        endforeach;
-                    ?>
-                    </tbody>
-                </table>
-            </div>
+                        $disabled = empty($null_route) || $null_route->isRemovable() ? '' : 'disabled';
+                ?>
+                    <tr data-ip-address="<?php echo $ip_address; ?>" data-null-route-id="<?php echo $null_id; ?>">
+                        <td><?php echo $ip_address; ?></td>
+                        <td><?php echo $created_on; ?></td>
+                        <td><?php echo $expires_on; ?></td>
+                        <td style="padding: 5px;"><?php echo $action; ?></td>
+                    </tr>
+                <?php
+                    endforeach;
+                ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

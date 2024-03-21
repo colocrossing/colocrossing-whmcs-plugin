@@ -47,8 +47,6 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 
 			if(count($this->bandwidth_graphs)) {
 				$this->bandwidth_graph_durations = array(
-					"current" => 'Current Billing Period',
-					"previous" => 'Previous Billing Period',
 					"12 hours" => "Last 12 Hours",
 					"1 day" => "Last Day",
 					"1 week" => "Last Week",

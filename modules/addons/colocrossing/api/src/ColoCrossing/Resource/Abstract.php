@@ -202,7 +202,7 @@ abstract class ColoCrossing_Resource_Abstract implements ColoCrossing_Resource
 		$query_params = array(
 			'page' => $options['page_number'],
 			'limit' => $options['page_size'],
-			'sort' => implode($options['sort'], ',')
+			'sort' => implode(',', $options['sort'])
 		);
 		foreach ($options['filters'] as $filter => $value)
 		{

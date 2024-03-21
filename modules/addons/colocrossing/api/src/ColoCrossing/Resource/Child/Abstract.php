@@ -47,7 +47,7 @@ abstract class ColoCrossing_Resource_Child_Abstract extends ColoCrossing_Resourc
 	 * @param  int 	$parent_id 	The Parent Id
 	 * @return string 			The Url
 	 */
-	protected function createCollectionUrl($parent_id)
+	protected function createCollectionUrl($parent_id = null)
 	{
 		return $this->parent_resource->createObjectUrl($parent_id) . $this->getUrl();
 	}
@@ -58,7 +58,7 @@ abstract class ColoCrossing_Resource_Child_Abstract extends ColoCrossing_Resourc
 	 * @param  int $parent_id 	The Parent Id
 	 * @return string   		The Url
 	 */
-	protected function createObjectUrl($id, $parent_id)
+	protected function createObjectUrl($id, $parent_id = null)
 	{
 		return  $this->parent_resource->createObjectUrl($parent_id) . $this->getUrl() . '/' . urlencode($id);
 	}

@@ -21,7 +21,7 @@ class ColoCrossing_Admins_Controller extends ColoCrossing_Controller {
      * @param  string $description
      */
     protected function log($description = ''){
-        ColoCrossing_Model_Event::log('admin', $description);
+        ColoCrossing_Model_Admin::log($description);
     }
 
     /**
