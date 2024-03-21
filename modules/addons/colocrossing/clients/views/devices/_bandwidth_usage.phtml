@@ -46,6 +46,9 @@
     }
 
     $(document).ready(function() {
+
+        $('#bandwidth-graph-duration-select').selectmenu();
+
         var link = '<?php echo $bandwidth_graph_url; ?>',
         graphs = JSON.parse('<?php echo json_encode($bandwidth_graphs); ?>'),
         container = $('#bandwidth-graphs'),

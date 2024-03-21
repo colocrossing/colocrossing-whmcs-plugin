@@ -90,6 +90,8 @@
         var addForm = $('form#add-null-route-form'),
         removeForm = $('form#remove-null-route-form');
 
+        $('#null-route-duration-select').selectmenu();
+
         $('input.add-null-route-button').on('click', function(e) {
             var row = $(this).closest('tr'),
             duration = $('select#null-route-duration-select').val(),
