@@ -15,7 +15,7 @@ class ColoCrossing_Clients_ServicesController extends ColoCrossing_Clients_Contr
 
 		$service = ColoCrossing_Model_Service::find($params['id']);
 
-		if(empty($service)) {
+		if(empty($service) || !$service->isAssignedToUser($this->current_user)) {
 			return 'Service not found!';
 		}
 
@@ -39,7 +39,7 @@ class ColoCrossing_Clients_ServicesController extends ColoCrossing_Clients_Contr
 	        $this->device = null;
 	    }
 
-	    if(empty($this->service) || empty($this->device)) {
+	    if(empty($this->service) || empty($this->device) || !$this->service->isAssignedToUser($this->current_user)) {
 	    	$this->disableRendering();
 	        return false;
 	    }

@@ -229,6 +229,12 @@ class ColoCrossing_Clients_DevicesController extends ColoCrossing_Clients_Contro
 	public function updateIpmi(array $params)
 	{
 		$device = $this->api->devices->find($params['device_id']);
+
+		if(empty($device) || !$this->isCurrentUserAssignedToDevice($device)) {
+			$this->setFlashMessage('The device was not found.', 'error');
+			$this->redirectTo('error', 'missing');
+		}
+
 		$config = $device->getIpmiConfiguration();
 		$status = $config->getNullRouteStatus()['id'];
 		switch($params['ipmi_action'])

@@ -36,7 +36,7 @@ class ColoCrossing_Model_Client extends ColoCrossing_Model_User {
 		$device_id = is_numeric($device) ? $device : $device->getId();
 		$service = ColoCrossing_Model_Service::findByDevice($device_id);
 
-		return isset($service) && $service->isActive();
+		return isset($service) && $service->isAssignedToUser($this) && $service->isActive();
 	}
 
 	/**
