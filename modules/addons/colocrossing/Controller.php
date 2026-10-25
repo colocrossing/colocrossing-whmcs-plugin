@@ -116,9 +116,12 @@ abstract class ColoCrossing_Controller {
 
         $result = $this->$action($params);
 
+        // Request params are deliberately not passed to the view. Actions expose
+        // data to templates through $this; extracting raw request input into the
+        // template scope lets clients set arbitrary template variables.
         if($this->isRenderingEnabled()) {
             $path = $this->getControllerActionTemplatePath($action);
-            $this->renderTemplate($path, $params);
+            $this->renderTemplate($path);
         }
 
         return $result;
@@ -131,17 +134,16 @@ abstract class ColoCrossing_Controller {
      * @param  array  $params Params to pass to template
      */
     protected function renderTemplate($path, array $params = null) {
-        if(isset($params)) {
-            extract($params);
-
-            if(is_null($params['params'])) {
-                unset($params);
-            }
-        }
-
         $path = $this->getViewDirectoryPath() . $path;
 
-        require $path;
+        // The template path and params are read via func_get_arg() so no local
+        // variable exists for extract() to overwrite (e.g. a "path" param).
+        $render = function () {
+            extract(func_get_arg(1), EXTR_SKIP);
+            require func_get_arg(0);
+        };
+
+        $render($path, isset($params) ? $params : array());
     }
 
     /**
