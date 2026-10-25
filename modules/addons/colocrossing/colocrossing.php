@@ -95,6 +95,19 @@ function colocrossing_sidebar($params) {
 }
 
 function colocrossing_clientarea($params) {
+    // WHMCS can only act on 'requirelogin' after this function returns, so
+    // without this check the action (and its side effects) runs for guests.
+    if(empty($_SESSION['uid'])) {
+        return array(
+            'pagetitle' => 'ColoCrossing',
+            'templatefile' => 'clients/template',
+            'requirelogin' => true,
+            'vars' => array(
+                'output' => ''
+            ),
+        );
+    }
+
     $module = ColoCrossing_Module::getInstance();
 
     list($title, $output) = $module->dispatchRequest('client');
