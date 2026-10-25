@@ -12,9 +12,14 @@ class ColoCrossing_Utilities {
 	 * @return string 		The Parsed Template
 	 */
 	public static function parseTemplate($file, array $data = array()) {
-	    extract($data);
+	    // Read via func_get_arg() so a "file" key in $data cannot replace the path.
+	    $render = static function () {
+	        extract(func_get_arg(1), EXTR_SKIP);
+	        require func_get_arg(0);
+	    };
+
 	    ob_start();
-	    require $file;
+	    $render($file, $data);
 	    return ob_get_clean();
 	}
 
